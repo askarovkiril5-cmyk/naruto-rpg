@@ -31,7 +31,16 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('[CRITICAL Unhandled Rejection]:', reason);
 });
 
+// Статическая раздача аудиофайлов (поддерживает server/public/audio, client/dist/audio и client/public/audio)
 app.use('/audio', express.static(path.join(__dirname, 'public/audio')));
+const clientDistAudio = path.join(__dirname, '..', 'client', 'dist', 'audio');
+if (fs.existsSync(clientDistAudio)) {
+  app.use('/audio', express.static(clientDistAudio));
+}
+const clientPublicAudio = path.join(__dirname, '..', 'client', 'public', 'audio');
+if (fs.existsSync(clientPublicAudio)) {
+  app.use('/audio', express.static(clientPublicAudio));
+}
 
 // Статическая раздача собранного клиента (для деплоя на Render / Docker)
 const clientDistPath = path.join(__dirname, '..', 'client', 'dist');

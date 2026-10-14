@@ -18,13 +18,22 @@ export function resolveAudioUrl(url) {
   }
   const cleanPath = url.replace(/^\/+/, '');
   if (typeof window !== 'undefined' && window.location) {
-    try {
-      return new URL(cleanPath, window.location.href).href;
-    } catch (e) {
-      return './' + cleanPath;
+    if (window.location.protocol === 'file:') {
+      try {
+        const baseHref = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+        return new URL(cleanPath, baseHref).href;
+      } catch (e) {
+        return './' + cleanPath;
+      }
+    } else {
+      try {
+        return new URL('/' + cleanPath, window.location.origin).href;
+      } catch (e) {
+        return '/' + cleanPath;
+      }
     }
   }
-  return './' + cleanPath;
+  return '/' + cleanPath;
 }
 
 export const AUDIO_TRACKS = [
@@ -191,6 +200,14 @@ class AudioManager {
   play(mode = 'lobby', trackId = null) {
     this.initAudioContext();
 
+    // Всегда снимаем заглушение и гарантируем слышимую громкость (65%)
+    this.isMuted = false;
+    try { localStorage.setItem('naruto_music_muted', 'false'); } catch (e) {}
+    if (typeof this.volume !== 'number' || isNaN(this.volume) || this.volume <= 0.05) {
+      this.volume = 0.65;
+      try { localStorage.setItem('naruto_music_volume', '0.65'); } catch (e) {}
+    }
+
     this.currentMode = mode;
     if (trackId) {
       this.currentTrackId = trackId;
@@ -222,8 +239,10 @@ class AudioManager {
       try {
         const resolvedUrl = resolveAudioUrl(trackObj.url);
         const audio = new Audio(resolvedUrl);
+        audio.preload = 'auto';
         audio.loop = (this.playbackMode === 'repeat-one');
         audio.volume = this.isMuted ? 0 : this.volume;
+        audio.muted = this.isMuted;
         audio.ontimeupdate = () => {
           this.currentTime = audio.currentTime || 0;
           this.duration = audio.duration || 0;

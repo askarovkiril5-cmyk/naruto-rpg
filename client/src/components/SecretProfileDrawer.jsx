@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   X, ShieldAlert, Zap, Activity, EyeOff, Shield, Eye, 
   Flame, Sparkles, Scroll, Compass, BookOpen, Layers, ArrowRight, Check, RefreshCw,
-  TrendingUp, TrendingDown, Maximize2, PanelRight, Minimize2, Swords, Heart, AlertCircle
+  TrendingUp, TrendingDown, Maximize2, PanelRight, Minimize2, Swords, Heart, AlertCircle, Trophy
 } from 'lucide-react';
 import { getJutsuDesc, getJutsuRange, getJutsuTacticalInfo } from '../utils/jutsuHelper';
 import { DOJUTSU_OPTIONS, getDojutsuById } from '../data/dojutsuData';
@@ -227,7 +227,8 @@ export default function SecretProfileDrawer({
   onRequestCard,
   gameVersion = '0.3.3',
   userProfile,
-  currentAccount
+  currentAccount,
+  onOpenPersonalProfile
 }) {
   const [activeSection, setActiveSection] = useState('ALL'); // 'ALL' | 'STATS' | 'CLAN' | 'EYE_0' | 'EYE_1'... | 'JUTSU'
   const [isEyeActive, setIsEyeActive] = useState(() => {
@@ -357,6 +358,21 @@ export default function SecretProfileDrawer({
               title="Обновить карточку шиноби"
             >
               <RefreshCw className="w-4 h-4" />
+            </button>
+          )}
+
+          {onOpenPersonalProfile && (
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onOpenPersonalProfile();
+              }}
+              className="px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 transition cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-sm"
+              title="Открыть персональный профиль: победы, винрейт и боевые титулы"
+            >
+              <Trophy className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Винрейт & Титулы</span>
             </button>
           )}
 

@@ -4,7 +4,7 @@ import {
   Send, Loader2, Play, Users, Swords, Crown, Sparkles, 
   ChevronDown, Compass, Zap, Shield, User, Backpack,
   Volume2, VolumeX, Bot, Music, Copy, Check, Share2, Plus, 
-  ArrowRightLeft, ShieldAlert, UserPlus, Users2, BookOpen, Lock, Unlock
+  ArrowRightLeft, ShieldAlert, UserPlus, Users2, BookOpen, Lock, Unlock, Trophy
 } from 'lucide-react';
 import TopMenu from './components/TopMenu';
 import SettingsModal, { initTheme } from './components/SettingsModal';
@@ -19,6 +19,7 @@ import ShinobiRanksModal from './components/ShinobiRanksModal';
 import ShinobiMailModal from './components/ShinobiMailModal';
 import TitlesModal from './components/TitlesModal';
 import FriendsModal from './components/FriendsModal';
+import ShinobiProfileModal from './components/ShinobiProfileModal';
 import { TITLES_DATA } from './data/titlesData';
 import NarrativeRenderer from './components/NarrativeRenderer';
 import defaultJutsuData from './data/jutsuData.json';
@@ -254,6 +255,7 @@ export default function App() {
   const [isMailOpen, setIsMailOpen] = useState(false);
   const [isTitlesOpen, setIsTitlesOpen] = useState(false);
   const [isFriendsOpen, setIsFriendsOpen] = useState(false);
+  const [isPersonalProfileOpen, setIsPersonalProfileOpen] = useState(false);
   const [activeTitleId, setActiveTitleId] = useState(() => {
     return localStorage.getItem('naruto_active_title_id') || null;
   });
@@ -1099,6 +1101,7 @@ export default function App() {
         onOpenMail={() => setIsMailOpen(true)}
         onOpenTitles={() => setIsTitlesOpen(true)}
         onOpenFriends={() => setIsFriendsOpen(true)}
+        onOpenPersonalProfile={() => setIsPersonalProfileOpen(true)}
         activeTitle={TITLES_DATA.find(t => t.id === activeTitleId)?.name || userProfile?.activeTitle || null}
         unreadMailCount={unreadMailCount}
         activeModel={activeModel}
@@ -1288,6 +1291,15 @@ export default function App() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 ml-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsPersonalProfileOpen(true)}
+                      className="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/50 text-emerald-300 text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-sm"
+                      title="Личные победы, винрейт, ранг и боевые титулы"
+                    >
+                      <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                      <span>🏆 Мой Профиль</span>
+                    </button>
                     <button
                       type="button"
                       onClick={() => setIsCreatorOpen(true)}
@@ -2111,6 +2123,7 @@ export default function App() {
         gameVersion={gameVersion}
         userProfile={userProfile}
         currentAccount={currentAccount}
+        onOpenPersonalProfile={() => setIsPersonalProfileOpen(true)}
       />
 
       {/* МОДАЛЬНЫЕ ОКНА */}
@@ -2242,6 +2255,26 @@ export default function App() {
               customNinja
             });
           }
+        }}
+      />
+
+      {/* 16. МОДАЛЬНОЕ ОКНО: Личный Профиль Шиноби (Победы, Винрейт, Титулы) */}
+      <ShinobiProfileModal
+        isOpen={isPersonalProfileOpen}
+        onClose={() => setIsPersonalProfileOpen(false)}
+        userProfile={userProfile}
+        playerName={playerName}
+        currentAccount={currentAccount}
+        activeTitleId={activeTitleId}
+        unlockedTitleIds={unlockedTitleIds}
+        onSelectTitle={handleSelectTitle}
+        onOpenLeaderboard={() => {
+          setIsPersonalProfileOpen(false);
+          setIsFriendsOpen(true);
+        }}
+        onOpenRanks={() => {
+          setIsPersonalProfileOpen(false);
+          setIsRanksOpen(true);
         }}
       />
     </div>

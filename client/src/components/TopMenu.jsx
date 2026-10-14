@@ -17,6 +17,7 @@ export default function TopMenu({
   onOpenMail,
   onOpenTitles,
   onOpenFriends,
+  onOpenPersonalProfile,
   activeTitle,
   unreadMailCount = 0,
   activeModel,
@@ -33,10 +34,10 @@ export default function TopMenu({
     <aside className="shrink-0 p-3 z-30 flex flex-col select-none">
       <div className="glass-panel border border-white/10 rounded-2xl p-2.5 flex flex-col gap-2 shadow-2xl backdrop-blur-md w-16 sm:w-44 transition-all duration-300">
         
-        {/* Карточка уровня и ранга шиноби (открывает Таблицу 100 рангов) */}
+        {/* Карточка уровня и ранга шиноби (открывает Личный Профиль, победы и винрейт) */}
         <div 
-          onClick={onOpenRanks}
-          title={`Ранг: ${userProfile?.rank?.title || 'Генин'}. Нажмите, чтобы открыть Таблицу 100 уровней и рангов шиноби!`}
+          onClick={onOpenPersonalProfile || onOpenRanks}
+          title={`Шиноби: ${userProfile?.rank?.title || 'Генин'} (Ур. ${userProfile?.level || 1}). Нажмите, чтобы открыть ваш Личный Профиль, победы, винрейт и достижения!`}
           className="cursor-pointer p-2 rounded-xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-amber-950/30 border border-amber-500/40 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-500/20 transition group shadow-md"
         >
           <div className="flex items-center justify-between">
@@ -135,11 +136,11 @@ export default function TopMenu({
           </span>
         </button>
 
-        {/* 5. Мой Профиль (Секретно) */}
+        {/* 5. Мой Профиль (Личная статистика и достижения / Секретное досье боя) */}
         <button
           type="button"
-          onClick={onToggleProfile}
-          title="Мой Профиль (Секретные статы, клан, додзюцу)"
+          onClick={hasProfile ? onToggleProfile : (onOpenPersonalProfile || onToggleProfile)}
+          title="Мой Профиль (Личные победы, винрейт, титулы и боевые характеристики)"
           className={`w-full flex items-center justify-between gap-1.5 px-2.5 py-2.5 rounded-xl transition cursor-pointer group ${
             isProfileOpen 
               ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 shadow-sm' 

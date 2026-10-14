@@ -361,6 +361,43 @@ export default function FriendsModal({
               </span>
             </div>
 
+            {/* Карточка личной статистики шиноби в Зале Славы */}
+            <div className="bg-gradient-to-r from-amber-950/50 via-zinc-900 to-zinc-950 border border-amber-500/40 rounded-xl p-3 flex items-center justify-between gap-2 flex-wrap text-xs shadow-lg">
+              <div className="flex items-center gap-2.5">
+                <span className="text-xl p-1.5 rounded-lg bg-amber-500/20 border border-amber-500/30">
+                  {userProfile?.rank?.icon || '🥋'}
+                </span>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-amber-300 uppercase tracking-wide">Ваш профиль: {playerName || 'Шиноби'}</span>
+                    {userProfile?.activeTitle && (
+                      <span className="text-[10px] text-amber-300 font-bold px-2 py-0.2 rounded-full bg-amber-500/20 border border-amber-500/40">
+                        🎖️ {userProfile.activeTitle}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-[10px] text-zinc-400 font-mono mt-0.5">
+                    Ранг: <strong className="text-amber-400">{userProfile?.rank?.title || 'Генин'} (Уровень {userProfile?.level || 1})</strong> • Печать: {userProfile?.rank?.symbol || '忍'}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 font-mono text-xs">
+                <div className="bg-zinc-950/70 px-2.5 py-1 rounded-lg border border-white/5">
+                  <span className="text-zinc-400 text-[10px] block">⚔️ PvP Победы</span>
+                  <span className="text-emerald-400 font-black text-sm">{userProfile?.stats?.pvp?.battlesWon || userProfile?.battlesWon || 0}</span>
+                </div>
+                <div className="bg-zinc-950/70 px-2.5 py-1 rounded-lg border border-white/5">
+                  <span className="text-zinc-400 text-[10px] block">% Винрейт</span>
+                  <span className="text-amber-300 font-black text-sm">{userProfile?.stats?.pvp?.winrate || 0}%</span>
+                </div>
+                <div className="bg-zinc-950/70 px-2.5 py-1 rounded-lg border border-white/5 hidden sm:block">
+                  <span className="text-zinc-400 text-[10px] block">🤖 ИИ Спарринги</span>
+                  <span className="text-blue-300 font-black text-sm">{userProfile?.stats?.ai?.battlesPlayed || 0}</span>
+                </div>
+              </div>
+            </div>
+
             {/* Таблица Зала Славы */}
             <div className="flex-1 overflow-y-auto scrollbar-thin border border-white/10 rounded-2xl bg-black/40">
               <table className="w-full text-left border-collapse">

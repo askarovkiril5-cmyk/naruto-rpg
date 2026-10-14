@@ -707,14 +707,14 @@ export default function App() {
             addMessage({
               id: Math.random().toString(),
               type: 'system',
-              text: `⚡ Победа в рейтинговом PvP! Уровень: ${myReport.profile.level} (${myReport.profile.rank?.title || 'Генин'}). До след. уровня: ${myReport.profile.currentWinsInLevel}/${myReport.profile.winsRequiredForNextLevel} побед.`,
+              text: `⚡ Победа в рейтинговом PvP! Начислено +${myReport.xpGain || 450} XP. Текущий уровень: ${myReport.profile.level} (${myReport.profile.rank?.title || 'Генин'}). Прогресс: ${myReport.profile.currentXpInLevel || 0}/${myReport.profile.xpRequiredForNextLevel || 400} XP.`,
               time: getCurrentTime()
             });
           } else {
             addMessage({
               id: Math.random().toString(),
               type: 'system',
-              text: `💥 Поражение в PvP дуэли. Изучайте тактику соперника и готовьтесь к реваншу!`,
+              text: `💥 Завершение PvP дуэли. Получено +${myReport.xpGain || 180} XP за боевой опыт. Текущий уровень: ${myReport.profile.level} (${myReport.profile.rank?.title || 'Генин'}). Прогресс: ${myReport.profile.currentXpInLevel || 0}/${myReport.profile.xpRequiredForNextLevel || 400} XP.`,
               time: getCurrentTime()
             });
           }
@@ -727,7 +727,9 @@ export default function App() {
             isWinner,
             roundCount: currentRound,
             level: myReport.profile.level,
-            rankTitle: myReport.profile.rank?.title
+            rankTitle: myReport.profile.rank?.title,
+            xpGain: myReport.xpGain,
+            totalXp: myReport.profile.totalXp
           });
 
           // 🟢 «Приказ Хокаге» при повышении ранга (зелёная подсветка)
@@ -748,10 +750,11 @@ export default function App() {
         }
       } else {
         // Тренировочный спарринг с ИИ
+        const aiXp = isWinner ? 150 : 60;
         addMessage({
           id: Math.random().toString(),
           type: 'system',
-          text: `🤖 Тренировочный спарринг с ИИ завершён. Результат занесён в статистику тренировок (уровень шиноби повышается только в битвах с живыми игроками).`,
+          text: `🤖 Тренировочный спарринг с ИИ завершён. Начислено +${aiXp} XP за отработку приёмов на полигоне.`,
           time: getCurrentTime()
         });
 
@@ -761,7 +764,8 @@ export default function App() {
           resultText: text,
           isPvp: false,
           isWinner,
-          roundCount: currentRound
+          roundCount: currentRound,
+          xpGain: aiXp
         });
       }
     });

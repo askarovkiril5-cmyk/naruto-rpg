@@ -444,7 +444,7 @@ export default function SecretProfileDrawer({
           )}
         </div>
 
-        {/* Прогресс-бар побед до следующего уровня (БЕЗ XP!) */}
+        {/* Прогресс-бар опыта до следующего уровня (XP) */}
         <div className="space-y-1">
           <div className="w-full bg-black/60 rounded-full h-2 overflow-hidden border border-white/5">
             <div 
@@ -453,9 +453,9 @@ export default function SecretProfileDrawer({
             />
           </div>
           <div className="flex justify-between text-[9px] font-mono text-zinc-400">
-            <span>Прогресс до след. ранга:</span>
+            <span>Опыт до след. ранга:</span>
             <span className="text-amber-300 font-bold">
-              {userProfile?.currentWinsInLevel || 0} / {userProfile?.winsRequiredForNextLevel || 1} побед в PvP ({userProfile?.progressPercent || 0}%)
+              {(userProfile?.currentXpInLevel || 0).toLocaleString()} / {(userProfile?.xpRequiredForNextLevel || 400).toLocaleString()} XP ({userProfile?.progressPercent || 0}%)
             </span>
           </div>
         </div>

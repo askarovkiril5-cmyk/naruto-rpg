@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   BookOpen, Scroll, UserCheck, Settings, Swords, ShieldAlert, 
-  Maximize2, Minimize2, UserPlus, FileText, Bot, Award, Mail, Users, Trophy, Crown 
+  Maximize2, Minimize2, UserPlus, FileText, Bot, Award, Mail, Users, Trophy, Crown,
+  Volume2, VolumeX, SkipForward
 } from 'lucide-react';
+import { audioManager, AUDIO_TRACKS } from '../utils/audioManager';
 
 export default function TopMenu({ 
   onOpenRules, 
@@ -30,6 +32,18 @@ export default function TopMenu({
   onToggleFullscreen,
   isFullscreen = false
 }) {
+  const [audioState, setAudioState] = useState(() => ({
+    isPlaying: audioManager.isPlaying,
+    currentTrackId: audioManager.currentTrackId,
+    volume: audioManager.volume,
+    isMuted: audioManager.isMuted
+  }));
+
+  useEffect(() => {
+    return audioManager.subscribe((st) => {
+      setAudioState({ ...st });
+    });
+  }, []);
   return (
     <aside className="shrink-0 p-3 z-30 flex flex-col select-none">
       <div className="glass-panel border border-white/10 rounded-2xl p-2.5 flex flex-col gap-2 shadow-2xl backdrop-blur-md w-16 sm:w-44 transition-all duration-300">
@@ -56,7 +70,7 @@ export default function TopMenu({
             </div>
           )}
 
-          {/* PvP победы прогресс-бар */}
+          {/* Боевой опыт (XP) прогресс-бар */}
           <div className="w-full bg-zinc-900/90 rounded-full h-1.5 mt-1.5 overflow-hidden border border-white/10">
             <div 
               className="bg-gradient-to-r from-amber-500 to-orange-400 h-full rounded-full transition-all duration-500" 
@@ -64,8 +78,8 @@ export default function TopMenu({
             />
           </div>
           <div className="hidden sm:flex justify-between items-center text-[8px] text-zinc-400 font-mono mt-1">
-            <span>PVP ПОБЕДЫ</span>
-            <span>{userProfile?.currentWinsInLevel || 0}/{userProfile?.winsRequiredForNextLevel || 1}</span>
+            <span>ОПЫТ (XP)</span>
+            <span>{userProfile?.currentXpInLevel || 0}/{userProfile?.xpRequiredForNextLevel || 400}</span>
           </div>
         </div>
 
@@ -257,6 +271,34 @@ export default function TopMenu({
 
         {/* Разделитель */}
         <div className="h-[1px] w-full bg-white/10 my-1" />
+
+        {/* 7.5. Быстрый аудиоплеер (Опенинги: Кайдзю №8, Наруто, Клевер) */}
+        <div className="w-full bg-gradient-to-r from-zinc-900/90 via-zinc-950 to-zinc-900/80 p-2 rounded-xl border border-white/10 shadow-sm flex items-center justify-between gap-1 group">
+          <button
+            type="button"
+            onClick={() => audioManager.togglePlay()}
+            title={audioState.isPlaying && !audioState.isMuted ? 'Пауза саундтрека' : 'Включить музыку (Кайдзю №8 / Наруто / Клевер)'}
+            className="flex items-center gap-1.5 text-zinc-300 hover:text-amber-300 cursor-pointer overflow-hidden text-left flex-1 min-w-0"
+          >
+            {audioState.isPlaying && !audioState.isMuted ? (
+              <Volume2 className="w-4 h-4 text-amber-400 animate-pulse shrink-0" />
+            ) : (
+              <VolumeX className="w-4 h-4 text-zinc-500 shrink-0 group-hover:text-amber-400/70" />
+            )}
+            <span className="text-[10px] font-bold hidden sm:inline truncate text-amber-300/90">
+              {AUDIO_TRACKS.find(t => t.id === audioState.currentTrackId)?.name?.split('—')[0]?.replace(/^[^\s]+\s/, '') || 'Кайдзю №8'}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => audioManager.playNextTrack()}
+            title="Следующий опенинг"
+            className="p-1 rounded hover:bg-white/10 text-zinc-400 hover:text-amber-400 transition cursor-pointer shrink-0"
+          >
+            <SkipForward className="w-3.5 h-3.5" />
+          </button>
+        </div>
 
         {/* 8. Настройки оформления */}
         <button

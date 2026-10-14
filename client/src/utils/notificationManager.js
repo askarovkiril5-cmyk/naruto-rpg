@@ -162,11 +162,12 @@ class NotificationManager {
   }
 
   // Быстрый метод: добавить боевое донесение
-  addBattleReport({ opponentName, resultText, isPvp = true, isWinner = false, roundCount = 1, level, rankTitle }) {
+  addBattleReport({ opponentName, resultText, isPvp = true, isWinner = false, roundCount = 1, level, rankTitle, xpGain, totalXp }) {
     const battleTypeStr = isPvp ? '⚔️ Рейтинговая PvP дуэль (живой соперник)' : '🤖 Тренировочный спарринг (Полигон с ИИ)';
+    const xpStr = xpGain ? `• Начислено опыта: +${xpGain} XP` : '';
     const progressNote = isPvp 
-      ? (isWinner ? `• Прогресс шиноби: Зачислена победа в послужной список! Текущий уровень: ${level || 1} (${rankTitle || 'Генин'}).` : '• Прогресс шиноби: Поражение. Изучите ошибки и проведите реванш!')
-      : '• Примечание: Уровень и ранг шиноби повышаются исключительно за победы над живыми игроками.';
+      ? (isWinner ? `• Прогресс шиноби: Зачислена победа в послужной список! Текущий уровень: ${level || 1} (${rankTitle || 'Генин'}).` : `• Прогресс шиноби: Боевой опыт получен. Уровень: ${level || 1} (${rankTitle || 'Генин'}).`)
+      : '• Примечание: Тренировочный опыт зачислен в общий резерв шиноби.';
 
     return this.addNotification({
       category: 'battle', // 🟡 Жёлтая подсветка
@@ -176,7 +177,7 @@ class NotificationManager {
 • Тип дуэли: ${battleTypeStr}
 • Результат: ${resultText || 'Дуэль завершена'}
 • Пройдено раундов: ${roundCount || 1}
-${progressNote}
+${xpStr ? xpStr + '\n' : ''}${progressNote}
 
 Все протоколы дуэли сохранены в Летописи боя.`
     });

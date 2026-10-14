@@ -38,6 +38,33 @@ export function resolveAudioUrl(url) {
 
 export const AUDIO_TRACKS = [
   {
+    id: 'kaiju_abyss',
+    type: 'battle',
+    name: '👾 Кайдзю №8: Сезон 1 — Abyss (YUNGBLUD)',
+    desc: 'Легендарный Опенинг 1 сезона Кайдзю №8 с мощным оригинальным вокалом!',
+    icon: '👾',
+    url: 'audio/kaiju_abyss.mp3',
+    hasVocals: true
+  },
+  {
+    id: 'kaiju_s2_opening',
+    type: 'battle',
+    name: '⚡ Кайдзю №8: Сезон 2 — You Can\'t Run From Yourself (AURORA)',
+    desc: 'Официальный Опенинг 2 сезона Кайдзю №8 от AURORA!',
+    icon: '⚡',
+    url: 'audio/kaiju_s2_opening.mp3',
+    hasVocals: true
+  },
+  {
+    id: 'kaiju_s2_russian',
+    type: 'battle',
+    name: '🎙️ Кайдзю №8: Сезон 2 — Опенинг (Русский кавер)',
+    desc: 'Превосходная русская кавер-версия опенинга 2 сезона Кайдзю №8 (MarieBibika)!',
+    icon: '🇷🇺',
+    url: 'audio/kaiju_s2_russian.mp3',
+    hasVocals: true
+  },
+  {
     id: 'mha_the_day',
     type: 'battle',
     name: '💥 Моя Геройская Академия — THE DAY (Porno Graffitti)',

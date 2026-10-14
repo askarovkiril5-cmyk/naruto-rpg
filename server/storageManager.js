@@ -98,36 +98,49 @@ function getShinobiRank(level) {
 }
 
 /**
- * Расчет уровня шиноби строго по числу побед над живыми игроками (PvP)
- * Без XP и без урона!
+ * Расчет уровня шиноби по общему накопленному опыту (XP)
+ * 100 уровней развития от Студента Академии до Бога Ниндзюцу
  */
-function calculateShinobiLevelFromPvpWins(pvpWins = 0) {
+function calculateShinobiLevelFromXp(totalXp = 0) {
+  let xp = Math.max(0, Math.floor(Number(totalXp) || 0));
   let level = 1;
-  let remainingWins = Math.max(0, pvpWins);
-  let req = 1; // 1 победа для первого уровня
+  let remainingXp = xp;
 
-  while (remainingWins >= req && level < 100) {
-    remainingWins -= req;
+  // Опыт, требуемый для перехода на следующий уровень:
+  // Плавная и сбалансированная кривая прокачки (1-100 уровней)
+  function getXpForLevel(lvl) {
+    if (lvl < 10) return 400 + (lvl - 1) * 60;       // Ур 1-9 (Генины): 400 - 880 XP на уровень
+    if (lvl < 25) return 900 + (lvl - 10) * 80;     // Ур 10-24 (Чунины): 900 - 2020 XP
+    if (lvl < 45) return 2100 + (lvl - 25) * 120;   // Ур 25-44 (Спец-Джонины): 2100 - 4380 XP
+    if (lvl < 70) return 4500 + (lvl - 45) * 160;   // Ур 45-69 (Джонины): 4500 - 8340 XP
+    if (lvl < 90) return 8500 + (lvl - 70) * 220;   // Ур 70-89 (АНБУ): 8500 - 12680 XP
+    if (lvl < 95) return 13000 + (lvl - 90) * 350;  // Ур 90-94 (Саннины): 13000 - 14400 XP
+    return 15000 + (lvl - 95) * 500;                // Ур 95-99 (Каге -> Бог Ниндзюцу): 15000 - 17000 XP
+  }
+
+  let req = getXpForLevel(1);
+  while (remainingXp >= req && level < 100) {
+    remainingXp -= req;
     level += 1;
-    // Градация побед на уровень:
-    if (level <= 10) req = 1;       // Ур 1-10: 1 победа на уровень (10 побед до Чунина)
-    else if (level <= 25) req = 2;  // Ур 11-25: 2 победы (30 побед до Спец-Джонина)
-    else if (level <= 50) req = 3;  // Ур 26-50: 3 победы (75 побед до Джонина)
-    else if (level <= 75) req = 4;  // Ур 51-75: 4 победы (100 побед до АНБУ)
-    else if (level <= 90) req = 5;  // Ур 76-90: 5 побед (75 побед до Саннина)
-    else req = 6;                   // Ур 91-100: 6 побед (60 побед до Бога Ниндзюцу)
+    req = getXpForLevel(level);
   }
 
   const rank = getShinobiRank(level);
-  const progressPercent = Math.min(100, Math.floor((remainingWins / req) * 100));
+  const progressPercent = level >= 100 ? 100 : Math.min(100, Math.floor((remainingXp / req) * 100));
 
   return {
     level,
-    currentWinsInLevel: remainingWins,
-    winsRequiredForNextLevel: req,
+    totalXp: xp,
+    currentXpInLevel: remainingXp,
+    xpRequiredForNextLevel: req,
     progressPercent,
     rank
   };
+}
+
+// Алиас для обратной совместимости
+function calculateShinobiLevelFromPvpWins(pvpWins = 0) {
+  return calculateShinobiLevelFromXp(pvpWins * 500);
 }
 
 /**
@@ -161,6 +174,7 @@ function getUserProfile(identifier) {
       name: identifier,
       email: key.includes('@') ? key : null,
       googleConnected: key.includes('@'),
+      totalXp: 0,
       activeTitle: null,
       activeTitleId: null,
       unlockedTitles: ['first_step'],
@@ -190,13 +204,27 @@ function getUserProfile(identifier) {
     winrate: 0
   };
 
-  const progression = calculateShinobiLevelFromPvpWins(pvpStats.battlesWon || 0);
+  // Если у профиля еще нет totalXp, восстанавливаем на основе прошлых побед
+  let userTotalXp = raw.totalXp;
+  if (userTotalXp === undefined || userTotalXp === null) {
+    userTotalXp = Math.max(0, 
+      (pvpStats.battlesWon * 500) + 
+      (pvpStats.battlesLost * 200) + 
+      (aiStats.battlesWon * 150) + 
+      (aiStats.battlesLost * 60)
+    );
+  } else {
+    userTotalXp = Math.max(0, Number(userTotalXp) || 0);
+  }
+
+  const progression = calculateShinobiLevelFromXp(userTotalXp);
 
   return {
     ...raw,
     identifier: raw.identifier || key,
     email: raw.email || (key.includes('@') ? key : null),
     name: raw.name || identifier,
+    totalXp: userTotalXp,
     stats: {
       pvp: pvpStats,
       ai: aiStats
@@ -261,6 +289,13 @@ function saveUser(userData) {
     mergedAi.winrate = Math.round((mergedAi.battlesWon / mergedAi.battlesPlayed) * 100);
   }
 
+  // Мерджим общий опыт (XP)
+  const incomingXp = Number(userData.totalXp);
+  const currentXp = Number(current.totalXp);
+  const mergedTotalXp = !isNaN(incomingXp) && incomingXp > 0
+    ? Math.max(incomingXp, !isNaN(currentXp) ? currentXp : 0)
+    : (!isNaN(currentXp) ? currentXp : 0);
+
   // Объединяем открытые титулы (чтобы не потерять ни одного открытого достижения)
   const existingTitles = Array.isArray(current.unlockedTitles) ? current.unlockedTitles : ['first_step'];
   const newTitles = Array.isArray(userData.unlockedTitles || userData.unlockedTitleIds) ? (userData.unlockedTitles || userData.unlockedTitleIds) : [];
@@ -281,6 +316,7 @@ function saveUser(userData) {
     email: emailKey || current.email || null,
     name: userData.name || current.name || 'Кирилл',
     googleConnected: Boolean(emailKey || current.googleConnected),
+    totalXp: mergedTotalXp,
     stats: {
       pvp: mergedPvp,
       ai: mergedAi
@@ -311,9 +347,11 @@ function saveUser(userData) {
 }
 
 /**
- * Начисление результата битвы:
- * - Если PvP: обновляет stats.pvp и прокачивает уровень шиноби
- * - Если против ИИ: обновляет stats.ai (полигон), уровень НЕ трогает
+ * Начисление результата битвы и опыта (XP):
+ * - PvP победа: 450 XP (+ раунд-бонус)
+ * - PvP поражение: 180 XP (+ раунд-бонус)
+ * - Тренировка с ИИ: 150 / 60 XP
+ * - Бонус за привязанную почту: +25% XP
  */
 function awardBattleResult(identifier, { isPvp = true, isWinner = false, rounds = 1, opponentName = '' }) {
   const profile = getUserProfile(identifier);
@@ -323,14 +361,17 @@ function awardBattleResult(identifier, { isPvp = true, isWinner = false, rounds 
   const oldRankTitle = profile.rank?.title;
 
   let updatedStats = { ...profile.stats };
+  let xpGain = 0;
 
   if (isPvp) {
     const pvp = { ...(updatedStats.pvp || { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 }) };
     pvp.battlesPlayed += 1;
     if (isWinner) {
       pvp.battlesWon += 1;
+      xpGain = 450 + Math.min(10, rounds) * 40;
     } else {
       pvp.battlesLost += 1;
+      xpGain = 180 + Math.min(10, rounds) * 25;
     }
     pvp.winrate = Math.round((pvp.battlesWon / pvp.battlesPlayed) * 100);
     updatedStats.pvp = pvp;
@@ -339,25 +380,38 @@ function awardBattleResult(identifier, { isPvp = true, isWinner = false, rounds 
     ai.battlesPlayed += 1;
     if (isWinner) {
       ai.battlesWon += 1;
+      xpGain = 150 + Math.min(10, rounds) * 15;
     } else {
       ai.battlesLost += 1;
+      xpGain = 60 + Math.min(10, rounds) * 10;
     }
     ai.winrate = Math.round((ai.battlesWon / ai.battlesPlayed) * 100);
     updatedStats.ai = ai;
   }
 
+  // Бонус +25% к XP за привязку облачного аккаунта (почты)
+  if (profile.email || profile.googleConnected) {
+    xpGain = Math.round(xpGain * 1.25);
+  }
+
+  const currentTotalXp = Number(profile.totalXp) || 0;
+  const newTotalXp = currentTotalXp + xpGain;
+
   const updatedProfile = saveUser({
     ...profile,
+    totalXp: newTotalXp,
     stats: updatedStats
   });
 
-  const leveledUp = isPvp && updatedProfile.level > oldLevel;
-  const rankPromoted = isPvp && updatedProfile.rank?.title !== oldRankTitle;
+  const leveledUp = updatedProfile.level > oldLevel;
+  const rankPromoted = updatedProfile.rank?.title !== oldRankTitle;
 
   return {
     profile: updatedProfile,
     isPvp,
     isWinner,
+    xpGain,
+    totalXp: newTotalXp,
     leveledUp,
     rankPromoted,
     oldLevel,
@@ -500,8 +554,9 @@ function getLeaderboard(filter = 'global', userKey = null) {
     }
   }
 
-  // Сортировка: 1) Уровень (PvP), 2) PvP победы, 3) Винрейт
+  // Сортировка: 1) Опыт (XP) / Уровень, 2) PvP победы, 3) Винрейт
   list.sort((a, b) => {
+    if ((b.totalXp || 0) !== (a.totalXp || 0)) return (b.totalXp || 0) - (a.totalXp || 0);
     if (b.level !== a.level) return b.level - a.level;
     if (b.stats.pvp.battlesWon !== a.stats.pvp.battlesWon) return b.stats.pvp.battlesWon - a.stats.pvp.battlesWon;
     return b.stats.pvp.winrate - a.stats.pvp.winrate;
@@ -513,6 +568,9 @@ function getLeaderboard(filter = 'global', userKey = null) {
     name: u.name,
     email: u.email,
     level: u.level,
+    totalXp: u.totalXp || 0,
+    currentXpInLevel: u.currentXpInLevel || 0,
+    xpRequiredForNextLevel: u.xpRequiredForNextLevel || 0,
     rank: u.rank,
     activeTitle: u.activeTitle,
     pvp: u.stats.pvp,
@@ -572,6 +630,7 @@ module.exports = {
   getUser,
   getUserProfile,
   getShinobiRank,
+  calculateShinobiLevelFromXp,
   calculateShinobiLevelFromPvpWins,
   awardBattleResult,
   awardBattleExperience,

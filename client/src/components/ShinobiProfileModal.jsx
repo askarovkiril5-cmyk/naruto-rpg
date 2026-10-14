@@ -48,8 +48,9 @@ export default function ShinobiProfileModal({
 
   const level = userProfile?.level || 1;
   const rank = userProfile?.rank || { title: 'Генин', stage: 'Начальная', symbol: '忍', icon: '🥋', color: '#94a3b8' };
-  const currentWinsInLevel = userProfile?.currentWinsInLevel || 0;
-  const winsRequired = userProfile?.winsRequiredForNextLevel || 1;
+  const currentXpInLevel = userProfile?.currentXpInLevel ?? 0;
+  const xpRequired = userProfile?.xpRequiredForNextLevel || 400;
+  const totalXp = userProfile?.totalXp || 0;
   const progressPercent = userProfile?.progressPercent || 0;
   const activeTitle = userProfile?.activeTitle || (activeTitleId ? TITLES_DATA.find(t => t.id === activeTitleId)?.name : null);
 
@@ -271,10 +272,14 @@ export default function ShinobiProfileModal({
                 </div>
 
                 <div className="flex justify-between items-center text-xs font-mono text-zinc-400">
-                  <span>Побед в текущем уровне:</span>
+                  <span>Опыт до след. уровня (XP):</span>
                   <span className="text-amber-300 font-bold">
-                    {currentWinsInLevel} из {winsRequired} побед ({progressPercent}%)
+                    {currentXpInLevel.toLocaleString()} / {xpRequired.toLocaleString()} XP ({progressPercent}%)
                   </span>
+                </div>
+                <div className="flex justify-between items-center text-[10px] font-mono text-zinc-500 pt-0.5">
+                  <span>Всего боевого опыта шиноби:</span>
+                  <span className="text-zinc-300 font-semibold">{totalXp.toLocaleString()} XP</span>
                 </div>
               </div>
 

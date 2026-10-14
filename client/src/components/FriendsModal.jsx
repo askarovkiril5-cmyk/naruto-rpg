@@ -462,6 +462,11 @@ export default function FriendsModal({
                             <span className="inline-block px-2 py-0.5 rounded-lg bg-zinc-900 border border-white/10 font-mono font-bold text-[11px] text-zinc-200">
                               Ур. {item.level} ({item.rank?.title || 'Генин'})
                             </span>
+                            {item.totalXp > 0 && (
+                              <span className="block text-[9px] font-mono text-amber-400/80 mt-0.5">
+                                {item.totalXp.toLocaleString()} XP
+                              </span>
+                            )}
                           </td>
 
                           <td className="py-3 px-3 text-center font-mono">

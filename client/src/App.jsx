@@ -15,9 +15,12 @@ import SecretProfileDrawer from './components/SecretProfileDrawer';
 import CharacterCreatorModal from './components/CharacterCreatorModal';
 import BattleChronicleModal from './components/BattleChronicleModal';
 import AiModelModal from './components/AiModelModal';
+import ShinobiRanksModal from './components/ShinobiRanksModal';
+import ShinobiMailModal from './components/ShinobiMailModal';
 import NarrativeRenderer from './components/NarrativeRenderer';
 import defaultJutsuData from './data/jutsuData.json';
 import { audioManager, AUDIO_TRACKS } from './utils/audioManager';
+import { notificationManager } from './utils/notificationManager';
 
 export const CANONICAL_BOTS = [
   {
@@ -242,6 +245,16 @@ export default function App() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isCreatorOpen, setIsCreatorOpen] = useState(false);
   const [isChronicleOpen, setIsChronicleOpen] = useState(false);
+  const [isRanksOpen, setIsRanksOpen] = useState(false);
+  const [isMailOpen, setIsMailOpen] = useState(false);
+  const [unreadMailCount, setUnreadMailCount] = useState(() => notificationManager.getUnreadCount());
+
+  useEffect(() => {
+    return notificationManager.subscribe(() => {
+      setUnreadMailCount(notificationManager.getUnreadCount());
+    });
+  }, []);
+
   const [arsenalViewMode, setArsenalViewMode] = useState(() => {
     try {
       return localStorage.getItem('naruto_arsenal_mode') || 'DRAWER';
@@ -521,6 +534,7 @@ export default function App() {
       if (Array.isArray(xpReports) && xpReports.length > 0) {
         const myXp = xpReports.find(r => r.name === playerName);
         if (myXp && myXp.profile) {
+          const oldRankTitle = userProfile?.rank?.title;
           setUserProfile(myXp.profile);
           try {
             localStorage.setItem('naruto_user_profile', JSON.stringify(myXp.profile));
@@ -531,7 +545,31 @@ export default function App() {
             text: `✨ Получено +${myXp.xpGain} XP! Уровень: ${myXp.level} (${myXp.rank?.title})`,
             time: getCurrentTime()
           });
+
+          // 🟡 «Боевые донесения» (жёлтая подсветка)
+          notificationManager.addBattleReport({
+            opponentName: winner === playerName ? 'соперника' : (winner || 'противника'),
+            resultText: text,
+            xpGain: myXp.xpGain,
+            roundCount: roundNumber
+          });
+
+          // 🟢 «Приказ Хокаге» при повышении ранга (зелёная подсветка)
+          if (myXp.leveledUp || (myXp.rank?.title && myXp.rank?.title !== oldRankTitle)) {
+            notificationManager.addHokagePromotion({
+              newRank: myXp.rank?.title || 'Чунин',
+              level: myXp.level
+            });
+          }
         }
+      } else {
+        // Донесение даже при быстром исходе
+        notificationManager.addBattleReport({
+          opponentName: 'соперника',
+          resultText: text,
+          xpGain: 100,
+          roundCount: roundNumber
+        });
       }
     });
 
@@ -886,6 +924,9 @@ export default function App() {
         onOpenChronicle={() => setIsChronicleOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onOpenAiModel={() => setIsAiModelOpen(true)}
+        onOpenRanks={() => setIsRanksOpen(true)}
+        onOpenMail={() => setIsMailOpen(true)}
+        unreadMailCount={unreadMailCount}
         activeModel={activeModel}
         userProfile={userProfile}
         onToggleFullscreen={handleToggleFullscreen}
@@ -1983,6 +2024,20 @@ export default function App() {
         currentAccount={currentAccount}
         onSelectAccount={handleSelectAccount}
         userProfile={userProfile}
+      />
+
+      {/* 12. МОДАЛЬНОЕ ОКНО: Таблица 100 рангов шиноби */}
+      <ShinobiRanksModal
+        isOpen={isRanksOpen}
+        onClose={() => setIsRanksOpen(false)}
+        currentLevel={userProfile?.level || 1}
+        currentRank={userProfile?.rank?.title || 'Генин'}
+      />
+
+      {/* 13. МОДАЛЬНОЕ ОКНО: Почтовая служба Конохи (Свиток уведомлений) */}
+      <ShinobiMailModal
+        isOpen={isMailOpen}
+        onClose={() => setIsMailOpen(false)}
       />
     </div>
   );

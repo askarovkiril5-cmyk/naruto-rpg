@@ -110,6 +110,27 @@ start "" "%~dp0NarutoRPG.exe"
 `;
 fs.writeFileSync(path.join(portableDir, 'Запуск_Игры.cmd'), launcherBat, 'utf8');
 
+// Add instructions for friends
+const readmeText = `=======================================================
+   NARUTO RPG: WILL OF FIRE (ЭПОХА ШИППУДЕНА)
+=======================================================
+
+КАК ИГРАТЬ С ДРУЗЬЯМИ:
+
+1. Запустите файл "NarutoRPG.exe" (или "Запуск_Игры.cmd").
+2. Игра откроется в отдельном фирменном окне с черным фоном и музыкой.
+3. В игре:
+   - Введите ваш ник (например: Кирилл, Саске, Наруто).
+   - Введите код комнаты, который создал ваш друг (например: KONOHA-777).
+   - Выберите техники для боя (30 техник шиноби).
+4. Если сервер находится в сети (на Render / облаке):
+   - В игре нажмите иконку ⚙️ Настройки в меню слева.
+   - В разделе "🌐 Сетевой сервер" вставьте ссылку вашего сервера и нажмите "Применить адрес".
+
+ПРИЯТНОЙ ИГРЫ И ЭПИЧНЫХ СРАЖЕНИЙ!
+`;
+fs.writeFileSync(path.join(portableDir, 'Инструкция_для_друзей.txt'), readmeText, 'utf8');
+
 console.log('4. Creating ZIP archive for friends to download...');
 if (fs.existsSync(zipPath)) {
   fs.unlinkSync(zipPath);
@@ -118,7 +139,11 @@ if (fs.existsSync(zipPath)) {
 const psZipCommand = `powershell -NoProfile -Command "Compress-Archive -Path '${portableDir}\\*' -DestinationPath '${zipPath}' -Force"`;
 execSync(psZipCommand, { stdio: 'inherit' });
 
-const stats = fs.statSync(zipPath);
-console.log('SUCCESS! Portable package created for friends:');
-console.log('Archive path:', zipPath);
+// Copy directly to Desktop
+const desktopZip = 'C:\\Users\\Acer\\Desktop\\Naruto_RPG_Игра_для_Друзей.zip';
+fs.copyFileSync(zipPath, desktopZip);
+
+const stats = fs.statSync(desktopZip);
+console.log('SUCCESS! Portable package created for friends on Desktop:');
+console.log('Desktop Archive path:', desktopZip);
 console.log('Size:', (stats.size / (1024 * 1024)).toFixed(2), 'MB');

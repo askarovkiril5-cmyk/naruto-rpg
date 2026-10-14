@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, Image, Sliders, Palette, RotateCcw, Maximize2, Minimize2, 
   Check, Trash2, Upload, Sparkles, Monitor, Sun, ExternalLink,
-  Eye, CheckCircle2, AlertCircle, Volume2, VolumeX, Music, Play, Pause, Globe
+  Eye, CheckCircle2, AlertCircle, Volume2, VolumeX, Music, Play, Pause, Globe,
+  Repeat, Repeat1, Shuffle, SkipBack, SkipForward
 } from 'lucide-react';
 import { audioManager, AUDIO_TRACKS } from '../utils/audioManager';
 
@@ -221,6 +222,7 @@ function formatTime(sec) {
     isPlaying: audioManager.isPlaying,
     currentMode: audioManager.currentMode,
     currentTrackId: audioManager.currentTrackId,
+    playbackMode: audioManager.playbackMode || 'repeat-all',
     volume: audioManager.volume,
     sfxVolume: audioManager.sfxVolume,
     isMuted: audioManager.isMuted,
@@ -801,25 +803,161 @@ function formatTime(sec) {
                 className="w-full accent-cyan-400 cursor-pointer h-2 bg-zinc-800 rounded-lg disabled:opacity-40"
               />
 
-              <div className="flex items-center justify-between text-xs pt-0.5">
-                <button
-                  type="button"
-                  disabled={!audioState.duration}
-                  onClick={() => audioManager.seek(Math.max(0, (audioState.currentTime || 0) - 10))}
-                  className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 disabled:opacity-40 text-zinc-300 text-[11px] font-semibold transition cursor-pointer flex items-center gap-1"
-                >
-                  <span>⏪ -10с</span>
-                </button>
-                <span className="text-[10px] text-zinc-400">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs pt-0.5">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => audioManager.playPrevTrack()}
+                    className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] font-semibold transition cursor-pointer flex items-center gap-1 border border-white/5 hover:border-cyan-500/40"
+                    title="Предыдущий трек"
+                  >
+                    <SkipBack className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Пред.</span>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!audioState.duration}
+                    onClick={() => audioManager.seek(Math.max(0, (audioState.currentTime || 0) - 10))}
+                    className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 disabled:opacity-40 text-zinc-300 text-[11px] font-semibold transition cursor-pointer flex items-center gap-1"
+                  >
+                    <span>⏪ -10с</span>
+                  </button>
+                </div>
+
+                <span className="text-[10px] text-zinc-400 font-medium">
                   {audioState.isPlaying && !audioState.isMuted ? '🎵 Воспроизведение' : '⏸️ Пауза'}
                 </span>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    disabled={!audioState.duration}
+                    onClick={() => audioManager.seek(Math.min(audioState.duration || 0, (audioState.currentTime || 0) + 10))}
+                    className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 disabled:opacity-40 text-zinc-300 text-[11px] font-semibold transition cursor-pointer flex items-center gap-1"
+                  >
+                    <span>+10с ⏩</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => audioManager.playNextTrack()}
+                    className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] font-semibold transition cursor-pointer flex items-center gap-1 border border-white/5 hover:border-cyan-500/40"
+                    title="Следующий трек"
+                  >
+                    <span>След.</span>
+                    <SkipForward className="w-3.5 h-3.5 text-cyan-400" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* РЕЖИМ ВОСПРОИЗВЕДЕНИЯ (ЗАЦИКЛИТЬ / ПО КРУГУ / В РАЗНОБОЙ) */}
+            <div className="space-y-2 pt-1 border-t border-white/5">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" /> Режим воспроизведения:
+                </span>
+                <span className="text-[10px] text-zinc-400 font-mono">
+                  {audioState.playbackMode === 'repeat-one' && '🔂 Зациклен один трек'}
+                  {audioState.playbackMode === 'repeat-all' && '🔁 Все треки по очереди'}
+                  {audioState.playbackMode === 'shuffle' && '🔀 Случайный порядок'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {/* 1. Зациклить один трек */}
                 <button
                   type="button"
-                  disabled={!audioState.duration}
-                  onClick={() => audioManager.seek(Math.min(audioState.duration || 0, (audioState.currentTime || 0) + 10))}
-                  className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 disabled:opacity-40 text-zinc-300 text-[11px] font-semibold transition cursor-pointer flex items-center gap-1"
+                  onClick={() => audioManager.setPlaybackMode('repeat-one')}
+                  className={`p-2.5 rounded-xl border text-left transition flex items-center gap-2.5 cursor-pointer relative overflow-hidden ${
+                    audioState.playbackMode === 'repeat-one'
+                      ? 'border-cyan-400 bg-cyan-950/60 shadow-lg shadow-cyan-500/20 ring-1 ring-cyan-400/50'
+                      : 'border-white/10 bg-black/40 hover:bg-white/5 text-zinc-400 hover:text-zinc-200'
+                  }`}
                 >
-                  <span>+10с ⏩</span>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                    audioState.playbackMode === 'repeat-one' 
+                      ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40' 
+                      : 'bg-zinc-800 text-zinc-400'
+                  }`}>
+                    <Repeat1 className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className={`text-xs font-bold block truncate ${
+                      audioState.playbackMode === 'repeat-one' ? 'text-cyan-300' : 'text-zinc-200'
+                    }`}>
+                      Зациклить трек
+                    </span>
+                    <span className="text-[10px] text-zinc-400 block truncate">
+                      Повтор одного трека
+                    </span>
+                  </div>
+                  {audioState.playbackMode === 'repeat-one' && (
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400 animate-pulse" />
+                  )}
+                </button>
+
+                {/* 2. По кругу все треки */}
+                <button
+                  type="button"
+                  onClick={() => audioManager.setPlaybackMode('repeat-all')}
+                  className={`p-2.5 rounded-xl border text-left transition flex items-center gap-2.5 cursor-pointer relative overflow-hidden ${
+                    audioState.playbackMode === 'repeat-all'
+                      ? 'border-amber-400 bg-amber-950/60 shadow-lg shadow-amber-500/20 ring-1 ring-amber-400/50'
+                      : 'border-white/10 bg-black/40 hover:bg-white/5 text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                    audioState.playbackMode === 'repeat-all' 
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-400/40' 
+                      : 'bg-zinc-800 text-zinc-400'
+                  }`}>
+                    <Repeat className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className={`text-xs font-bold block truncate ${
+                      audioState.playbackMode === 'repeat-all' ? 'text-amber-300' : 'text-zinc-200'
+                    }`}>
+                      По кругу все
+                    </span>
+                    <span className="text-[10px] text-zinc-400 block truncate">
+                      По порядку из списка
+                    </span>
+                  </div>
+                  {audioState.playbackMode === 'repeat-all' && (
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 shadow-sm shadow-amber-400 animate-pulse" />
+                  )}
+                </button>
+
+                {/* 3. В разнобой (Shuffle) */}
+                <button
+                  type="button"
+                  onClick={() => audioManager.setPlaybackMode('shuffle')}
+                  className={`p-2.5 rounded-xl border text-left transition flex items-center gap-2.5 cursor-pointer relative overflow-hidden ${
+                    audioState.playbackMode === 'shuffle'
+                      ? 'border-purple-400 bg-purple-950/60 shadow-lg shadow-purple-500/20 ring-1 ring-purple-400/50'
+                      : 'border-white/10 bg-black/40 hover:bg-white/5 text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                    audioState.playbackMode === 'shuffle' 
+                      ? 'bg-purple-500/20 text-purple-300 border border-purple-400/40' 
+                      : 'bg-zinc-800 text-zinc-400'
+                  }`}>
+                    <Shuffle className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <span className={`text-xs font-bold block truncate ${
+                      audioState.playbackMode === 'shuffle' ? 'text-purple-300' : 'text-zinc-200'
+                    }`}>
+                      В разнобой
+                    </span>
+                    <span className="text-[10px] text-zinc-400 block truncate">
+                      Случайный выбор
+                    </span>
+                  </div>
+                  {audioState.playbackMode === 'shuffle' && (
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-purple-400 shadow-sm shadow-purple-400 animate-pulse" />
+                  )}
                 </button>
               </div>
             </div>

@@ -1,5 +1,8 @@
 import React from 'react';
-import { BookOpen, Scroll, UserCheck, Settings, Swords, ShieldAlert, Maximize2, Minimize2, UserPlus, FileText, Bot } from 'lucide-react';
+import { 
+  BookOpen, Scroll, UserCheck, Settings, Swords, ShieldAlert, 
+  Maximize2, Minimize2, UserPlus, FileText, Bot, Award, Mail 
+} from 'lucide-react';
 
 export default function TopMenu({ 
   onOpenRules, 
@@ -10,6 +13,9 @@ export default function TopMenu({
   onOpenChronicle,
   onOpenSettings,
   onOpenAiModel,
+  onOpenRanks,
+  onOpenMail,
+  unreadMailCount = 0,
   activeModel,
   userProfile,
   hasProfile,
@@ -24,18 +30,18 @@ export default function TopMenu({
     <aside className="shrink-0 p-3 z-30 flex flex-col select-none">
       <div className="glass-panel border border-white/10 rounded-2xl p-2.5 flex flex-col gap-2 shadow-2xl backdrop-blur-md w-16 sm:w-44 transition-all duration-300">
         
-        {/* Карточка уровня и ранга шиноби */}
+        {/* Карточка уровня и ранга шиноби (открывает Таблицу 100 рангов) */}
         <div 
-          onClick={onOpenAiModel}
-          title={`Ранг: ${userProfile?.rank?.title || 'Генин'}. Нажмите для управления аккаунтом`}
-          className="cursor-pointer p-2 rounded-xl bg-gradient-to-br from-amber-500/15 to-orange-500/5 border border-amber-500/30 hover:border-amber-500/60 transition group shadow-md"
+          onClick={onOpenRanks}
+          title={`Ранг: ${userProfile?.rank?.title || 'Генин'}. Нажмите, чтобы открыть Таблицу 100 уровней и рангов шиноби!`}
+          className="cursor-pointer p-2 rounded-xl bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-amber-950/30 border border-amber-500/40 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-500/20 transition group shadow-md"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-amber-400 font-mono flex items-center gap-1">
-              <span>{userProfile?.rank?.icon || '🥋'}</span>
-              <span className="hidden sm:inline truncate max-w-[85px]">{userProfile?.rank?.title || 'Генин'}</span>
+              <span className="group-hover:scale-125 transition-transform">{userProfile?.rank?.icon || '🥋'}</span>
+              <span className="hidden sm:inline truncate max-w-[85px] group-hover:text-amber-200">{userProfile?.rank?.title || 'Генин'}</span>
             </span>
-            <span className="text-[10px] font-mono font-black px-1.5 py-0.2 rounded bg-amber-500/25 text-amber-300 border border-amber-500/30">
+            <span className="text-[10px] font-mono font-black px-1.5 py-0.2 rounded bg-amber-500/25 text-amber-300 border border-amber-500/30 group-hover:bg-amber-400 group-hover:text-zinc-950 transition">
               Ур.{userProfile?.level || 1}
             </span>
           </div>
@@ -151,6 +157,48 @@ export default function TopMenu({
           <FileText className="w-5 h-5 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
           <span className="text-xs font-semibold hidden sm:inline text-zinc-200 group-hover:text-amber-300">
             Летопись боя
+          </span>
+        </button>
+
+        {/* 6.5. Свиток уведомлений (Почта Конохи с цыферкой) */}
+        <button
+          type="button"
+          onClick={onOpenMail}
+          title={unreadMailCount > 0 ? `Почтовая служба Конохи: ${unreadMailCount} новых свитков!` : "Почта Конохи (Приказы Хокаге, донесения и вести деревни)"}
+          className={`w-full flex items-center justify-between gap-1.5 px-2.5 py-2.5 rounded-xl transition cursor-pointer group ${
+            unreadMailCount > 0
+              ? 'bg-gradient-to-r from-rose-950/70 to-zinc-900 border border-rose-500/50 shadow-md shadow-rose-950/40 text-rose-300'
+              : 'hover:bg-white/10 text-zinc-300 hover:text-amber-400'
+          }`}
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="relative">
+              <Scroll className="w-5 h-5 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
+              {unreadMailCount > 0 && (
+                <span className="sm:hidden absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
+              )}
+            </div>
+            <span className="text-xs font-semibold hidden sm:inline text-zinc-200 group-hover:text-amber-300">
+              Почта Конохи
+            </span>
+          </div>
+          {unreadMailCount > 0 && (
+            <span className="text-[10px] font-mono font-black px-1.5 py-0.5 rounded-full bg-rose-600 text-white shadow-md shadow-rose-600/60 animate-bounce">
+              {unreadMailCount}
+            </span>
+          )}
+        </button>
+
+        {/* 6.8. Таблица рангов шиноби (100 уровней) */}
+        <button
+          type="button"
+          onClick={onOpenRanks}
+          title="Таблица 100 рангов и ступеней шиноби"
+          className="w-full flex items-center justify-center sm:justify-start gap-2.5 px-2.5 py-2 rounded-xl hover:bg-white/10 text-zinc-300 hover:text-amber-400 transition cursor-pointer group"
+        >
+          <Award className="w-5 h-5 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
+          <span className="text-xs font-semibold hidden sm:inline text-zinc-200 group-hover:text-amber-300">
+            Ранги Шиноби
           </span>
         </button>
 

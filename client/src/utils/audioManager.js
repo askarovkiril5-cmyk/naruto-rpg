@@ -70,6 +70,7 @@ class AudioManager {
     this.isPlaying = false;
     this.currentMode = 'battle';
     this.currentTrackId = 'mha_the_day'; // По умолчанию Моя Геройская Академия!
+    this.playbackMode = 'repeat-all'; // 'repeat-one' | 'repeat-all' | 'shuffle'
     this.volume = 0.50;
     this.sfxVolume = 0.55;
     this.isMuted = false;
@@ -102,6 +103,11 @@ class AudioManager {
       if (savedTrack && AUDIO_TRACKS.some(t => t.id === savedTrack)) {
         this.currentTrackId = savedTrack;
       }
+
+      const savedMode = localStorage.getItem('naruto_playback_mode');
+      if (savedMode && ['repeat-one', 'repeat-all', 'shuffle'].includes(savedMode)) {
+        this.playbackMode = savedMode;
+      }
     } catch (e) {}
   }
 
@@ -115,6 +121,7 @@ class AudioManager {
       isPlaying: this.isPlaying,
       currentMode: this.currentMode,
       currentTrackId: this.currentTrackId,
+      playbackMode: this.playbackMode,
       volume: this.volume,
       sfxVolume: this.sfxVolume,
       isMuted: this.isMuted,
@@ -195,7 +202,7 @@ class AudioManager {
     if (trackObj && trackObj.url) {
       try {
         const audio = new Audio(trackObj.url);
-        audio.loop = true;
+        audio.loop = (this.playbackMode === 'repeat-one');
         audio.volume = this.isMuted ? 0 : this.volume;
         audio.ontimeupdate = () => {
           this.currentTime = audio.currentTime || 0;
@@ -205,6 +212,9 @@ class AudioManager {
         audio.onloadedmetadata = () => {
           this.duration = audio.duration || 0;
           this.notify();
+        };
+        audio.onended = () => {
+          this.handleTrackEnded();
         };
         this.htmlAudio = audio;
         const playPromise = audio.play();
@@ -221,6 +231,75 @@ class AudioManager {
     }
 
     this.notify();
+  }
+
+  // Обработка окончания трека по выбранному режиму
+  handleTrackEnded() {
+    if (this.playbackMode === 'repeat-one') {
+      if (this.htmlAudio) {
+        this.htmlAudio.currentTime = 0;
+        this.htmlAudio.play().catch(() => {});
+      }
+    } else if (this.playbackMode === 'shuffle') {
+      this.playNextTrack(true);
+    } else {
+      // 'repeat-all'
+      this.playNextTrack(false);
+    }
+  }
+
+  // Смена режима воспроизведения ('repeat-one' | 'repeat-all' | 'shuffle')
+  setPlaybackMode(mode) {
+    if (!['repeat-one', 'repeat-all', 'shuffle'].includes(mode)) return;
+    this.playbackMode = mode;
+    if (this.htmlAudio) {
+      this.htmlAudio.loop = (mode === 'repeat-one');
+    }
+    try {
+      localStorage.setItem('naruto_playback_mode', mode);
+    } catch (e) {}
+    this.notify();
+  }
+
+  // Следующий трек (с учётом режима или принудительно)
+  playNextTrack(forceShuffle = null) {
+    const shouldShuffle = forceShuffle !== null ? forceShuffle : (this.playbackMode === 'shuffle');
+    const currentIndex = AUDIO_TRACKS.findIndex(t => t.id === this.currentTrackId);
+    let nextTrack = null;
+
+    if (shouldShuffle) {
+      if (AUDIO_TRACKS.length <= 1) {
+        nextTrack = AUDIO_TRACKS[0];
+      } else {
+        const available = AUDIO_TRACKS.filter(t => t.id !== this.currentTrackId);
+        nextTrack = available[Math.floor(Math.random() * available.length)];
+      }
+    } else {
+      const nextIdx = (currentIndex + 1) % AUDIO_TRACKS.length;
+      nextTrack = AUDIO_TRACKS[nextIdx];
+    }
+
+    if (nextTrack) {
+      this.play(this.currentMode, nextTrack.id);
+    }
+  }
+
+  // Предыдущий трек
+  playPrevTrack() {
+    // Если трек играет дольше 3 секунд, сбрасываем в начало этого же трека
+    if (this.htmlAudio && this.htmlAudio.currentTime > 3) {
+      this.htmlAudio.currentTime = 0;
+      this.currentTime = 0;
+      this.notify();
+      return;
+    }
+
+    const currentIndex = AUDIO_TRACKS.findIndex(t => t.id === this.currentTrackId);
+    const prevIdx = (currentIndex - 1 + AUDIO_TRACKS.length) % AUDIO_TRACKS.length;
+    const prevTrack = AUDIO_TRACKS[prevIdx];
+    if (prevTrack) {
+      this.play(this.currentMode, prevTrack.id);
+    }
   }
 
   // Перемотка музыки на указанную секунду

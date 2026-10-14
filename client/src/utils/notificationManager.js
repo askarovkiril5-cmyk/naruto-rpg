@@ -163,11 +163,10 @@ class NotificationManager {
 
   // Быстрый метод: добавить боевое донесение
   addBattleReport({ opponentName, resultText, isPvp = true, isWinner = false, roundCount = 1, level, rankTitle, xpGain, totalXp }) {
-    const battleTypeStr = isPvp ? '⚔️ Рейтинговая PvP дуэль (живой соперник)' : '🤖 Тренировочный спарринг (Полигон с ИИ)';
-    const xpStr = xpGain ? `• Начислено опыта: +${xpGain} XP` : '';
+    const xpStr = (isPvp && xpGain > 0) ? `• Начислено опыта: +${xpGain} XP\n` : '';
     const progressNote = isPvp 
       ? (isWinner ? `• Прогресс шиноби: Зачислена победа в послужной список! Текущий уровень: ${level || 1} (${rankTitle || 'Генин'}).` : `• Прогресс шиноби: Боевой опыт получен. Уровень: ${level || 1} (${rankTitle || 'Генин'}).`)
-      : '• Примечание: Тренировочный опыт зачислен в общий резерв шиноби.';
+      : '• Примечание: Тренировочный бой на полигоне с ИИ. Опыт XP и уровни шиноби повышаются строго за сражения с живыми игроками.';
 
     return this.addNotification({
       category: 'battle', // 🟡 Жёлтая подсветка

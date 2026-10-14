@@ -204,14 +204,12 @@ function getUserProfile(identifier) {
     winrate: 0
   };
 
-  // Если у профиля еще нет totalXp, восстанавливаем на основе прошлых побед
+  // Если у профиля еще нет totalXp, восстанавливаем на основе прошлых PvP побед (ИИ опыт не дает)
   let userTotalXp = raw.totalXp;
   if (userTotalXp === undefined || userTotalXp === null) {
     userTotalXp = Math.max(0, 
       (pvpStats.battlesWon * 500) + 
-      (pvpStats.battlesLost * 200) + 
-      (aiStats.battlesWon * 150) + 
-      (aiStats.battlesLost * 60)
+      (pvpStats.battlesLost * 200)
     );
   } else {
     userTotalXp = Math.max(0, Number(userTotalXp) || 0);
@@ -373,25 +371,24 @@ function awardBattleResult(identifier, { isPvp = true, isWinner = false, rounds 
       pvp.battlesLost += 1;
       xpGain = 180 + Math.min(10, rounds) * 25;
     }
+    // Бонус +25% к XP за привязку облачного аккаунта (почты) действует в PvP
+    if (profile.email || profile.googleConnected) {
+      xpGain = Math.round(xpGain * 1.25);
+    }
     pvp.winrate = Math.round((pvp.battlesWon / pvp.battlesPlayed) * 100);
     updatedStats.pvp = pvp;
   } else {
+    // Тренировка с ИИ (полигон): за спарринги с ботами опыт (XP) НЕ начисляется!
     const ai = { ...(updatedStats.ai || { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 }) };
     ai.battlesPlayed += 1;
     if (isWinner) {
       ai.battlesWon += 1;
-      xpGain = 150 + Math.min(10, rounds) * 15;
     } else {
       ai.battlesLost += 1;
-      xpGain = 60 + Math.min(10, rounds) * 10;
     }
     ai.winrate = Math.round((ai.battlesWon / ai.battlesPlayed) * 100);
     updatedStats.ai = ai;
-  }
-
-  // Бонус +25% к XP за привязку облачного аккаунта (почты)
-  if (profile.email || profile.googleConnected) {
-    xpGain = Math.round(xpGain * 1.25);
+    xpGain = 0; // Строго 0 XP за ИИ
   }
 
   const currentTotalXp = Number(profile.totalXp) || 0;
@@ -403,8 +400,8 @@ function awardBattleResult(identifier, { isPvp = true, isWinner = false, rounds 
     stats: updatedStats
   });
 
-  const leveledUp = updatedProfile.level > oldLevel;
-  const rankPromoted = updatedProfile.rank?.title !== oldRankTitle;
+  const leveledUp = isPvp && updatedProfile.level > oldLevel;
+  const rankPromoted = isPvp && updatedProfile.rank?.title !== oldRankTitle;
 
   return {
     profile: updatedProfile,

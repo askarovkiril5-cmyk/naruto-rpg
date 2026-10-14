@@ -749,12 +749,11 @@ export default function App() {
           });
         }
       } else {
-        // Тренировочный спарринг с ИИ
-        const aiXp = isWinner ? 150 : 60;
+        // Тренировочный спарринг с ИИ (за тренировки опыт НЕ получают)
         addMessage({
           id: Math.random().toString(),
           type: 'system',
-          text: `🤖 Тренировочный спарринг с ИИ завершён. Начислено +${aiXp} XP за отработку приёмов на полигоне.`,
+          text: `🤖 Тренировочный спарринг с ИИ завершён. Результат занесён в статистику тренировок (опыт XP и уровень шиноби повышаются только в битвах с живыми игроками).`,
           time: getCurrentTime()
         });
 
@@ -765,7 +764,7 @@ export default function App() {
           isPvp: false,
           isWinner,
           roundCount: currentRound,
-          xpGain: aiXp
+          xpGain: 0
         });
       }
     });

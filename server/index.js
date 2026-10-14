@@ -1061,6 +1061,8 @@ io.on('connection', (socket) => {
                 name: p.name,
                 isPvp,
                 isWinner,
+                xpGain: battleRes.xpGain || 0,
+                totalXp: battleRes.totalXp,
                 level: battleRes.newLevel,
                 rank: battleRes.newRank,
                 leveledUp: battleRes.leveledUp,

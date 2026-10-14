@@ -141,7 +141,7 @@ export default function App() {
   });
   // 9. Ввод имени персонажа: сохраняем и читаем из localStorage (по умолчанию Вова и Кирилл)
   const [playerName, setPlayerName] = useState(() => {
-    return localStorage.getItem('naruto_player_name') || 'Вова';
+    return localStorage.getItem('naruto_player_name') || 'Кирилл';
   });
   const [isAiModelOpen, setIsAiModelOpen] = useState(false);
   const [activeModel, setActiveModel] = useState(() => {
@@ -285,14 +285,19 @@ export default function App() {
       localStorage.setItem('naruto_user_profile', JSON.stringify(updated));
     } catch (e) {}
 
-    // Синхронизация с сервером
+    // Синхронизация с сервером (привязка к почте)
     try {
+      const emailToSync = currentAccount?.email || userProfile?.email;
       fetch(`${BACKEND_URL}/api/user/profile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          identifier: currentAccount?.email || playerName,
-          activeTitle: titleObj ? titleObj.name : null
+          email: emailToSync || null,
+          identifier: emailToSync || playerName,
+          name: playerName,
+          activeTitle: titleObj ? titleObj.name : null,
+          activeTitleId: titleId,
+          unlockedTitles: unlockedTitleIds
         })
       }).catch(() => {});
     } catch (e) {}
@@ -528,7 +533,14 @@ export default function App() {
 
     s.on('connect', () => {
       setIsConnected(true);
-      s.emit('join_battle', { roomId, playerName, playerId, team: myTeam, customNinja });
+      s.emit('join_battle', { 
+        roomId, 
+        playerName, 
+        playerId, 
+        team: myTeam, 
+        customNinja,
+        accountEmail: currentAccount?.email || userProfile?.email || null
+      });
     });
 
     s.on('joined_room_info', (data) => {
@@ -813,6 +825,14 @@ export default function App() {
     if (socket) {
       socket.emit('update_player_name', { roomId, playerName: finalName, playerId });
     }
+    const emailToSync = currentAccount?.email || userProfile?.email;
+    if (emailToSync) {
+      fetch(`${BACKEND_URL}/api/user/profile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailToSync, name: finalName })
+      }).catch(() => {});
+    }
   };
 
   // 8. ДОБАВЛЕНИЕ / УДАЛЕНИЕ ТЕХНИКИ ИЗ АРСЕНАЛА 30 СЛОТОВ
@@ -835,6 +855,17 @@ export default function App() {
       try {
         localStorage.setItem('naruto_selected_jutsu', JSON.stringify(next));
       } catch (e) {}
+
+      // Автоматическое сохранение арсенала в аккаунт
+      const emailToSync = currentAccount?.email || userProfile?.email;
+      if (emailToSync) {
+        fetch(`${BACKEND_URL}/api/user/profile`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailToSync, selectedJutsuIds: next })
+        }).catch(() => {});
+      }
+
       return next;
     });
   };
@@ -848,6 +879,15 @@ export default function App() {
     try {
       localStorage.removeItem('naruto_selected_jutsu');
     } catch (e) {}
+
+    const emailToSync = currentAccount?.email || userProfile?.email;
+    if (emailToSync) {
+      fetch(`${BACKEND_URL}/api/user/profile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailToSync, selectedJutsuIds: [] })
+      }).catch(() => {});
+    }
   };
 
   // Подтверждение и блокировка арсенала техник
@@ -868,6 +908,16 @@ export default function App() {
         selectedJutsuIds,
         jutsuCount: selectedJutsuIds.length
       });
+    }
+
+    // Фиксация в облачном аккаунте
+    const emailToSync = currentAccount?.email || userProfile?.email;
+    if (emailToSync) {
+      fetch(`${BACKEND_URL}/api/user/profile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailToSync, selectedJutsuIds })
+      }).catch(() => {});
     }
   };
 
@@ -914,6 +964,18 @@ export default function App() {
         socket.emit('update_player_name', { roomId, playerName: ninjaData.name, playerId });
       }
     }
+    const emailToSync = currentAccount?.email || userProfile?.email;
+    if (emailToSync) {
+      fetch(`${BACKEND_URL}/api/user/profile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: emailToSync, 
+          customNinja: ninjaData,
+          name: ninjaData.name || playerName
+        })
+      }).catch(() => {});
+    }
   };
 
   // СОЗДАНИЕ НОВОЙ КОМНАТЫ
@@ -926,7 +988,14 @@ export default function App() {
       window.history.pushState({}, '', url.toString());
     }
     if (socket) {
-      socket.emit('join_battle', { roomId: newCode, playerName, playerId, team: myTeam, customNinja });
+      socket.emit('join_battle', { 
+        roomId: newCode, 
+        playerName, 
+        playerId, 
+        team: myTeam, 
+        customNinja,
+        accountEmail: currentAccount?.email || userProfile?.email || null
+      });
     }
   };
 
@@ -962,7 +1031,14 @@ export default function App() {
       window.history.pushState({}, '', url.toString());
     }
     if (socket) {
-      socket.emit('join_battle', { roomId: trimmed, playerName, playerId, team: myTeam, customNinja });
+      socket.emit('join_battle', { 
+        roomId: trimmed, 
+        playerName, 
+        playerId, 
+        team: myTeam, 
+        customNinja,
+        accountEmail: currentAccount?.email || userProfile?.email || null
+      });
     }
     setJoinCodeInput('');
   };
@@ -1031,9 +1107,9 @@ export default function App() {
     }
   };
 
-  // Синхронизация профиля и уровня с сервером при смене аккаунта или имени
+  // Синхронизация профиля и всех данных аккаунта с сервером при смене аккаунта или имени
   useEffect(() => {
-    const identifier = currentAccount?.email || playerName || 'Вова';
+    const identifier = currentAccount?.email || playerName || 'Кирилл';
     fetch(`${BACKEND_URL}/api/user/profile/${encodeURIComponent(identifier)}`)
       .then(res => res.json())
       .then(data => {
@@ -1042,10 +1118,156 @@ export default function App() {
           try {
             localStorage.setItem('naruto_user_profile', JSON.stringify(data));
           } catch {}
+
+          // Восстанавливаем сохраненный арсенал, кастомного шиноби и титулы с сервера
+          if (Array.isArray(data.selectedJutsuIds) && data.selectedJutsuIds.length > 0) {
+            setSelectedJutsuIds(prev => prev.length === 0 ? data.selectedJutsuIds : prev);
+          }
+          if (data.customNinja) {
+            setCustomNinja(prev => prev ? prev : data.customNinja);
+          }
+          if (Array.isArray(data.unlockedTitles) && data.unlockedTitles.length > 0) {
+            setUnlockedTitleIds(data.unlockedTitles);
+          }
+          if (data.activeTitleId) {
+            setActiveTitleId(data.activeTitleId);
+          }
         }
       })
       .catch(() => {});
   }, [currentAccount, playerName]);
+
+  // Полное сохранение всех данных аккаунта в облако (почту)
+  const handleSyncAccount = async (extraData = {}) => {
+    const emailToUse = extraData.email || currentAccount?.email || userProfile?.email;
+    if (!emailToUse) return null;
+
+    const payload = {
+      email: emailToUse,
+      name: extraData.name || playerName || 'Кирилл',
+      selectedJutsuIds,
+      customNinja,
+      activeTitleId,
+      unlockedTitles: unlockedTitleIds,
+      stats: userProfile?.stats,
+      googleConnected: true,
+      ...extraData
+    };
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/user/profile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data?.profile) {
+        setUserProfile(data.profile);
+        try { localStorage.setItem('naruto_user_profile', JSON.stringify(data.profile)); } catch {}
+      }
+      return data?.profile;
+    } catch (e) {
+      console.warn('Sync failed:', e);
+      throw e;
+    }
+  };
+
+  // Привязка почты или вход по почте с полным восстановлением прогресса
+  const handleLinkEmail = async (email, mode = 'save') => {
+    if (!email || !email.includes('@')) {
+      return { success: false, error: 'Введите корректный адрес электронной почты' };
+    }
+    const cleanEmail = email.trim().toLowerCase();
+
+    try {
+      if (mode === 'load') {
+        // Загрузка существующего аккаунта из облака по почте
+        const res = await fetch(`${BACKEND_URL}/api/user/profile/${encodeURIComponent(cleanEmail)}`);
+        const cloudData = await res.json();
+        if (cloudData && (cloudData.email || cloudData.level)) {
+          setUserProfile(cloudData);
+          try { localStorage.setItem('naruto_user_profile', JSON.stringify(cloudData)); } catch {}
+
+          if (cloudData.name) {
+            setPlayerName(cloudData.name);
+            try { localStorage.setItem('naruto_player_name', cloudData.name); } catch {}
+          }
+          if (Array.isArray(cloudData.selectedJutsuIds) && cloudData.selectedJutsuIds.length > 0) {
+            setSelectedJutsuIds(cloudData.selectedJutsuIds);
+            try { localStorage.setItem('naruto_selected_jutsu', JSON.stringify(cloudData.selectedJutsuIds)); } catch {}
+          }
+          if (cloudData.customNinja) {
+            setCustomNinja(cloudData.customNinja);
+            try { localStorage.setItem('naruto_custom_ninja', JSON.stringify(cloudData.customNinja)); } catch {}
+          }
+          if (Array.isArray(cloudData.unlockedTitles) && cloudData.unlockedTitles.length > 0) {
+            setUnlockedTitleIds(cloudData.unlockedTitles);
+            try { localStorage.setItem('naruto_unlocked_titles', JSON.stringify(cloudData.unlockedTitles)); } catch {}
+          }
+          if (cloudData.activeTitleId) {
+            setActiveTitleId(cloudData.activeTitleId);
+            try { localStorage.setItem('naruto_active_title_id', cloudData.activeTitleId); } catch {}
+          }
+
+          const acc = {
+            id: `acc_${cleanEmail}`,
+            email: cleanEmail,
+            name: cloudData.name || playerName,
+            avatar: '🍥'
+          };
+          setCurrentAccount(acc);
+          try { localStorage.setItem('naruto_google_accounts', JSON.stringify([acc])); } catch {}
+
+          handleSelectModel('gemini-3.8-flash');
+
+          notificationManager.addSystemNotice({
+            title: 'Облачный аккаунт загружен',
+            body: `Все данные вашего аккаунта (${cleanEmail}) успешно восстановлены: Уровень ${cloudData.level || 1} (${cloudData.rank?.title || 'Генин'}), ${cloudData.stats?.pvp?.battlesWon || 0} PvP побед.`
+          });
+
+          return { success: true, profile: cloudData, loaded: true };
+        }
+      }
+
+      // Сохранение и привязка текущих данных к этой почте
+      const acc = {
+        id: `acc_${cleanEmail}`,
+        email: cleanEmail,
+        name: playerName || 'Кирилл',
+        avatar: '🍥'
+      };
+      setCurrentAccount(acc);
+      try { localStorage.setItem('naruto_google_accounts', JSON.stringify([acc])); } catch {}
+
+      const savedProf = await handleSyncAccount({
+        email: cleanEmail,
+        name: playerName || 'Кирилл',
+        googleConnected: true
+      });
+
+      handleSelectModel('gemini-3.8-flash');
+
+      notificationManager.addSystemNotice({
+        title: 'Почта привязана к аккаунту',
+        body: `Аккаунт успешно сохранен под почтой ${cleanEmail}! Все победы, уровень, 30 техник арсенала и титулы надежно зафиксированы.`
+      });
+
+      return { success: true, profile: savedProf };
+    } catch (err) {
+      console.error('Error linking email:', err);
+      return { success: false, error: err.message };
+    }
+  };
+
+  const handleUnlinkEmail = () => {
+    setCurrentAccount(null);
+    try {
+      localStorage.removeItem('naruto_google_accounts');
+      const updated = { ...userProfile, email: null, googleConnected: false };
+      setUserProfile(updated);
+      localStorage.setItem('naruto_user_profile', JSON.stringify(updated));
+    } catch {}
+  };
 
   const handleSelectAccount = (account) => {
     setCurrentAccount(account);
@@ -1055,24 +1277,8 @@ export default function App() {
         localStorage.setItem('naruto_player_name', account.name);
       } catch (e) {}
     }
-    // Если подключена почта — автоматически активируем флагманскую модель Gemini 3.8 Flash!
     if (account?.email) {
-      handleSelectModel('gemini-3.8-flash');
-      // Сохраняем связь на сервере
-      fetch(`${BACKEND_URL}/api/user/profile`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: account.email,
-          name: account.name || playerName,
-          googleConnected: true
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data?.profile) setUserProfile(data.profile);
-      })
-      .catch(() => {});
+      handleLinkEmail(account.email, 'load');
     }
   };
 
@@ -2252,13 +2458,14 @@ export default function App() {
               roomId: code,
               playerName,
               playerId,
-              customNinja
+              customNinja,
+              accountEmail: currentAccount?.email || userProfile?.email || null
             });
           }
         }}
       />
 
-      {/* 16. МОДАЛЬНОЕ ОКНО: Личный Профиль Шиноби (Победы, Винрейт, Титулы) */}
+      {/* 16. МОДАЛЬНОЕ ОКНО: Личный Профиль Шиноби (Победы, Винрейт, Титулы & Облачный Аккаунт) */}
       <ShinobiProfileModal
         isOpen={isPersonalProfileOpen}
         onClose={() => setIsPersonalProfileOpen(false)}
@@ -2276,6 +2483,11 @@ export default function App() {
           setIsPersonalProfileOpen(false);
           setIsRanksOpen(true);
         }}
+        onLinkEmail={handleLinkEmail}
+        onUnlinkEmail={handleUnlinkEmail}
+        onSyncAccount={handleSyncAccount}
+        selectedJutsuCount={selectedJutsuIds.length}
+        hasCustomNinja={Boolean(customNinja)}
       />
     </div>
   );

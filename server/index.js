@@ -145,6 +145,20 @@ app.post('/api/user/profile', (req, res) => {
   res.json({ success: true, profile });
 });
 
+// Синхронизация всех данных аккаунта по почте
+app.post('/api/user/sync', (req, res) => {
+  const profile = storageManager.saveUser(req.body);
+  res.json({ success: true, profile });
+});
+
+// Вход по почте: возвращает все сохраненные данные аккаунта из облака
+app.post('/api/user/login', (req, res) => {
+  const { email } = req.body || {};
+  if (!email) return res.status(400).json({ error: 'Email обязателен' });
+  const profile = storageManager.getUserProfile(email);
+  res.json({ success: true, profile });
+});
+
 // REST эндпоинты для истории боев и летописей (постоянное хранилище)
 app.get('/api/battles', (req, res) => {
   res.json(storageManager.getBattleRecords());
@@ -320,7 +334,7 @@ io.on('connection', (socket) => {
   });
 
   // Подключение к комнате
-  socket.on('join_battle', ({ roomId, playerName, playerId, team, customNinja }) => {
+  socket.on('join_battle', ({ roomId, playerName, playerId, team, customNinja, accountEmail }) => {
     const room = getOrCreateRoom(roomId);
     socket.join(roomId);
 
@@ -357,6 +371,9 @@ io.on('connection', (socket) => {
       }
       if (customNinja) {
         player.customNinja = customNinja;
+      }
+      if (accountEmail) {
+        player.accountEmail = accountEmail;
       }
       console.log(`[Reconnected] Шиноби ${player.name} (${effectivePlayerId}) вернулся! Сокет: ${socket.id}`);
 
@@ -407,6 +424,7 @@ io.on('connection', (socket) => {
         isHost,
         isBot: false,
         isConnected: true,
+        accountEmail: accountEmail || null,
         customNinja: customNinja || null,
         character: null
       };

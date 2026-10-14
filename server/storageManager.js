@@ -137,20 +137,43 @@ function getUserProfile(identifier) {
   if (!identifier) return null;
   const key = String(identifier).trim().toLowerCase();
   const users = readJsonFile(USERS_FILE, {});
-  const raw = users[key] || {
-    identifier: key,
-    name: identifier,
-    email: key.includes('@') ? key : null,
-    googleConnected: key.includes('@'),
-    activeTitle: null,
-    unlockedTitles: ['first_step'],
-    friends: [],
-    stats: {
-      pvp: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 },
-      ai: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 }
-    },
-    createdAt: new Date().toISOString()
-  };
+
+  // 1. Прямой поиск по ключу
+  let raw = users[key];
+
+  // 2. Если не найден по ключу, ищем пользователя, у которого email === key или name.toLowerCase() === key
+  if (!raw) {
+    const foundKey = Object.keys(users).find(k => {
+      const u = users[k];
+      return (u.email && u.email.toLowerCase() === key) ||
+             (u.name && u.name.toLowerCase() === key) ||
+             (u.identifier && u.identifier.toLowerCase() === key);
+    });
+    if (foundKey) {
+      raw = users[foundKey];
+    }
+  }
+
+  // 3. Если профиль еще не создан
+  if (!raw) {
+    raw = {
+      identifier: key,
+      name: identifier,
+      email: key.includes('@') ? key : null,
+      googleConnected: key.includes('@'),
+      activeTitle: null,
+      activeTitleId: null,
+      unlockedTitles: ['first_step'],
+      selectedJutsuIds: [],
+      customNinja: null,
+      friends: [],
+      stats: {
+        pvp: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 },
+        ai: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 }
+      },
+      createdAt: new Date().toISOString()
+    };
+  }
 
   // Миграция старых данных (если были плоские battlesPlayed/battlesWon)
   const pvpStats = raw.stats?.pvp || {
@@ -171,7 +194,9 @@ function getUserProfile(identifier) {
 
   return {
     ...raw,
-    identifier: key,
+    identifier: raw.identifier || key,
+    email: raw.email || (key.includes('@') ? key : null),
+    name: raw.name || identifier,
     stats: {
       pvp: pvpStats,
       ai: aiStats
@@ -179,37 +204,107 @@ function getUserProfile(identifier) {
     friends: Array.isArray(raw.friends) ? raw.friends : [],
     unlockedTitles: Array.isArray(raw.unlockedTitles) ? raw.unlockedTitles : ['first_step'],
     activeTitle: raw.activeTitle || null,
+    activeTitleId: raw.activeTitleId || null,
+    selectedJutsuIds: Array.isArray(raw.selectedJutsuIds) ? raw.selectedJutsuIds : [],
+    customNinja: raw.customNinja || null,
     ...progression,
     unlockedTopModels: Boolean(raw.googleConnected || raw.email)
   };
 }
 
 /**
- * Сохранить / обновить данные пользователя
+ * Сохранить / обновить данные пользователя (почта — главный ключ аккаунта!)
  */
 function saveUser(userData) {
   if (!userData) return null;
-  const key = (userData.email || userData.name || userData.identifier || 'shinobi').trim().toLowerCase();
+  const emailKey = userData.email ? String(userData.email).trim().toLowerCase() : null;
+  const nameKey = userData.name ? String(userData.name).trim().toLowerCase() : null;
+  const key = emailKey || nameKey || (userData.identifier ? String(userData.identifier).trim().toLowerCase() : 'shinobi');
+
   const users = readJsonFile(USERS_FILE, {});
-  const current = users[key] || {};
+
+  // Если указана почта, проверяем, не было ли ранее сохраненного профиля по имени
+  let current = users[key] || {};
+  if (emailKey && (!current || Object.keys(current).length === 0) && nameKey && users[nameKey]) {
+    // Переносим существующие достижения игрока под его привязанную почту
+    current = { ...users[nameKey] };
+  }
+
+  // Мерджим статистику (сохраняем максимальные победы при синхронизации)
+  const incomingPvp = userData.stats?.pvp || {};
+  const currentPvp = current.stats?.pvp || {
+    battlesPlayed: current.battlesPlayed || 0,
+    battlesWon: current.battlesWon || 0,
+    battlesLost: Math.max(0, (current.battlesPlayed || 0) - (current.battlesWon || 0)),
+    winrate: 0
+  };
+
+  const mergedPvp = {
+    battlesPlayed: Math.max(Number(incomingPvp.battlesPlayed) || 0, Number(currentPvp.battlesPlayed) || 0),
+    battlesWon: Math.max(Number(incomingPvp.battlesWon) || 0, Number(currentPvp.battlesWon) || 0),
+    battlesLost: Math.max(Number(incomingPvp.battlesLost) || 0, Number(currentPvp.battlesLost) || 0),
+    winrate: 0
+  };
+  if (mergedPvp.battlesPlayed > 0) {
+    mergedPvp.winrate = Math.round((mergedPvp.battlesWon / mergedPvp.battlesPlayed) * 100);
+  }
+
+  const incomingAi = userData.stats?.ai || {};
+  const currentAi = current.stats?.ai || { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 };
+  const mergedAi = {
+    battlesPlayed: Math.max(Number(incomingAi.battlesPlayed) || 0, Number(currentAi.battlesPlayed) || 0),
+    battlesWon: Math.max(Number(incomingAi.battlesWon) || 0, Number(currentAi.battlesWon) || 0),
+    battlesLost: Math.max(Number(incomingAi.battlesLost) || 0, Number(currentAi.battlesLost) || 0),
+    winrate: 0
+  };
+  if (mergedAi.battlesPlayed > 0) {
+    mergedAi.winrate = Math.round((mergedAi.battlesWon / mergedAi.battlesPlayed) * 100);
+  }
+
+  // Объединяем открытые титулы (чтобы не потерять ни одного открытого достижения)
+  const existingTitles = Array.isArray(current.unlockedTitles) ? current.unlockedTitles : ['first_step'];
+  const newTitles = Array.isArray(userData.unlockedTitles || userData.unlockedTitleIds) ? (userData.unlockedTitles || userData.unlockedTitleIds) : [];
+  const mergedTitles = Array.from(new Set([...existingTitles, ...newTitles]));
+
+  // Арсенал выбранных техник (30 дзюцу)
+  const mergedArsenal = Array.isArray(userData.selectedJutsuIds) && userData.selectedJutsuIds.length > 0
+    ? userData.selectedJutsuIds
+    : (Array.isArray(current.selectedJutsuIds) ? current.selectedJutsuIds : []);
+
+  // Созданный персонаж (конструктор шиноби)
+  const mergedCustomNinja = userData.customNinja || current.customNinja || null;
 
   const updated = {
     ...current,
     ...userData,
     identifier: key,
-    email: userData.email || current.email || (key.includes('@') ? key : null),
-    googleConnected: Boolean(userData.googleConnected || userData.email || current.googleConnected),
-    stats: userData.stats || current.stats || {
-      pvp: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 },
-      ai: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 }
+    email: emailKey || current.email || null,
+    name: userData.name || current.name || 'Кирилл',
+    googleConnected: Boolean(emailKey || current.googleConnected),
+    stats: {
+      pvp: mergedPvp,
+      ai: mergedAi
     },
+    selectedJutsuIds: mergedArsenal,
+    customNinja: mergedCustomNinja,
     friends: Array.isArray(userData.friends) ? userData.friends : (current.friends || []),
     activeTitle: userData.activeTitle !== undefined ? userData.activeTitle : current.activeTitle,
-    unlockedTitles: Array.isArray(userData.unlockedTitles) ? userData.unlockedTitles : (current.unlockedTitles || ['first_step']),
+    activeTitleId: userData.activeTitleId !== undefined ? userData.activeTitleId : current.activeTitleId,
+    unlockedTitles: mergedTitles,
     updatedAt: new Date().toISOString()
   };
 
   users[key] = updated;
+
+  // Если сохранен по почте, но у него есть имя, связываем также имя для быстрого поиска
+  if (emailKey && nameKey && nameKey !== emailKey) {
+    users[nameKey] = {
+      ...updated,
+      identifier: nameKey,
+      linkedToEmail: emailKey
+    };
+  }
+
   writeJsonFile(USERS_FILE, users);
 
   return getUserProfile(key);

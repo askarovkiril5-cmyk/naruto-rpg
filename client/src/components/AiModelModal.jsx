@@ -233,7 +233,7 @@ export default function AiModelModal({
           <div>
             <div className="flex justify-between text-[10px] font-mono text-zinc-300 mb-1">
               <span>Прогресс ранга</span>
-              <span>XP: {userProfile?.currentXp || 0} / {userProfile?.nextLevelXp || 400} ({userProfile?.progressPercent || 0}%)</span>
+              <span>Победы: {userProfile?.currentWinsInLevel || 0} / {userProfile?.winsRequiredForNextLevel || 1} ({userProfile?.progressPercent || 0}%)</span>
             </div>
             <div className="w-full bg-zinc-950 rounded-full h-2 overflow-hidden border border-white/10">
               <div 

@@ -17,8 +17,8 @@ out/
 release/
 
 # Persistent data and storage (battles, saved users)
-data/
-server/data/
+/data/
+/server/data/
 *.tmp_*
 
 # OS & Editor files

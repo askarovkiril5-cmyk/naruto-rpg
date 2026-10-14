@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  naruto-rpg:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: naruto-rpg-server
+    restart: always
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - DATA_DIR=/app/data
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    volumes:
+      - naruto_data:/app/data
+      - ./rules:/app/rules
+
+volumes:
+  naruto_data:
+    driver: local

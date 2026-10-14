@@ -1,0 +1,16 @@
+{
+  "name": "naruto-rpg-server",
+  "version": "1.0.0",
+  "description": "Multiplayer Game Server with AI Game Master for Naruto RPG",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "parse": "node parse.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  }
+}

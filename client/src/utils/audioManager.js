@@ -1,0 +1,609 @@
+/**
+ * audioManager.js
+ * Комплексный звуковой движок боевой арены шиноби:
+ * - Фоновый японский лоу-фай и эмбиент для лобби (сякухати, кото, колокольчики)
+ * - Напряженная боевая тема с барабанами тайко для сражения
+ * - Звуковые эффекты (SFX): складывание печатей, шаринган, гонг, клики
+ * - Работает через Web Audio API: 100% автономно, без внешних лагов, кристально чистое звучание!
+ */
+
+// Японская пентатоническая гамма Инсэн (Insen Scale) в тональности Ре (D)
+const INSEN_SCALE = [146.83, 155.56, 196.00, 220.00, 261.63, 293.66, 311.13, 392.00, 440.00, 523.25];
+
+export const AUDIO_TRACKS = [
+  {
+    id: 'mha_the_day',
+    type: 'battle',
+    name: '💥 Моя Геройская Академия — THE DAY (Porno Graffitti)',
+    desc: 'Легендарный Опенинг 1 Моей Геройской Академии с оригинальным вокалом!',
+    icon: '⚡',
+    url: '/audio/mha_the_day.mp3',
+    hasVocals: true
+  },
+  {
+    id: 'mha_you_say_run',
+    type: 'battle',
+    name: '🔥 Моя Геройская Академия — You Say Run (OST)',
+    desc: 'Главный эпичный боевой саундтрек всех битв Академии!',
+    icon: '💥',
+    url: '/audio/mha_you_say_run.mp3',
+    hasVocals: false
+  },
+  {
+    id: 'bc_black_rover',
+    type: 'battle',
+    name: '🍀 Black Clover — Black Rover (Vickeblanka)',
+    desc: 'Опенинг 3 Чёрного Клевера с вокалом! Взрывной рок-драйв',
+    icon: '🍀',
+    url: '/audio/black_rover.mp3',
+    hasVocals: true
+  },
+  {
+    id: 'bc_black_catcher',
+    type: 'battle',
+    name: '🗡️ Black Clover — Black Catcher (Vickeblanka)',
+    desc: 'Опенинг 10 Чёрного Клевера с вокалом! Легендарный эпик',
+    icon: '🗡️',
+    url: '/audio/black_catcher.mp3',
+    hasVocals: true
+  },
+  {
+    id: 'naruto_diver',
+    type: 'battle',
+    name: '🍥 Naruto Shippuden — Diver (NICO)',
+    desc: 'Опенинг 8 Наруто с вокалом (Diver)',
+    icon: '🌊',
+    url: '/audio/naruto_shippuden_diver.mp3',
+    hasVocals: true
+  }
+];
+
+class AudioManager {
+  constructor() {
+    this.ctx = null;
+    this.musicGain = null;
+    this.sfxGain = null;
+    this.masterGain = null;
+    this.htmlAudio = null;
+
+    // Состояние
+    this.isPlaying = false;
+    this.currentMode = 'battle';
+    this.currentTrackId = 'mha_the_day'; // По умолчанию Моя Геройская Академия!
+    this.volume = 0.50;
+    this.sfxVolume = 0.55;
+    this.isMuted = false;
+    this.sfxEnabled = true;
+    this.currentTime = 0;
+    this.duration = 0;
+
+    // Таймеры процедурного генератора
+    this.loopTimer = null;
+    this.activeNodes = [];
+
+    // Слушатели изменений для React-компонентов
+    this.listeners = new Set();
+
+    // Загрузка сохраненных настроек
+    try {
+      const savedVol = localStorage.getItem('naruto_music_volume');
+      if (savedVol !== null) this.volume = parseFloat(savedVol);
+
+      const savedSfxVol = localStorage.getItem('naruto_sfx_volume');
+      if (savedSfxVol !== null) this.sfxVolume = parseFloat(savedSfxVol);
+
+      const savedMute = localStorage.getItem('naruto_music_muted');
+      if (savedMute !== null) this.isMuted = savedMute === 'true';
+
+      const savedSfx = localStorage.getItem('naruto_sfx_enabled');
+      if (savedSfx !== null) this.sfxEnabled = savedSfx !== 'false';
+
+      const savedTrack = localStorage.getItem('naruto_current_track');
+      if (savedTrack && AUDIO_TRACKS.some(t => t.id === savedTrack)) {
+        this.currentTrackId = savedTrack;
+      }
+    } catch (e) {}
+  }
+
+  subscribe(callback) {
+    this.listeners.add(callback);
+    return () => this.listeners.delete(callback);
+  }
+
+  notify() {
+    this.listeners.forEach(cb => cb({
+      isPlaying: this.isPlaying,
+      currentMode: this.currentMode,
+      currentTrackId: this.currentTrackId,
+      volume: this.volume,
+      sfxVolume: this.sfxVolume,
+      isMuted: this.isMuted,
+      sfxEnabled: this.sfxEnabled,
+      currentTime: this.currentTime,
+      duration: this.duration
+    }));
+  }
+
+  initAudioContext() {
+    if (!this.ctx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return null;
+      this.ctx = new AudioContextClass();
+
+      // Мастер-шина
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.connect(this.ctx.destination);
+
+      // Шина музыки
+      this.musicGain = this.ctx.createGain();
+      this.musicGain.gain.value = this.isMuted ? 0 : this.volume;
+      this.musicGain.connect(this.masterGain);
+
+      // Шина звуковых эффектов
+      this.sfxGain = this.ctx.createGain();
+      this.sfxGain.gain.value = this.sfxEnabled ? this.sfxVolume : 0;
+      this.sfxGain.connect(this.masterGain);
+    }
+
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
+    }
+
+    return this.ctx;
+  }
+
+  // Включение / выключение воспроизведения
+  togglePlay() {
+    if (this.isPlaying) {
+      this.stop();
+    } else {
+      this.play(this.currentMode);
+    }
+  }
+
+  // Запуск музыки
+  play(mode = 'lobby', trackId = null) {
+    this.initAudioContext();
+
+    this.currentMode = mode;
+    if (trackId) {
+      this.currentTrackId = trackId;
+      try { localStorage.setItem('naruto_current_track', trackId); } catch (e) {}
+    } else {
+      // Автоматический выбор трека под текущий режим
+      if (mode === 'battle') {
+        if (!this.currentTrackId || this.currentTrackId === 'lobby_konoha' || this.currentTrackId === 'lobby_temple') {
+          this.currentTrackId = 'bc_black_rover';
+        }
+      } else if (mode === 'lobby') {
+        if (!this.currentTrackId) {
+          this.currentTrackId = 'bc_black_catcher';
+        }
+      }
+    }
+
+    this.stopSynthesizer();
+    if (this.htmlAudio) {
+      try { this.htmlAudio.pause(); this.htmlAudio = null; } catch (e) {}
+    }
+
+    this.isPlaying = true;
+
+    const trackObj = AUDIO_TRACKS.find(t => t.id === this.currentTrackId) || AUDIO_TRACKS[0];
+
+    // Если у трека есть MP3-файл (Black Clover / Naruto / MHA с вокалом)
+    if (trackObj && trackObj.url) {
+      try {
+        const audio = new Audio(trackObj.url);
+        audio.loop = true;
+        audio.volume = this.isMuted ? 0 : this.volume;
+        audio.ontimeupdate = () => {
+          this.currentTime = audio.currentTime || 0;
+          this.duration = audio.duration || 0;
+          this.notify();
+        };
+        audio.onloadedmetadata = () => {
+          this.duration = audio.duration || 0;
+          this.notify();
+        };
+        this.htmlAudio = audio;
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            console.warn('[Audio] HTML5 audio play error:', err);
+          });
+        }
+      } catch (err) {
+        console.warn('[Audio] Failed to initialize Audio element:', err);
+      }
+    } else {
+      this.startBattleSynth();
+    }
+
+    this.notify();
+  }
+
+  // Перемотка музыки на указанную секунду
+  seek(seconds) {
+    if (this.htmlAudio) {
+      const target = Math.max(0, Math.min(this.htmlAudio.duration || 0, seconds));
+      this.htmlAudio.currentTime = target;
+      this.currentTime = target;
+      this.notify();
+    }
+  }
+
+  // Остановка музыки
+  stop() {
+    this.stopSynthesizer();
+    if (this.htmlAudio) {
+      try {
+        this.htmlAudio.pause();
+        this.htmlAudio.currentTime = 0;
+      } catch (e) {}
+      this.htmlAudio = null;
+    }
+    this.currentTime = 0;
+    this.isPlaying = false;
+    this.notify();
+  }
+
+  stopSynthesizer() {
+    if (this.loopTimer) {
+      clearInterval(this.loopTimer);
+      this.loopTimer = null;
+    }
+    this.activeNodes.forEach(node => {
+      try { node.stop(); node.disconnect(); } catch (e) {}
+    });
+    this.activeNodes = [];
+  }
+
+  // Установка громкости музыки
+  setVolume(val) {
+    this.volume = Math.max(0, Math.min(1, val));
+    if (this.musicGain) {
+      this.musicGain.gain.value = this.isMuted ? 0 : this.volume;
+    }
+    if (this.htmlAudio) {
+      this.htmlAudio.volume = this.isMuted ? 0 : this.volume;
+    }
+    try { localStorage.setItem('naruto_music_volume', this.volume.toString()); } catch (e) {}
+    this.notify();
+  }
+
+  // Мутирование
+  setMuted(muted) {
+    this.isMuted = muted;
+    if (this.musicGain) {
+      this.musicGain.gain.value = this.isMuted ? 0 : this.volume;
+    }
+    if (this.htmlAudio) {
+      this.htmlAudio.volume = this.isMuted ? 0 : this.volume;
+      this.htmlAudio.muted = this.isMuted;
+    }
+    try { localStorage.setItem('naruto_music_muted', this.isMuted ? 'true' : 'false'); } catch (e) {}
+    this.notify();
+  }
+
+  // Включение / выключение SFX
+  setSfxEnabled(enabled) {
+    this.sfxEnabled = enabled;
+    if (this.sfxGain) {
+      this.sfxGain.gain.value = this.sfxEnabled ? this.sfxVolume : 0;
+    }
+    try { localStorage.setItem('naruto_sfx_enabled', this.sfxEnabled ? 'true' : 'false'); } catch (e) {}
+    this.notify();
+  }
+
+  setSfxVolume(val) {
+    this.sfxVolume = Math.max(0, Math.min(1, val));
+    if (this.sfxGain && this.sfxEnabled) {
+      this.sfxGain.gain.value = this.sfxVolume;
+    }
+    try { localStorage.setItem('naruto_sfx_volume', this.sfxVolume.toString()); } catch (e) {}
+    this.notify();
+  }
+
+  // ==========================================
+  // 1. ПРОЦЕДУРНЫЙ ЭМБИЕНТ ДЛЯ ЛОББИ (ЯПОНИЯ)
+  // ==========================================
+  startLobbySynth() {
+    const ctx = this.ctx;
+    if (!ctx) return;
+
+    // Базовый мягкий дрон (гул святилища)
+    const droneOsc = ctx.createOscillator();
+    const droneGain = ctx.createGain();
+    const droneFilter = ctx.createBiquadFilter();
+
+    droneOsc.type = 'triangle';
+    droneOsc.frequency.setValueAtTime(146.83, ctx.currentTime); // Ре (D3)
+
+    droneFilter.type = 'lowpass';
+    droneFilter.frequency.setValueAtTime(420, ctx.currentTime);
+
+    droneGain.gain.setValueAtTime(0.08, ctx.currentTime);
+
+    droneOsc.connect(droneFilter);
+    droneFilter.connect(droneGain);
+    droneGain.connect(this.musicGain);
+
+    droneOsc.start();
+    this.activeNodes.push(droneOsc);
+
+    // Функция проигрывания одной ноты сякухати/кото с мягкой атакой
+    const playZenNote = () => {
+      if (!this.isPlaying || this.currentMode !== 'lobby') return;
+      const noteFreq = INSEN_SCALE[Math.floor(Math.random() * INSEN_SCALE.length)];
+
+      const osc = ctx.createOscillator();
+      const oscGain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+
+      osc.type = Math.random() > 0.5 ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(noteFreq, ctx.currentTime);
+
+      // Легкое естественное вибрато флейты
+      const vibrato = ctx.createOscillator();
+      const vibratoGain = ctx.createGain();
+      vibrato.frequency.setValueAtTime(4.5, ctx.currentTime);
+      vibratoGain.gain.setValueAtTime(2.5, ctx.currentTime);
+      vibrato.connect(osc.frequency);
+      vibrato.start();
+
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(noteFreq * 1.5, ctx.currentTime);
+      filter.Q.setValueAtTime(3.0, ctx.currentTime);
+
+      // Плавное нарастание и затухание (дыхание сякухати)
+      const now = ctx.currentTime;
+      const duration = 2.5 + Math.random() * 1.5;
+      oscGain.gain.setValueAtTime(0.001, now);
+      oscGain.gain.exponentialRampToValueAtTime(0.12, now + 0.6);
+      oscGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+      osc.connect(filter);
+      filter.connect(oscGain);
+      oscGain.connect(this.musicGain);
+
+      osc.start(now);
+      osc.stop(now + duration + 0.1);
+      vibrato.stop(now + duration + 0.1);
+    };
+
+    // Звон кристального колокольчика (фурин)
+    const playWindChime = () => {
+      if (!this.isPlaying || this.currentMode !== 'lobby') return;
+      const now = ctx.currentTime;
+      const chimeFreq = 1200 + Math.random() * 800;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(chimeFreq, now);
+
+      gain.gain.setValueAtTime(0.06, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+
+      osc.connect(gain);
+      gain.connect(this.musicGain);
+
+      osc.start(now);
+      osc.stop(now + 2.0);
+    };
+
+    // Запускаем первую ноту
+    playZenNote();
+
+    // Циклический вызов нот каждые 2.8 - 4.5 сек
+    let step = 0;
+    this.loopTimer = setInterval(() => {
+      playZenNote();
+      step++;
+      if (step % 3 === 0) {
+        setTimeout(playWindChime, 600);
+      }
+    }, 3200);
+  }
+
+  // ==========================================
+  // 2. ПРОЦЕДУРНЫЙ БОЕВОЙ РИТМ (ТАЙКО & РОК)
+  // ==========================================
+  startBattleSynth() {
+    const ctx = this.ctx;
+    if (!ctx) return;
+
+    // Удар боевого барабана Тайко (глубокий sub-bass и резонанс мембраны)
+    const playTaikoStrike = (accent = false) => {
+      if (!this.isPlaying || this.currentMode !== 'battle') return;
+      const now = ctx.currentTime;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      // Резкий спад высоты тона, имитирующий натянутую кожу тайко
+      osc.frequency.setValueAtTime(accent ? 160 : 120, now);
+      osc.frequency.exponentialRampToValueAtTime(42, now + 0.35);
+
+      gain.gain.setValueAtTime(accent ? 0.35 : 0.22, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + (accent ? 0.6 : 0.4));
+
+      osc.connect(gain);
+      gain.connect(this.musicGain);
+
+      osc.start(now);
+      osc.stop(now + 0.7);
+    };
+
+    // Металлический обод барабана / щелчок палочки
+    const playRimSnap = () => {
+      if (!this.isPlaying || this.currentMode !== 'battle') return;
+      const now = ctx.currentTime;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(480, now);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.08);
+
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+      osc.connect(gain);
+      gain.connect(this.musicGain);
+
+      osc.start(now);
+      osc.stop(now + 0.1);
+    };
+
+    // Напряженный боевой рифф
+    const playBattlePluck = (freq) => {
+      if (!this.isPlaying || this.currentMode !== 'battle') return;
+      const now = ctx.currentTime;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, now);
+
+      gain.gain.setValueAtTime(0.07, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+      osc.connect(gain);
+      gain.connect(this.musicGain);
+
+      osc.start(now);
+      osc.stop(now + 0.3);
+    };
+
+    let beat = 0;
+    const battleNotes = [146.83, 174.61, 220.00, 261.63, 146.83, 196.00];
+
+    // Боевой тайминг: 130 BPM (~460ms шаг)
+    this.loopTimer = setInterval(() => {
+      const isDownbeat = (beat % 4 === 0);
+      playTaikoStrike(isDownbeat);
+
+      if (beat % 2 === 1) {
+        setTimeout(playRimSnap, 120);
+      }
+
+      if (beat % 2 === 0) {
+        const note = battleNotes[(beat / 2) % battleNotes.length];
+        playBattlePluck(note);
+      }
+
+      beat++;
+    }, 460);
+  }
+
+  // ==========================================
+  // 3. ЗВУКОВЫЕ ЭФФЕКТЫ (SFX)
+  // ==========================================
+  playSfx(type) {
+    if (!this.sfxEnabled) return;
+    const ctx = this.initAudioContext();
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+
+    switch (type) {
+      // Клик по интерфейсу / кнопкам
+      case 'click': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1100, now);
+        osc.frequency.exponentialRampToValueAtTime(450, now + 0.04);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        osc.connect(gain);
+        gain.connect(this.sfxGain);
+        osc.start(now);
+        osc.stop(now + 0.06);
+        break;
+      }
+
+      // Складывание печатей / свист техники нинпо
+      case 'seal': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(250, now);
+        osc.frequency.exponentialRampToValueAtTime(1600, now + 0.12);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+        osc.connect(gain);
+        gain.connect(this.sfxGain);
+        osc.start(now);
+        osc.stop(now + 0.16);
+        break;
+      }
+
+      // Активация глаз (Шаринган / Бьякуган)
+      case 'eye': {
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc1.type = 'sine';
+        osc2.type = 'sine';
+        osc1.frequency.setValueAtTime(528, now); // Сольфеджио чакры
+        osc2.frequency.setValueAtTime(792, now);
+        osc1.frequency.exponentialRampToValueAtTime(880, now + 0.3);
+        osc2.frequency.exponentialRampToValueAtTime(1320, now + 0.3);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(this.sfxGain);
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 0.5);
+        osc2.stop(now + 0.5);
+        break;
+      }
+
+      // Удар боевого гонга (старт дуэли)
+      case 'gong': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.exponentialRampToValueAtTime(55, now + 1.2);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.6);
+        osc.connect(gain);
+        gain.connect(this.sfxGain);
+        osc.start(now);
+        osc.stop(now + 1.8);
+        break;
+      }
+
+      // Щелчок фиксации хода
+      case 'lock': {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(700, now);
+        osc.frequency.setValueAtTime(950, now + 0.03);
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        osc.connect(gain);
+        gain.connect(this.sfxGain);
+        osc.start(now);
+        osc.stop(now + 0.09);
+        break;
+      }
+
+      default:
+        break;
+    }
+  }
+}
+
+export const audioManager = new AudioManager();

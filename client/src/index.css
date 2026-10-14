@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Фон приложения по умолчанию: эстетичный арт долины Завершения / Конохи */
+  --app-bg-image: url('https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1920&auto=format&fit=crop');
+  --bg-overlay-opacity: 0.55;
+  
+  /* Прозрачность интерфейса */
+  --panel-opacity: 0.85;
+  --panel-blur: 16px;
+
+  /* Пузыри сообщений игрока */
+  --player-bubble-bg: #1e3a8a;
+  --player-bubble-text: #ffffff;
+
+  /* Пузыри сообщений оппонента */
+  --opponent-bubble-bg: #4c1d95;
+  --opponent-bubble-text: #ffffff;
+
+  /* Пузыри сообщений ИИ-Мастера */
+  --gm-bubble-bg: #18181b;
+  --gm-bubble-text: #fef08a;
+}
+
+/* Стили стеклянных полупрозрачных панелей */
+.glass-panel {
+  background-color: rgba(18, 22, 34, var(--panel-opacity));
+  backdrop-filter: blur(var(--panel-blur));
+  -webkit-backdrop-filter: blur(var(--panel-blur));
+}
+
+/* Кастомный тонкий скроллбар */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 158, 11, 0.5);
+}

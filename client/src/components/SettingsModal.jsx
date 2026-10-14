@@ -975,6 +975,8 @@ function formatTime(sec) {
                       key={t.id}
                       type="button"
                       onClick={() => {
+                        if (audioManager.isMuted) audioManager.setMuted(false);
+                        if (audioManager.volume <= 0.05) audioManager.setVolume(0.5);
                         audioManager.play(t.type, t.id);
                       }}
                       className={`p-2.5 rounded-xl border text-left transition flex items-center justify-between cursor-pointer ${

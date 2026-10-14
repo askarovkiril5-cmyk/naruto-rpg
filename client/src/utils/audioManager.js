@@ -10,6 +10,23 @@
 // Японская пентатоническая гамма Инсэн (Insen Scale) в тональности Ре (D)
 const INSEN_SCALE = [146.83, 155.56, 196.00, 220.00, 261.63, 293.66, 311.13, 392.00, 440.00, 523.25];
 
+// Функция надежного разрешения путей к аудио (поддерживает Electron file://, Web, localhost и продакшн)
+export function resolveAudioUrl(url) {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('data:')) {
+    return url;
+  }
+  const cleanPath = url.replace(/^\/+/, '');
+  if (typeof window !== 'undefined' && window.location) {
+    try {
+      return new URL(cleanPath, window.location.href).href;
+    } catch (e) {
+      return './' + cleanPath;
+    }
+  }
+  return './' + cleanPath;
+}
+
 export const AUDIO_TRACKS = [
   {
     id: 'mha_the_day',
@@ -17,7 +34,7 @@ export const AUDIO_TRACKS = [
     name: '💥 Моя Геройская Академия — THE DAY (Porno Graffitti)',
     desc: 'Легендарный Опенинг 1 Моей Геройской Академии с оригинальным вокалом!',
     icon: '⚡',
-    url: '/audio/mha_the_day.mp3',
+    url: 'audio/mha_the_day.mp3',
     hasVocals: true
   },
   {
@@ -26,7 +43,7 @@ export const AUDIO_TRACKS = [
     name: '🔥 Моя Геройская Академия — You Say Run (OST)',
     desc: 'Главный эпичный боевой саундтрек всех битв Академии!',
     icon: '💥',
-    url: '/audio/mha_you_say_run.mp3',
+    url: 'audio/mha_you_say_run.mp3',
     hasVocals: false
   },
   {
@@ -35,7 +52,7 @@ export const AUDIO_TRACKS = [
     name: '🍀 Black Clover — Black Rover (Vickeblanka)',
     desc: 'Опенинг 3 Чёрного Клевера с вокалом! Взрывной рок-драйв',
     icon: '🍀',
-    url: '/audio/black_rover.mp3',
+    url: 'audio/black_rover.mp3',
     hasVocals: true
   },
   {
@@ -44,7 +61,7 @@ export const AUDIO_TRACKS = [
     name: '🗡️ Black Clover — Black Catcher (Vickeblanka)',
     desc: 'Опенинг 10 Чёрного Клевера с вокалом! Легендарный эпик',
     icon: '🗡️',
-    url: '/audio/black_catcher.mp3',
+    url: 'audio/black_catcher.mp3',
     hasVocals: true
   },
   {
@@ -53,7 +70,7 @@ export const AUDIO_TRACKS = [
     name: '🍥 Naruto Shippuden — Diver (NICO)',
     desc: 'Опенинг 8 Наруто с вокалом (Diver)',
     icon: '🌊',
-    url: '/audio/naruto_shippuden_diver.mp3',
+    url: 'audio/naruto_shippuden_diver.mp3',
     hasVocals: true
   }
 ];
@@ -161,9 +178,11 @@ class AudioManager {
 
   // Включение / выключение воспроизведения
   togglePlay() {
-    if (this.isPlaying) {
+    if (this.isPlaying && !this.isMuted) {
       this.stop();
     } else {
+      if (this.isMuted) this.setMuted(false);
+      if (this.volume <= 0.05) this.setVolume(0.5);
       this.play(this.currentMode);
     }
   }
@@ -201,7 +220,8 @@ class AudioManager {
     // Если у трека есть MP3-файл (Black Clover / Naruto / MHA с вокалом)
     if (trackObj && trackObj.url) {
       try {
-        const audio = new Audio(trackObj.url);
+        const resolvedUrl = resolveAudioUrl(trackObj.url);
+        const audio = new Audio(resolvedUrl);
         audio.loop = (this.playbackMode === 'repeat-one');
         audio.volume = this.isMuted ? 0 : this.volume;
         audio.ontimeupdate = () => {
@@ -216,11 +236,38 @@ class AudioManager {
         audio.onended = () => {
           this.handleTrackEnded();
         };
+        audio.onerror = (e) => {
+          console.warn('[Audio] Error loading audio track:', resolvedUrl, audio.error);
+          if (!audio._retried) {
+            audio._retried = true;
+            // Попытка альтернативного относительного пути
+            audio.src = './' + trackObj.url.replace(/^\/+/, '');
+            audio.load();
+            audio.play().catch(() => this.startBattleSynth());
+            return;
+          }
+          this.startBattleSynth();
+        };
+
         this.htmlAudio = audio;
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise.catch(err => {
             console.warn('[Audio] HTML5 audio play error:', err);
+            // Если браузер заблокировал автовоспроизведение до первого клика — снимем блокировку при первом клике/нажатии
+            if (err.name === 'NotAllowedError') {
+              const onFirstGesture = () => {
+                if (this.isPlaying && this.htmlAudio && this.htmlAudio.paused) {
+                  this.htmlAudio.play().catch(() => {});
+                }
+                window.removeEventListener('click', onFirstGesture);
+                window.removeEventListener('keydown', onFirstGesture);
+                window.removeEventListener('touchstart', onFirstGesture);
+              };
+              window.addEventListener('click', onFirstGesture, { once: true, passive: true });
+              window.addEventListener('keydown', onFirstGesture, { once: true, passive: true });
+              window.addEventListener('touchstart', onFirstGesture, { once: true, passive: true });
+            }
           });
         }
       } catch (err) {

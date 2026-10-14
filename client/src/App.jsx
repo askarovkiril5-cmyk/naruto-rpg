@@ -423,16 +423,34 @@ export default function App() {
     if (audioState.isPlaying && !audioState.isMuted) {
       audioManager.stop();
     } else {
+      if (audioManager.isMuted) audioManager.setMuted(false);
+      if (audioManager.volume <= 0.05) audioManager.setVolume(0.5);
       audioManager.play(roomStatus === 'BATTLE' ? 'battle' : 'lobby');
     }
   };
 
   const addMessage = (msg) => {
-    setMessages(prev => [...prev, msg]);
+    const enriched = {
+      ...msg,
+      timestamp: msg?.timestamp || Date.now(),
+      time: msg?.time || getCurrentTime()
+    };
+    setMessages(prev => [...prev, enriched]);
   };
 
   const getCurrentTime = () => {
     return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Форматирование времени сообщения по местному часовому поясу игрока
+  const formatMsgLocalTime = (m) => {
+    if (m?.timestamp) {
+      const d = new Date(m.timestamp);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+    }
+    return m?.time || getCurrentTime();
   };
 
   // Синхронизированные актуальные ссылки для сокет-колбэков (предотвращение stale closures)
@@ -1968,7 +1986,7 @@ export default function App() {
                         <span className="font-bold text-xs tracking-wider uppercase text-amber-400 flex items-center gap-1.5">
                           📜 {m.authorName || 'ИИ Ведущий'}
                         </span>
-                        <span className="text-[10px] text-zinc-400">{m.time}</span>
+                        <span className="text-[10px] text-zinc-400">{formatMsgLocalTime(m)}</span>
                       </div>
                       <div className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap font-serif">
                         <NarrativeRenderer 
@@ -1994,7 +2012,7 @@ export default function App() {
                           {m.team === 'blue' ? '🔵 Синие' : '🔴 Красные'}
                         </span>
                       )}
-                      <span>{m.authorName || (isMine ? 'Вы' : 'Оппонент')} • {m.time}</span>
+                      <span>{m.authorName || (isMine ? 'Вы' : 'Оппонент')} • {formatMsgLocalTime(m)}</span>
                     </div>
                     <div
                       className="max-w-[80%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm shadow-md leading-relaxed"

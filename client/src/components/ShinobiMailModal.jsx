@@ -111,6 +111,31 @@ export default function ShinobiMailModal({ isOpen, onClose }) {
     }
   };
 
+  // Форматирование даты и времени письма по местному часовому поясу игрока
+  const formatNotificationLocalTime = (item) => {
+    if (!item) return '';
+    const ts = item.timestamp;
+    if (!ts) return item.date || 'Сегодня';
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return item.date || 'Сегодня';
+
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    const isYesterday = d.toDateString() === yesterday.toDateString();
+
+    const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    if (isToday) {
+      return `Сегодня, ${timeStr}`;
+    } else if (isYesterday) {
+      return `Вчера, ${timeStr}`;
+    } else {
+      return `${d.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' })}, ${timeStr}`;
+    }
+  };
+
   const unreadCount = notificationManager.getUnreadCount();
 
   return (
@@ -270,7 +295,7 @@ export default function ShinobiMailModal({ isOpen, onClose }) {
                           <span>{details.title}</span>
                         </span>
                         <span className="text-[10px] text-zinc-400 font-mono">
-                          {item.date}
+                          {formatNotificationLocalTime(item)}
                         </span>
                       </div>
 
@@ -314,7 +339,7 @@ export default function ShinobiMailModal({ isOpen, onClose }) {
                           <span>{details.title}</span>
                         </span>
                         <span className="text-xs text-zinc-400 font-mono">
-                          {selectedMail.date}
+                          {formatNotificationLocalTime(selectedMail)}
                         </span>
                       </div>
 

@@ -235,6 +235,20 @@ export default function FriendsModal({
     return onlineIdentifiers.includes(String(id).trim().toLowerCase());
   };
 
+  // Форматирование времени личного сообщения по местному часовому поясу игрока
+  const formatDirectMsgTime = (msg) => {
+    if (msg?.timestamp) {
+      const d = new Date(msg.timestamp);
+      if (!isNaN(d.getTime())) {
+        const now = new Date();
+        const isToday = d.toDateString() === now.toDateString();
+        const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return isToday ? timeStr : `${d.toLocaleDateString([], { day: '2-digit', month: '2-digit' })} ${timeStr}`;
+      }
+    }
+    return msg?.time || '';
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-3 sm:p-5 select-none animate-fadeIn">
       <div className="w-full max-w-4xl rounded-3xl border border-white/10 bg-zinc-950/98 p-4 sm:p-6 shadow-2xl text-zinc-100 flex flex-col max-h-[92vh] overflow-hidden">
@@ -556,7 +570,7 @@ export default function FriendsModal({
                             className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
                           >
                             <span className="text-[9px] text-zinc-500 font-mono mb-0.5">
-                              {isMine ? 'Вы' : selectedFriend.name} • {m.time}
+                              {isMine ? 'Вы' : selectedFriend.name} • {formatDirectMsgTime(m)}
                             </span>
 
                             <div

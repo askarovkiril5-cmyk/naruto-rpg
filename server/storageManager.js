@@ -1,14 +1,15 @@
 /**
  * storageManager.js
  * Надежное постоянное хранилище для Naruto RPG.
- * Сохраняет историю сражений, летописи боев, пользовательских шиноби и статистику.
- * Работает как на локальном ПК, так и в Docker / облаке (Render Persistent Disk).
+ * - История сражений и летописи
+ * - Профили шиноби с раздельным PvP и ИИ рейтингом
+ * - Уровень 1-100 растет строго от побед в PvP над реальными игроками
+ * - Система друзей, Зал Славы (Таблица лидеров) и личные сообщения
  */
 
 const fs = require('fs');
 const path = require('path');
 
-// Путь к папке постоянного хранилища (поддерживает переменную DATA_DIR для Render/Docker)
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 
 if (!fs.existsSync(DATA_DIR)) {
@@ -16,8 +17,8 @@ if (!fs.existsSync(DATA_DIR)) {
 }
 
 const BATTLES_FILE = path.join(DATA_DIR, 'battles_history.json');
-const CHARACTERS_FILE = path.join(DATA_DIR, 'saved_characters.json');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
+const DIRECT_MESSAGES_FILE = path.join(DATA_DIR, 'direct_messages.json');
 
 function readJsonFile(filePath, defaultValue = []) {
   try {
@@ -67,10 +68,8 @@ function saveBattleRecord(record) {
   };
 
   battles.unshift(entry);
-  // Сохраняем до 500 последних боев
   if (battles.length > 500) battles.length = 500;
   writeJsonFile(BATTLES_FILE, battles);
-  console.log(`[StorageManager] Партия ${entry.id} успешно сохранена в постоянное хранилище.`);
   return entry;
 }
 
@@ -88,7 +87,9 @@ function getBattleById(id) {
  * Ранговая система мира шиноби по уровням
  */
 function getShinobiRank(level) {
-  if (level >= 90) return { title: 'Каге / Легендарный Саннин', icon: '🔥', tier: 6, color: '#f59e0b' };
+  if (level >= 100) return { title: 'Бог Ниндзюцу', icon: '⚡', tier: 8, color: '#fbbf24' };
+  if (level >= 95) return { title: 'Хокаге / Каге', icon: '🔥', tier: 7, color: '#ef4444' };
+  if (level >= 90) return { title: 'Легендарный Саннин', icon: '🐸', tier: 6, color: '#f59e0b' };
   if (level >= 70) return { title: 'Элитный АНБУ', icon: '🎭', tier: 5, color: '#ec4899' };
   if (level >= 45) return { title: 'Джонин Конохи', icon: '🌪️', tier: 4, color: '#8b5cf6' };
   if (level >= 25) return { title: 'Специальный Джонин', icon: '⚔️', tier: 3, color: '#3b82f6' };
@@ -97,27 +98,33 @@ function getShinobiRank(level) {
 }
 
 /**
- * Расчет уровня шиноби и оставшегося опыта
+ * Расчет уровня шиноби строго по числу побед над живыми игроками (PvP)
+ * Без XP и без урона!
  */
-function calculateLevelFromXp(totalXp = 0) {
+function calculateShinobiLevelFromPvpWins(pvpWins = 0) {
   let level = 1;
-  let remaining = Math.max(0, totalXp);
-  let req = 400;
+  let remainingWins = Math.max(0, pvpWins);
+  let req = 1; // 1 победа для первого уровня
 
-  while (remaining >= req && level < 100) {
-    remaining -= req;
+  while (remainingWins >= req && level < 100) {
+    remainingWins -= req;
     level += 1;
-    req = Math.floor(400 + (level - 1) * 250);
+    // Градация побед на уровень:
+    if (level <= 10) req = 1;       // Ур 1-10: 1 победа на уровень (10 побед до Чунина)
+    else if (level <= 25) req = 2;  // Ур 11-25: 2 победы (30 побед до Спец-Джонина)
+    else if (level <= 50) req = 3;  // Ур 26-50: 3 победы (75 побед до Джонина)
+    else if (level <= 75) req = 4;  // Ур 51-75: 4 победы (100 побед до АНБУ)
+    else if (level <= 90) req = 5;  // Ур 76-90: 5 побед (75 побед до Саннина)
+    else req = 6;                   // Ур 91-100: 6 побед (60 побед до Бога Ниндзюцу)
   }
 
   const rank = getShinobiRank(level);
-  const progressPercent = Math.min(100, Math.floor((remaining / req) * 100));
+  const progressPercent = Math.min(100, Math.floor((remainingWins / req) * 100));
 
   return {
     level,
-    currentXp: remaining,
-    nextLevelXp: req,
-    totalXp,
+    currentWinsInLevel: remainingWins,
+    winsRequiredForNextLevel: req,
     progressPercent,
     rank
   };
@@ -135,16 +142,43 @@ function getUserProfile(identifier) {
     name: identifier,
     email: key.includes('@') ? key : null,
     googleConnected: key.includes('@'),
-    totalXp: 0,
-    battlesPlayed: 0,
-    battlesWon: 0,
+    activeTitle: null,
+    unlockedTitles: ['first_step'],
+    friends: [],
+    stats: {
+      pvp: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 },
+      ai: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 }
+    },
     createdAt: new Date().toISOString()
   };
 
-  const progression = calculateLevelFromXp(raw.totalXp || 0);
+  // Миграция старых данных (если были плоские battlesPlayed/battlesWon)
+  const pvpStats = raw.stats?.pvp || {
+    battlesPlayed: raw.battlesPlayed || 0,
+    battlesWon: raw.battlesWon || 0,
+    battlesLost: Math.max(0, (raw.battlesPlayed || 0) - (raw.battlesWon || 0)),
+    winrate: raw.battlesPlayed ? Math.round(((raw.battlesWon || 0) / raw.battlesPlayed) * 100) : 0
+  };
+
+  const aiStats = raw.stats?.ai || {
+    battlesPlayed: 0,
+    battlesWon: 0,
+    battlesLost: 0,
+    winrate: 0
+  };
+
+  const progression = calculateShinobiLevelFromPvpWins(pvpStats.battlesWon || 0);
 
   return {
     ...raw,
+    identifier: key,
+    stats: {
+      pvp: pvpStats,
+      ai: aiStats
+    },
+    friends: Array.isArray(raw.friends) ? raw.friends : [],
+    unlockedTitles: Array.isArray(raw.unlockedTitles) ? raw.unlockedTitles : ['first_step'],
+    activeTitle: raw.activeTitle || null,
     ...progression,
     unlockedTopModels: Boolean(raw.googleConnected || raw.email)
   };
@@ -165,9 +199,13 @@ function saveUser(userData) {
     identifier: key,
     email: userData.email || current.email || (key.includes('@') ? key : null),
     googleConnected: Boolean(userData.googleConnected || userData.email || current.googleConnected),
-    totalXp: userData.totalXp !== undefined ? userData.totalXp : (current.totalXp || 0),
-    battlesPlayed: userData.battlesPlayed !== undefined ? userData.battlesPlayed : (current.battlesPlayed || 0),
-    battlesWon: userData.battlesWon !== undefined ? userData.battlesWon : (current.battlesWon || 0),
+    stats: userData.stats || current.stats || {
+      pvp: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 },
+      ai: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 }
+    },
+    friends: Array.isArray(userData.friends) ? userData.friends : (current.friends || []),
+    activeTitle: userData.activeTitle !== undefined ? userData.activeTitle : current.activeTitle,
+    unlockedTitles: Array.isArray(userData.unlockedTitles) ? userData.unlockedTitles : (current.unlockedTitles || ['first_step']),
     updatedAt: new Date().toISOString()
   };
 
@@ -178,41 +216,256 @@ function saveUser(userData) {
 }
 
 /**
- * Начислить опыт по итогам битвы
+ * Начисление результата битвы:
+ * - Если PvP: обновляет stats.pvp и прокачивает уровень шиноби
+ * - Если против ИИ: обновляет stats.ai (полигон), уровень НЕ трогает
  */
-function awardBattleExperience(identifier, { isWinner = false, rounds = 1 }) {
+function awardBattleResult(identifier, { isPvp = true, isWinner = false, rounds = 1, opponentName = '' }) {
   const profile = getUserProfile(identifier);
   if (!profile) return null;
 
-  // Базовые награды
-  let xpGain = (isWinner ? 400 : 150) + (rounds * 40);
-  // Бонус 25% за привязанный Google-аккаунт
-  if (profile.googleConnected) {
-    xpGain = Math.round(xpGain * 1.25);
+  const oldLevel = profile.level;
+  const oldRankTitle = profile.rank?.title;
+
+  let updatedStats = { ...profile.stats };
+
+  if (isPvp) {
+    const pvp = { ...(updatedStats.pvp || { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 }) };
+    pvp.battlesPlayed += 1;
+    if (isWinner) {
+      pvp.battlesWon += 1;
+    } else {
+      pvp.battlesLost += 1;
+    }
+    pvp.winrate = Math.round((pvp.battlesWon / pvp.battlesPlayed) * 100);
+    updatedStats.pvp = pvp;
+  } else {
+    const ai = { ...(updatedStats.ai || { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 }) };
+    ai.battlesPlayed += 1;
+    if (isWinner) {
+      ai.battlesWon += 1;
+    } else {
+      ai.battlesLost += 1;
+    }
+    ai.winrate = Math.round((ai.battlesWon / ai.battlesPlayed) * 100);
+    updatedStats.ai = ai;
   }
 
-  const oldLevel = profile.level;
-  const newTotalXp = (profile.totalXp || 0) + xpGain;
   const updatedProfile = saveUser({
     ...profile,
-    totalXp: newTotalXp,
-    battlesPlayed: (profile.battlesPlayed || 0) + 1,
-    battlesWon: (profile.battlesWon || 0) + (isWinner ? 1 : 0)
+    stats: updatedStats
   });
 
-  const leveledUp = updatedProfile.level > oldLevel;
+  const leveledUp = isPvp && updatedProfile.level > oldLevel;
+  const rankPromoted = isPvp && updatedProfile.rank?.title !== oldRankTitle;
 
   return {
     profile: updatedProfile,
-    xpGain,
+    isPvp,
+    isWinner,
     leveledUp,
+    rankPromoted,
     oldLevel,
-    newLevel: updatedProfile.level
+    newLevel: updatedProfile.level,
+    newRank: updatedProfile.rank
   };
+}
+
+// Для обратной совместимости
+function awardBattleExperience(identifier, opts) {
+  return awardBattleResult(identifier, opts);
 }
 
 function getUser(email) {
   return getUserProfile(email);
+}
+
+// ==========================================
+// СИСТЕМА ДРУЗЕЙ И ПОИСК
+// ==========================================
+
+function searchUsers(query, excludeKey = '') {
+  if (!query || typeof query !== 'string') return [];
+  const q = query.trim().toLowerCase();
+  const users = readJsonFile(USERS_FILE, {});
+  const results = [];
+
+  for (const [key, user] of Object.entries(users)) {
+    if (key === excludeKey.trim().toLowerCase()) continue;
+    const matchesEmail = user.email && user.email.toLowerCase().includes(q);
+    const matchesName = user.name && user.name.toLowerCase().includes(q);
+    const matchesKey = key.includes(q);
+
+    if (matchesEmail || matchesName || matchesKey) {
+      const fullProfile = getUserProfile(key);
+      results.push({
+        identifier: fullProfile.identifier,
+        name: fullProfile.name,
+        email: fullProfile.email,
+        level: fullProfile.level,
+        rank: fullProfile.rank,
+        activeTitle: fullProfile.activeTitle,
+        pvpStats: fullProfile.stats.pvp
+      });
+    }
+    if (results.length >= 15) break;
+  }
+
+  return results;
+}
+
+function addFriend(userKey, friendKeyOrEmail) {
+  if (!userKey || !friendKeyOrEmail) return false;
+  const uKey = String(userKey).trim().toLowerCase();
+  const fKey = String(friendKeyOrEmail).trim().toLowerCase();
+  if (uKey === fKey) return false;
+
+  const userProfile = getUserProfile(uKey);
+  const friendProfile = getUserProfile(fKey);
+  if (!userProfile || !friendProfile) return false;
+
+  const currentFriends = new Set(userProfile.friends || []);
+  currentFriends.add(friendProfile.identifier);
+
+  saveUser({
+    ...userProfile,
+    friends: Array.from(currentFriends)
+  });
+
+  // Взаимное добавление в контакты
+  const friendFriends = new Set(friendProfile.friends || []);
+  friendFriends.add(userProfile.identifier);
+  saveUser({
+    ...friendProfile,
+    friends: Array.from(friendFriends)
+  });
+
+  return true;
+}
+
+function removeFriend(userKey, friendKey) {
+  if (!userKey || !friendKey) return false;
+  const uKey = String(userKey).trim().toLowerCase();
+  const fKey = String(friendKey).trim().toLowerCase();
+
+  const userProfile = getUserProfile(uKey);
+  if (!userProfile) return false;
+
+  const currentFriends = (userProfile.friends || []).filter(f => f.toLowerCase() !== fKey);
+  saveUser({
+    ...userProfile,
+    friends: currentFriends
+  });
+
+  return true;
+}
+
+function getFriendsList(userKey) {
+  const profile = getUserProfile(userKey);
+  if (!profile || !profile.friends) return [];
+
+  return profile.friends.map(fKey => {
+    const friend = getUserProfile(fKey);
+    if (!friend) return null;
+    return {
+      identifier: friend.identifier,
+      name: friend.name,
+      email: friend.email,
+      level: friend.level,
+      rank: friend.rank,
+      activeTitle: friend.activeTitle,
+      pvpStats: friend.stats.pvp,
+      aiStats: friend.stats.ai
+    };
+  }).filter(Boolean);
+}
+
+// ==========================================
+// ЗАЛ СЛАВЫ КОНОХИ (ТАБЛИЦА ЛИДЕРОВ)
+// ==========================================
+
+function getLeaderboard(filter = 'global', userKey = null) {
+  const users = readJsonFile(USERS_FILE, {});
+  let list = [];
+
+  if (filter === 'friends' && userKey) {
+    const myProfile = getUserProfile(userKey);
+    const friendKeys = new Set(myProfile?.friends || []);
+    friendKeys.add(String(userKey).trim().toLowerCase());
+
+    for (const key of friendKeys) {
+      const p = getUserProfile(key);
+      if (p) list.push(p);
+    }
+  } else {
+    // Вся Коноха (глобально)
+    for (const key of Object.keys(users)) {
+      const p = getUserProfile(key);
+      if (p) list.push(p);
+    }
+  }
+
+  // Сортировка: 1) Уровень (PvP), 2) PvP победы, 3) Винрейт
+  list.sort((a, b) => {
+    if (b.level !== a.level) return b.level - a.level;
+    if (b.stats.pvp.battlesWon !== a.stats.pvp.battlesWon) return b.stats.pvp.battlesWon - a.stats.pvp.battlesWon;
+    return b.stats.pvp.winrate - a.stats.pvp.winrate;
+  });
+
+  return list.slice(0, 50).map((u, index) => ({
+    rankPosition: index + 1,
+    identifier: u.identifier,
+    name: u.name,
+    email: u.email,
+    level: u.level,
+    rank: u.rank,
+    activeTitle: u.activeTitle,
+    pvp: u.stats.pvp,
+    ai: u.stats.ai
+  }));
+}
+
+// ==========================================
+// ЛИЧНЫЕ СООБЩЕНИЯ (DIRECT CHAT)
+// ==========================================
+
+function getChatKey(userA, userB) {
+  const a = String(userA).trim().toLowerCase();
+  const b = String(userB).trim().toLowerCase();
+  return a < b ? `${a}___${b}` : `${b}___${a}`;
+}
+
+function saveDirectMessage({ from, to, text, inviteData = null }) {
+  if (!from || !to || (!text && !inviteData)) return null;
+  const messagesStore = readJsonFile(DIRECT_MESSAGES_FILE, {});
+  const chatKey = getChatKey(from, to);
+
+  const history = messagesStore[chatKey] || [];
+  const newMsg = {
+    id: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    from: String(from).trim().toLowerCase(),
+    to: String(to).trim().toLowerCase(),
+    text: text || '',
+    inviteData: inviteData || null,
+    timestamp: Date.now(),
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  };
+
+  history.push(newMsg);
+  // Храним до 200 последних сообщений диалога
+  if (history.length > 200) history.shift();
+
+  messagesStore[chatKey] = history;
+  writeJsonFile(DIRECT_MESSAGES_FILE, messagesStore);
+
+  return newMsg;
+}
+
+function getDirectMessages(userA, userB) {
+  if (!userA || !userB) return [];
+  const messagesStore = readJsonFile(DIRECT_MESSAGES_FILE, {});
+  const chatKey = getChatKey(userA, userB);
+  return messagesStore[chatKey] || [];
 }
 
 module.exports = {
@@ -224,6 +477,15 @@ module.exports = {
   getUser,
   getUserProfile,
   getShinobiRank,
-  calculateLevelFromXp,
-  awardBattleExperience
+  calculateShinobiLevelFromPvpWins,
+  awardBattleResult,
+  awardBattleExperience,
+  // Друзья & Зал Славы & Личные сообщения
+  searchUsers,
+  addFriend,
+  removeFriend,
+  getFriendsList,
+  getLeaderboard,
+  saveDirectMessage,
+  getDirectMessages
 };

@@ -17,6 +17,9 @@ import BattleChronicleModal from './components/BattleChronicleModal';
 import AiModelModal from './components/AiModelModal';
 import ShinobiRanksModal from './components/ShinobiRanksModal';
 import ShinobiMailModal from './components/ShinobiMailModal';
+import TitlesModal from './components/TitlesModal';
+import FriendsModal from './components/FriendsModal';
+import { TITLES_DATA } from './data/titlesData';
 import NarrativeRenderer from './components/NarrativeRenderer';
 import defaultJutsuData from './data/jutsuData.json';
 import { audioManager, AUDIO_TRACKS } from './utils/audioManager';
@@ -158,13 +161,15 @@ export default function App() {
     } catch {}
     return {
       level: 1,
-      currentXp: 0,
-      nextLevelXp: 400,
-      totalXp: 0,
+      currentWinsInLevel: 0,
+      winsRequiredForNextLevel: 1,
       progressPercent: 0,
-      rank: { title: 'Генин', icon: '🥋', color: '#94a3b8' },
-      battlesPlayed: 0,
-      battlesWon: 0,
+      rank: { title: 'Генин', stage: 'Начальная', symbol: '忍', icon: '🥋', color: '#94a3b8' },
+      stats: {
+        pvp: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 },
+        ai: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 }
+      },
+      activeTitle: null,
       googleConnected: false
     };
   });
@@ -247,6 +252,50 @@ export default function App() {
   const [isChronicleOpen, setIsChronicleOpen] = useState(false);
   const [isRanksOpen, setIsRanksOpen] = useState(false);
   const [isMailOpen, setIsMailOpen] = useState(false);
+  const [isTitlesOpen, setIsTitlesOpen] = useState(false);
+  const [isFriendsOpen, setIsFriendsOpen] = useState(false);
+  const [activeTitleId, setActiveTitleId] = useState(() => {
+    return localStorage.getItem('naruto_active_title_id') || null;
+  });
+  const [unlockedTitleIds, setUnlockedTitleIds] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('naruto_unlocked_titles') || '[]');
+      return Array.isArray(saved) && saved.length > 0 ? saved : ['first_step'];
+    } catch {
+      return ['first_step'];
+    }
+  });
+
+  const handleSelectTitle = (titleId) => {
+    setActiveTitleId(titleId);
+    if (titleId) {
+      localStorage.setItem('naruto_active_title_id', titleId);
+    } else {
+      localStorage.removeItem('naruto_active_title_id');
+    }
+    const titleObj = TITLES_DATA.find(t => t.id === titleId);
+    const updated = {
+      ...userProfile,
+      activeTitle: titleObj ? titleObj.name : null
+    };
+    setUserProfile(updated);
+    try {
+      localStorage.setItem('naruto_user_profile', JSON.stringify(updated));
+    } catch (e) {}
+
+    // Синхронизация с сервером
+    try {
+      fetch(`${BACKEND_URL}/api/user/profile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identifier: currentAccount?.email || playerName,
+          activeTitle: titleObj ? titleObj.name : null
+        })
+      }).catch(() => {});
+    } catch (e) {}
+  };
+
   const [unreadMailCount, setUnreadMailCount] = useState(() => notificationManager.getUnreadCount());
 
   useEffect(() => {
@@ -375,6 +424,79 @@ export default function App() {
       audioManager.stop();
     } else {
       audioManager.play(roomStatus === 'BATTLE' ? 'battle' : 'lobby');
+    }
+  };
+
+  const addMessage = (msg) => {
+    setMessages(prev => [...prev, msg]);
+  };
+
+  const getCurrentTime = () => {
+    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  // Синхронизированные актуальные ссылки для сокет-колбэков (предотвращение stale closures)
+  const playerNameRef = useRef(playerName);
+  const userProfileRef = useRef(userProfile);
+  const roundNumberRef = useRef(roundNumber);
+  const battleModeRef = useRef(battleMode);
+  const activeBotInfoRef = useRef(activeBotInfo);
+  const unlockedTitleIdsRef = useRef(unlockedTitleIds);
+  const currentAccountRef = useRef(currentAccount);
+
+  useEffect(() => { playerNameRef.current = playerName; }, [playerName]);
+  useEffect(() => { userProfileRef.current = userProfile; }, [userProfile]);
+  useEffect(() => { roundNumberRef.current = roundNumber; }, [roundNumber]);
+  useEffect(() => { battleModeRef.current = battleMode; }, [battleMode]);
+  useEffect(() => { activeBotInfoRef.current = activeBotInfo; }, [activeBotInfo]);
+  useEffect(() => { unlockedTitleIdsRef.current = unlockedTitleIds; }, [unlockedTitleIds]);
+  useEffect(() => { currentAccountRef.current = currentAccount; }, [currentAccount]);
+
+  // Проверка и открытие новых боевых титулов (достижений)
+  const checkAndUnlockTitles = (currentProf, ctx = {}) => {
+    const currentUnlocked = unlockedTitleIdsRef.current || [];
+    const newlyUnlocked = [];
+    TITLES_DATA.forEach(title => {
+      if (!currentUnlocked.includes(title.id)) {
+        if (title.unlockCheck && title.unlockCheck(currentProf, ctx)) {
+          newlyUnlocked.push(title);
+        }
+      }
+    });
+
+    if (newlyUnlocked.length > 0) {
+      const updatedIds = [...currentUnlocked, ...newlyUnlocked.map(t => t.id)];
+      setUnlockedTitleIds(updatedIds);
+      unlockedTitleIdsRef.current = updatedIds;
+      try {
+        localStorage.setItem('naruto_unlocked_titles', JSON.stringify(updatedIds));
+      } catch {}
+
+      newlyUnlocked.forEach(t => {
+        addMessage({
+          id: Math.random().toString(),
+          type: 'system',
+          text: `🎖️ Открыт Боевой Титул: ${t.name} [Ранг ${t.rank}]! Экипируйте его во вкладке «Титулы».`,
+          time: getCurrentTime()
+        });
+        notificationManager.addTitleUnlockedNotification({
+          titleName: t.name,
+          titleRank: t.rank,
+          description: t.desc
+        });
+      });
+
+      // Синхронизация с сервером
+      try {
+        fetch(`${BACKEND_URL}/api/user/profile`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            identifier: currentAccountRef.current?.email || playerNameRef.current,
+            unlockedTitles: updatedIds
+          })
+        }).catch(() => {});
+      } catch {}
     }
   };
 
@@ -522,62 +644,101 @@ export default function App() {
       setInputText('');
     });
 
-    s.on('battle_finished', ({ winner, text, xpReports }) => {
+    s.on('battle_finished', ({ winner, text, isPvp, reports }) => {
       setRoomStatus('FINISHED');
       setIsActionLocked(true);
+      const currentName = playerNameRef.current;
+      const currentRound = roundNumberRef.current;
+      const currentProf = userProfileRef.current;
+      const curBot = activeBotInfoRef.current;
+      const curMode = battleModeRef.current;
+
       addMessage({
         id: Math.random().toString(),
         type: 'system',
-        text: `🏆 ${text}`,
+        text: `🏆 ${text || 'Сражение завершено!'}`,
         time: getCurrentTime()
       });
-      if (Array.isArray(xpReports) && xpReports.length > 0) {
-        const myXp = xpReports.find(r => r.name === playerName);
-        if (myXp && myXp.profile) {
-          const oldRankTitle = userProfile?.rank?.title;
-          setUserProfile(myXp.profile);
+
+      const myReport = Array.isArray(reports) ? reports.find(r => r.name === currentName) : null;
+      const isWinner = Boolean(myReport ? myReport.isWinner : (winner && winner.includes(currentName)));
+
+      if (isPvp) {
+        if (myReport && myReport.profile) {
+          const oldRankTitle = currentProf?.rank?.title;
+          setUserProfile(myReport.profile);
           try {
-            localStorage.setItem('naruto_user_profile', JSON.stringify(myXp.profile));
+            localStorage.setItem('naruto_user_profile', JSON.stringify(myReport.profile));
           } catch {}
-          addMessage({
-            id: Math.random().toString(),
-            type: 'system',
-            text: `✨ Получено +${myXp.xpGain} XP! Уровень: ${myXp.level} (${myXp.rank?.title})`,
-            time: getCurrentTime()
-          });
+
+          if (isWinner) {
+            addMessage({
+              id: Math.random().toString(),
+              type: 'system',
+              text: `⚡ Победа в рейтинговом PvP! Уровень: ${myReport.profile.level} (${myReport.profile.rank?.title || 'Генин'}). До след. уровня: ${myReport.profile.currentWinsInLevel}/${myReport.profile.winsRequiredForNextLevel} побед.`,
+              time: getCurrentTime()
+            });
+          } else {
+            addMessage({
+              id: Math.random().toString(),
+              type: 'system',
+              text: `💥 Поражение в PvP дуэли. Изучайте тактику соперника и готовьтесь к реваншу!`,
+              time: getCurrentTime()
+            });
+          }
 
           // 🟡 «Боевые донесения» (жёлтая подсветка)
           notificationManager.addBattleReport({
-            opponentName: winner === playerName ? 'соперника' : (winner || 'противника'),
+            opponentName: winner === currentName ? 'соперника' : (winner || 'противника'),
             resultText: text,
-            xpGain: myXp.xpGain,
-            roundCount: roundNumber
+            isPvp: true,
+            isWinner,
+            roundCount: currentRound,
+            level: myReport.profile.level,
+            rankTitle: myReport.profile.rank?.title
           });
 
           // 🟢 «Приказ Хокаге» при повышении ранга (зелёная подсветка)
-          if (myXp.leveledUp || (myXp.rank?.title && myXp.rank?.title !== oldRankTitle)) {
+          if (myReport.leveledUp || myReport.rankPromoted || (myReport.profile.rank?.title && myReport.profile.rank?.title !== oldRankTitle)) {
             notificationManager.addHokagePromotion({
-              newRank: myXp.rank?.title || 'Чунин',
-              level: myXp.level
+              newRank: myReport.profile.rank?.title || 'Чунин',
+              level: myReport.profile.level
             });
           }
+
+          // Проверка на открытие новых титулов (достижений)
+          checkAndUnlockTitles(myReport.profile, {
+            isPvp: true,
+            isWinner,
+            rounds: currentRound,
+            battleMode: curMode
+          });
         }
       } else {
-        // Донесение даже при быстром исходе
+        // Тренировочный спарринг с ИИ
+        addMessage({
+          id: Math.random().toString(),
+          type: 'system',
+          text: `🤖 Тренировочный спарринг с ИИ завершён. Результат занесён в статистику тренировок (уровень шиноби повышается только в битвах с живыми игроками).`,
+          time: getCurrentTime()
+        });
+
+        // 🟡 Боевое донесение об ИИ бое
         notificationManager.addBattleReport({
-          opponentName: 'соперника',
+          opponentName: curBot?.name || 'Бота-инструктора',
           resultText: text,
-          xpGain: 100,
-          roundCount: roundNumber
+          isPvp: false,
+          isWinner,
+          roundCount: currentRound
         });
       }
     });
 
-    s.on('account_xp_awarded', (xpRes) => {
-      if (xpRes?.profile) {
-        setUserProfile(xpRes.profile);
+    s.on('account_battle_awarded', (battleRes) => {
+      if (battleRes?.profile) {
+        setUserProfile(battleRes.profile);
         try {
-          localStorage.setItem('naruto_user_profile', JSON.stringify(xpRes.profile));
+          localStorage.setItem('naruto_user_profile', JSON.stringify(battleRes.profile));
         } catch {}
       }
     });
@@ -588,14 +749,6 @@ export default function App() {
       s.disconnect();
     };
   }, []);
-
-  const addMessage = (msg) => {
-    setMessages(prev => [...prev, msg]);
-  };
-
-  const getCurrentTime = () => {
-    return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -926,6 +1079,9 @@ export default function App() {
         onOpenAiModel={() => setIsAiModelOpen(true)}
         onOpenRanks={() => setIsRanksOpen(true)}
         onOpenMail={() => setIsMailOpen(true)}
+        onOpenTitles={() => setIsTitlesOpen(true)}
+        onOpenFriends={() => setIsFriendsOpen(true)}
+        activeTitle={TITLES_DATA.find(t => t.id === activeTitleId)?.name || userProfile?.activeTitle || null}
         unreadMailCount={unreadMailCount}
         activeModel={activeModel}
         userProfile={userProfile}
@@ -2038,6 +2194,37 @@ export default function App() {
       <ShinobiMailModal
         isOpen={isMailOpen}
         onClose={() => setIsMailOpen(false)}
+      />
+
+      {/* 14. МОДАЛЬНОЕ ОКНО: Боевые Титулы (Достижения) */}
+      <TitlesModal
+        isOpen={isTitlesOpen}
+        onClose={() => setIsTitlesOpen(false)}
+        userProfile={userProfile}
+        activeTitleId={activeTitleId}
+        unlockedTitleIds={unlockedTitleIds}
+        onSelectTitle={handleSelectTitle}
+      />
+
+      {/* 15. МОДАЛЬНОЕ ОКНО: Штаб Друзей & Зал Славы Конохи */}
+      <FriendsModal
+        isOpen={isFriendsOpen}
+        onClose={() => setIsFriendsOpen(false)}
+        userProfile={userProfile}
+        playerName={playerName}
+        backendUrl={BACKEND_URL}
+        socket={socket}
+        onJoinRoom={(code) => {
+          setRoomId(code);
+          if (socket) {
+            socket.emit('join_battle', {
+              roomId: code,
+              playerName,
+              playerId,
+              customNinja
+            });
+          }
+        }}
       />
     </div>
   );

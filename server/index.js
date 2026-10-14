@@ -118,7 +118,17 @@ app.post('/api/auth/google', (req, res) => {
 // REST эндпоинты для системы уровней и рангов шиноби
 app.get('/api/user/profile/:identifier', (req, res) => {
   const profile = storageManager.getUserProfile(req.params.identifier);
-  res.json(profile || { level: 1, currentXp: 0, nextLevelXp: 400, rank: storageManager.getShinobiRank(1) });
+  res.json(profile || {
+    level: 1,
+    currentWinsInLevel: 0,
+    winsRequiredForNextLevel: 1,
+    progressPercent: 0,
+    rank: storageManager.getShinobiRank(1),
+    stats: {
+      pvp: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 },
+      ai: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 }
+    }
+  });
 });
 
 app.post('/api/user/profile', (req, res) => {
@@ -135,6 +145,44 @@ app.get('/api/battles/:id', (req, res) => {
   const battle = storageManager.getBattleById(req.params.id);
   if (!battle) return res.status(404).json({ error: 'Бой не найден' });
   res.json(battle);
+});
+
+// REST эндпоинты для Зала Славы, Друзей и Сообщений
+app.get('/api/leaderboard', (req, res) => {
+  const filter = req.query.filter || 'global';
+  const user = req.query.user || null;
+  res.json(storageManager.getLeaderboard(filter, user));
+});
+
+app.get('/api/users/search', (req, res) => {
+  const q = req.query.q || '';
+  const exclude = req.query.exclude || '';
+  res.json(storageManager.searchUsers(q, exclude));
+});
+
+app.get('/api/friends/:identifier', (req, res) => {
+  res.json(storageManager.getFriendsList(req.params.identifier));
+});
+
+app.post('/api/friends/add', (req, res) => {
+  const { userKey, friendKey } = req.body;
+  const ok = storageManager.addFriend(userKey, friendKey);
+  res.json({ success: ok });
+});
+
+app.post('/api/friends/remove', (req, res) => {
+  const { userKey, friendKey } = req.body;
+  const ok = storageManager.removeFriend(userKey, friendKey);
+  res.json({ success: ok });
+});
+
+app.get('/api/messages/:userA/:userB', (req, res) => {
+  res.json(storageManager.getDirectMessages(req.params.userA, req.params.userB));
+});
+
+app.post('/api/messages', (req, res) => {
+  const saved = storageManager.saveDirectMessage(req.body);
+  res.json({ success: Boolean(saved), message: saved });
 });
 
 // REST эндпоинт для списка каноничных ботов (Саске, Итачи, Минато, Наруто, Какаши)
@@ -213,8 +261,38 @@ function getOrCreateRoom(roomId) {
   return rooms.get(roomId);
 }
 
+const onlineUsers = new Map(); // identifier -> socketId
+
 io.on('connection', (socket) => {
   console.log(`[Socket.io] Клиент подключился: ${socket.id}`);
+
+  // Регистрация активного шиноби в сети
+  socket.on('register_shinobi', ({ identifier }) => {
+    if (identifier) {
+      const key = String(identifier).trim().toLowerCase();
+      onlineUsers.set(key, socket.id);
+      io.emit('online_users_updated', Array.from(onlineUsers.keys()));
+      console.log(`[Online] Шиноби ${key} в сети (socket: ${socket.id})`);
+    }
+  });
+
+  // Отправка личного сообщения другу
+  socket.on('send_direct_message', ({ from, to, text, inviteData }) => {
+    const saved = storageManager.saveDirectMessage({ from, to, text, inviteData });
+    if (saved) {
+      socket.emit('direct_message_sent', saved);
+      const targetSocketId = onlineUsers.get(String(to).trim().toLowerCase());
+      if (targetSocketId) {
+        io.to(targetSocketId).emit('receive_direct_message', saved);
+      }
+    }
+  });
+
+  // Запрос истории личных сообщений
+  socket.on('get_direct_messages', ({ userA, userB }) => {
+    const list = storageManager.getDirectMessages(userA, userB);
+    socket.emit('direct_messages_history', { userB, messages: list });
+  });
 
   // Смена модели ИИ-ведущего (на лету в любой момент игры)
   socket.on('change_ai_model', ({ roomId, modelId, apiKey }) => {
@@ -927,11 +1005,16 @@ io.on('connection', (socket) => {
         history: room.battleHistory
       });
 
-      // 5. Проверка завершения битвы и начисление опыта (XP) и уровней
+      // 5. Проверка завершения битвы и начисление статистики (PvP vs ИИ)
       if (result.isFinished) {
         room.status = 'FINISHED';
 
-        const xpReports = [];
+        const humanPlayers = Array.from(room.players.values()).filter(p => !p.isBot);
+        const hasBots = Array.from(room.players.values()).some(p => p.isBot);
+        // Честное PvP: минимум 2 живых человека и никаких ботов
+        const isPvp = humanPlayers.length >= 2 && !hasBots;
+
+        const battleReports = [];
         for (const p of room.players.values()) {
           if (!p.isBot) {
             const isWinner = Boolean(
@@ -939,23 +1022,27 @@ io.on('connection', (socket) => {
               (result.winner.includes(p.name) || (p.team && result.winner.toLowerCase().includes(p.team === 'blue' ? 'синие' : 'красные')))
             );
 
-            const xpRes = storageManager.awardBattleExperience(p.accountEmail || p.name, {
+            const battleRes = storageManager.awardBattleResult(p.accountEmail || p.name, {
+              isPvp,
               isWinner,
-              rounds: room.roundNumber
+              rounds: room.roundNumber,
+              opponentName: result.winner
             });
 
-            if (xpRes) {
-              xpReports.push({
+            if (battleRes) {
+              battleReports.push({
                 name: p.name,
-                xpGain: xpRes.xpGain,
-                level: xpRes.newLevel,
-                rank: xpRes.profile.rank,
-                leveledUp: xpRes.leveledUp,
-                profile: xpRes.profile
+                isPvp,
+                isWinner,
+                level: battleRes.newLevel,
+                rank: battleRes.newRank,
+                leveledUp: battleRes.leveledUp,
+                rankPromoted: battleRes.rankPromoted,
+                profile: battleRes.profile
               });
 
               if (p.socketId) {
-                io.to(p.socketId).emit('account_xp_awarded', xpRes);
+                io.to(p.socketId).emit('account_battle_awarded', battleRes);
               }
             }
           }
@@ -964,7 +1051,8 @@ io.on('connection', (socket) => {
         io.to(room.roomId).emit('battle_finished', {
           winner: result.winner,
           text: `🏆 Сражение завершено! Победитель: ${result.winner}!`,
-          xpReports
+          isPvp,
+          reports: battleReports
         });
       } else {
         // Переход к следующему раунду

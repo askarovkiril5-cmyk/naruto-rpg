@@ -395,42 +395,114 @@ export default function SecretProfileDrawer({
   // Секция 1: Статы, Чакра и Активные режимы
   const renderStatsSection = () => (
     <div className="space-y-3">
-      {/* Ранг и уровень аккаунта шиноби */}
-      <div className="bg-gradient-to-r from-amber-950/40 via-orange-950/30 to-zinc-900 border border-amber-500/40 rounded-2xl p-4 shadow-xl space-y-2.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="text-2xl p-1.5 rounded-xl bg-amber-500/20 border border-amber-500/40 shadow-md">
+      {/* Ранг, титул и раздельная статистика аккаунта шиноби (PvP vs ИИ) */}
+      <div className="bg-gradient-to-r from-amber-950/40 via-orange-950/30 to-zinc-900 border border-amber-500/40 rounded-2xl p-4 shadow-xl space-y-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center gap-3">
+            <span className="text-3xl p-2 rounded-xl bg-amber-500/20 border border-amber-500/40 shadow-md">
               {userProfile?.rank?.icon || '🥋'}
             </span>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs font-black uppercase tracking-wide text-amber-300">
                   {userProfile?.rank?.title || 'Генин'}
                 </span>
                 <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/30">
                   Уровень {userProfile?.level || 1}
                 </span>
+                {userProfile?.activeTitle && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-900/60 text-amber-300 border border-amber-500/40 shadow-sm animate-pulse">
+                    🎖️ {userProfile.activeTitle}
+                  </span>
+                )}
               </div>
               <p className="text-[10px] text-zinc-400 font-mono mt-0.5">
-                Сражений: {userProfile?.battlesPlayed || 0} • Побед: {userProfile?.battlesWon || 0}
+                Ступень: {userProfile?.rank?.stage || 'Начальная'} • Печать: {userProfile?.rank?.symbol || '忍'}
               </p>
             </div>
           </div>
           {currentAccount?.email && (
-            <span className="text-[9px] font-mono text-emerald-300 bg-emerald-950/70 border border-emerald-500/40 px-2 py-0.5 rounded-md">
+            <span className="text-[9px] font-mono text-emerald-300 bg-emerald-950/70 border border-emerald-500/40 px-2 py-0.5 rounded-md whitespace-nowrap">
               Google Связан
             </span>
           )}
         </div>
-        <div className="w-full bg-black/60 rounded-full h-1.5 overflow-hidden border border-white/5">
-          <div 
-            className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-300 h-full rounded-full transition-all duration-700" 
-            style={{ width: `${userProfile?.progressPercent || 0}%` }}
-          />
+
+        {/* Прогресс-бар побед до следующего уровня (БЕЗ XP!) */}
+        <div className="space-y-1">
+          <div className="w-full bg-black/60 rounded-full h-2 overflow-hidden border border-white/5">
+            <div 
+              className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-300 h-full rounded-full transition-all duration-700" 
+              style={{ width: `${userProfile?.progressPercent || 0}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-[9px] font-mono text-zinc-400">
+            <span>Прогресс до след. ранга:</span>
+            <span className="text-amber-300 font-bold">
+              {userProfile?.currentWinsInLevel || 0} / {userProfile?.winsRequiredForNextLevel || 1} побед в PvP ({userProfile?.progressPercent || 0}%)
+            </span>
+          </div>
         </div>
-        <div className="flex justify-between text-[9px] font-mono text-zinc-400">
-          <span>Прогресс ранга</span>
-          <span>XP: {userProfile?.currentXp || 0} / {userProfile?.nextLevelXp || 400} ({userProfile?.progressPercent || 0}%)</span>
+
+        {/* Раздельные карточки PvP (Люди) и AI (Полигон) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 border-t border-white/10">
+          {/* PvP Блок */}
+          <div className="bg-zinc-950/70 border border-amber-500/30 rounded-xl p-2.5">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1">
+                ⚔️ PvP (Живые люди)
+              </span>
+              <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/50 px-1.5 py-0.5 rounded">
+                {userProfile?.stats?.pvp?.winrate || 0}% побед
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-1 text-center font-mono">
+              <div className="bg-zinc-900/60 rounded p-1">
+                <div className="text-[9px] text-zinc-500">Бои</div>
+                <div className="text-xs font-bold text-zinc-200">{userProfile?.stats?.pvp?.battlesPlayed || 0}</div>
+              </div>
+              <div className="bg-zinc-900/60 rounded p-1">
+                <div className="text-[9px] text-emerald-500">Победы</div>
+                <div className="text-xs font-bold text-emerald-300">{userProfile?.stats?.pvp?.battlesWon || 0}</div>
+              </div>
+              <div className="bg-zinc-900/60 rounded p-1">
+                <div className="text-[9px] text-rose-500">Поражения</div>
+                <div className="text-xs font-bold text-rose-300">{userProfile?.stats?.pvp?.battlesLost || 0}</div>
+              </div>
+            </div>
+            <div className="text-[8px] text-zinc-500 mt-1 italic text-center">
+              *Только эти победы повышают ранг и уровень
+            </div>
+          </div>
+
+          {/* AI Блок */}
+          <div className="bg-zinc-950/70 border border-blue-500/30 rounded-xl p-2.5">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[10px] font-black uppercase tracking-wider text-blue-400 flex items-center gap-1">
+                🤖 Спарринги с ИИ
+              </span>
+              <span className="text-[10px] font-mono font-bold text-blue-400 bg-blue-950/50 px-1.5 py-0.5 rounded">
+                {userProfile?.stats?.ai?.winrate || 0}% побед
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-1 text-center font-mono">
+              <div className="bg-zinc-900/60 rounded p-1">
+                <div className="text-[9px] text-zinc-500">Спарринги</div>
+                <div className="text-xs font-bold text-zinc-200">{userProfile?.stats?.ai?.battlesPlayed || 0}</div>
+              </div>
+              <div className="bg-zinc-900/60 rounded p-1">
+                <div className="text-[9px] text-blue-400">Победы</div>
+                <div className="text-xs font-bold text-blue-300">{userProfile?.stats?.ai?.battlesWon || 0}</div>
+              </div>
+              <div className="bg-zinc-900/60 rounded p-1">
+                <div className="text-[9px] text-zinc-500">Поражения</div>
+                <div className="text-xs font-bold text-zinc-400">{userProfile?.stats?.ai?.battlesLost || 0}</div>
+              </div>
+            </div>
+            <div className="text-[8px] text-zinc-500 mt-1 italic text-center">
+              *Тренировочный полигон (не влияет на ранг)
+            </div>
+          </div>
         </div>
       </div>
 

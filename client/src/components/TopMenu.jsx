@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   BookOpen, Scroll, UserCheck, Settings, Swords, ShieldAlert, 
-  Maximize2, Minimize2, UserPlus, FileText, Bot, Award, Mail 
+  Maximize2, Minimize2, UserPlus, FileText, Bot, Award, Mail, Users, Trophy, Crown 
 } from 'lucide-react';
 
 export default function TopMenu({ 
@@ -15,6 +15,9 @@ export default function TopMenu({
   onOpenAiModel,
   onOpenRanks,
   onOpenMail,
+  onOpenTitles,
+  onOpenFriends,
+  activeTitle,
   unreadMailCount = 0,
   activeModel,
   userProfile,
@@ -45,7 +48,14 @@ export default function TopMenu({
               Ур.{userProfile?.level || 1}
             </span>
           </div>
-          {/* XP прогресс-бар */}
+
+          {activeTitle && (
+            <div className="hidden sm:block text-[9px] text-amber-300/90 font-mono truncate mt-0.5 font-bold">
+              {activeTitle}
+            </div>
+          )}
+
+          {/* PvP победы прогресс-бар */}
           <div className="w-full bg-zinc-900/90 rounded-full h-1.5 mt-1.5 overflow-hidden border border-white/10">
             <div 
               className="bg-gradient-to-r from-amber-500 to-orange-400 h-full rounded-full transition-all duration-500" 
@@ -53,8 +63,8 @@ export default function TopMenu({
             />
           </div>
           <div className="hidden sm:flex justify-between items-center text-[8px] text-zinc-400 font-mono mt-1">
-            <span>ОПЫТ</span>
-            <span>{userProfile?.currentXp || 0}/{userProfile?.nextLevelXp || 400}</span>
+            <span>PVP ПОБЕДЫ</span>
+            <span>{userProfile?.currentWinsInLevel || 0}/{userProfile?.winsRequiredForNextLevel || 1}</span>
           </div>
         </div>
 
@@ -196,9 +206,35 @@ export default function TopMenu({
           title="Таблица 100 рангов и ступеней шиноби"
           className="w-full flex items-center justify-center sm:justify-start gap-2.5 px-2.5 py-2 rounded-xl hover:bg-white/10 text-zinc-300 hover:text-amber-400 transition cursor-pointer group"
         >
-          <Award className="w-5 h-5 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
+          <Crown className="w-5 h-5 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
           <span className="text-xs font-semibold hidden sm:inline text-zinc-200 group-hover:text-amber-300">
             Ранги Шиноби
+          </span>
+        </button>
+
+        {/* 6.9. Боевые Титулы (Достижения) */}
+        <button
+          type="button"
+          onClick={onOpenTitles}
+          title="Боевые титулы шиноби (Достижения)"
+          className="w-full flex items-center justify-center sm:justify-start gap-2.5 px-2.5 py-2 rounded-xl hover:bg-white/10 text-zinc-300 hover:text-amber-400 transition cursor-pointer group"
+        >
+          <Award className="w-5 h-5 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
+          <span className="text-xs font-semibold hidden sm:inline text-zinc-200 group-hover:text-amber-300">
+            Титулы
+          </span>
+        </button>
+
+        {/* 6.95. Штаб Друзей & Зал Славы Конохи */}
+        <button
+          type="button"
+          onClick={onOpenFriends}
+          title="Штаб Друзей, личные чаты и Зал Славы (Таблица лидеров)"
+          className="w-full flex items-center justify-center sm:justify-start gap-2.5 px-2.5 py-2 rounded-xl hover:bg-white/10 text-zinc-300 hover:text-cyan-400 transition cursor-pointer group"
+        >
+          <Trophy className="w-5 h-5 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
+          <span className="text-xs font-semibold hidden sm:inline text-zinc-200 group-hover:text-cyan-300">
+            Друзья & Топ
           </span>
         </button>
 

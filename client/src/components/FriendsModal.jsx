@@ -489,8 +489,14 @@ export default function FriendsModal({
 
                             <td className="py-3 px-3">
                               <div className="flex items-center gap-2.5">
-                                <div className="p-1 rounded-lg bg-black/60 border border-white/10 shrink-0">
-                                  {emblem.renderSvg("w-6 h-6 sm:w-8 sm:h-8")}
+                                <div 
+                                  className="p-1 rounded-xl bg-black/80 border shrink-0 shadow-md transition-transform hover:scale-105"
+                                  style={{
+                                    borderColor: `${emblem.themeColor}60`,
+                                    boxShadow: `0 0 10px ${emblem.themeColor}20`
+                                  }}
+                                >
+                                  {emblem.renderSvg("w-7 h-7 sm:w-9 sm:h-9")}
                                 </div>
                                 <div className="min-w-0">
                                   <div className="flex items-center gap-1.5">

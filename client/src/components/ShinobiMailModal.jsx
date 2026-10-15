@@ -511,9 +511,20 @@ export default function ShinobiMailModal({
                       {selectedMail.clanInviteData && (
                         <div className="mt-4 p-4 rounded-2xl bg-gradient-to-br from-amber-950/50 via-zinc-900 to-zinc-950 border border-amber-500/40 shadow-xl space-y-3">
                           <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-xl bg-black/60 border border-white/10 shrink-0 shadow-md">
-                              {getClanEmblemById(selectedMail.clanInviteData.emblemId).renderSvg("w-10 h-10 sm:w-12 sm:h-12")}
-                            </div>
+                            {(() => {
+                              const emb = getClanEmblemById(selectedMail.clanInviteData.emblemId);
+                              return (
+                                <div 
+                                  className="p-2 rounded-2xl bg-black/80 border shrink-0 shadow-xl transition-transform hover:scale-105"
+                                  style={{
+                                    borderColor: `${emb.themeColor}80`,
+                                    boxShadow: `0 0 20px ${emb.themeColor}35`
+                                  }}
+                                >
+                                  {emb.renderSvg("w-11 h-11 sm:w-13 sm:h-13")}
+                                </div>
+                              );
+                            })()}
                             <div>
                               <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider block">
                                 📜 Официальный Свиток Приглашения в Клан

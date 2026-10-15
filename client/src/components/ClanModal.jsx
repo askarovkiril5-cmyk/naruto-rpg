@@ -282,8 +282,14 @@ export default function ClanModal({
         {/* ШАПКА КЛАНА */}
         <div className="p-4 sm:p-5 border-b border-white/10 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-2xl bg-black/60 border border-white/10 shadow-lg">
-              {currentEmblem.renderSvg("w-10 h-10 sm:w-12 sm:h-12")}
+            <div 
+              className="p-1.5 sm:p-2 rounded-2xl bg-black/80 border shadow-2xl transition-all duration-300 transform hover:scale-105 shrink-0"
+              style={{
+                borderColor: `${currentEmblem.themeColor}80`,
+                boxShadow: `0 0 25px ${currentEmblem.themeColor}40, inset 0 0 12px ${currentEmblem.themeColor}20`
+              }}
+            >
+              {currentEmblem.renderSvg("w-12 h-12 sm:w-14 sm:h-14")}
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -691,8 +697,14 @@ export default function ClanModal({
                           </div>
 
                           {/* Герб */}
-                          <div className="p-1.5 rounded-xl bg-black/60 border border-white/10 shrink-0">
-                            {emblem.renderSvg("w-8 h-8 sm:w-10 sm:h-10")}
+                          <div 
+                            className="p-1.5 rounded-2xl bg-black/80 border shrink-0 transition-transform hover:scale-105 shadow-md"
+                            style={{
+                              borderColor: `${emblem.themeColor}70`,
+                              boxShadow: `0 0 15px ${emblem.themeColor}30`
+                            }}
+                          >
+                            {emblem.renderSvg("w-9 h-9 sm:w-11 sm:h-11")}
                           </div>
 
                           {/* Данные клана */}
@@ -775,39 +787,49 @@ export default function ClanModal({
                 />
               </div>
 
-              {/* Выбор герба из 16 высокодетализированных символов */}
+              {/* Выбор герба из 18 императорских 3D медальонов */}
               <div className="space-y-2">
                 <label className="text-xs font-bold text-zinc-300 flex items-center justify-between">
-                  <span>Выбор священного герба клана:</span>
-                  <span className="text-[10px] text-amber-400 font-mono">16 каноничных и уникальных гербов</span>
+                  <span>Выбор священного герба клана (Камон 3D):</span>
+                  <span className="text-[10px] text-amber-400 font-mono font-bold">{CLAN_EMBLEMS.length} императорских медальонов</span>
                 </label>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-h-[260px] overflow-y-auto pr-1 scrollbar-thin">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
                   {CLAN_EMBLEMS.map((emblem) => {
                     const isSelected = selectedEmblemId === emblem.id;
                     return (
                       <div
                         key={emblem.id}
                         onClick={() => setSelectedEmblemId(emblem.id)}
-                        className={`p-3 rounded-2xl border text-center transition cursor-pointer flex flex-col items-center justify-between gap-2 relative ${
+                        className={`p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-1.5 relative group ${
                           isSelected
-                            ? 'bg-amber-950/40 border-amber-500 shadow-md shadow-amber-500/20 ring-1 ring-amber-500'
-                            : 'bg-zinc-900/60 border-white/5 hover:border-white/20 hover:bg-zinc-900'
+                            ? 'bg-amber-950/50 border-amber-500 ring-2 ring-amber-400/60 shadow-xl scale-[1.02]'
+                            : 'bg-zinc-900/60 border-white/5 hover:border-white/20 hover:bg-zinc-900/90 hover:scale-[1.02]'
                         }`}
+                        style={isSelected ? {
+                          borderColor: emblem.themeColor,
+                          boxShadow: `0 0 25px ${emblem.themeColor}35, inset 0 0 10px ${emblem.themeColor}20`
+                        } : undefined}
                       >
-                        <div className="p-1 rounded-xl bg-black/50">
-                          {emblem.renderSvg("w-10 h-10")}
+                        <div 
+                          className="p-1.5 rounded-2xl bg-black/70 border transition-transform duration-300 group-hover:scale-110 shadow-inner"
+                          style={{ borderColor: `${emblem.themeColor}40` }}
+                        >
+                          {emblem.renderSvg("w-12 h-12")}
                         </div>
-                        <div>
-                          <span className="text-[11px] font-black text-white block line-clamp-1">
-                            {emblem.name}
+                        <div className="w-full">
+                          <span className="text-[11px] font-black text-white block truncate group-hover:text-amber-300 transition-colors">
+                            {emblem.name.replace(/Герб\s+/i, '')}
                           </span>
-                          <span className="text-[9px] text-zinc-400 font-serif">
+                          <span className="text-[10px] text-zinc-400 font-serif font-bold">
                             {emblem.kanji}
                           </span>
                         </div>
                         {isSelected && (
-                          <span className="w-2 h-2 rounded-full bg-amber-400 absolute top-2 right-2 shadow-sm shadow-amber-400" />
+                          <span 
+                            className="w-2.5 h-2.5 rounded-full absolute top-2 right-2 shadow-md animate-pulse"
+                            style={{ backgroundColor: emblem.themeColor, boxShadow: `0 0 10px ${emblem.themeColor}` }}
+                          />
                         )}
                       </div>
                     );

@@ -841,20 +841,15 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
     // 2а. САСКЕ УЧИХА — ВМШ (Слияние 6-конечной звезды Чоку-Томоэ Саске и лезвий Итачи)
     case MANGEKYO_PATTERNS.SASUKE_EMS:
       return (
-        <g>
-          {/* Подложка: 6 пылающих алых лепестков звезды Саске (из сетки 4х4 и аниме) */}
+        <g id="sasuke_ems">
+          {/* Подложка: 6 заостренных алых лепестков звезды Саске */}
           <g id="sasuke_ems_bg_petals">
             {[0, 60, 120].map((deg) => (
-              <ellipse
+              <path
                 key={deg}
-                cx="0"
-                cy="0"
-                rx="16"
-                ry="82"
-                fill="#ff1a35"
-                opacity="0.85"
+                d="M 0,-83 A 211 211 0 0 1 0,83 A 211 211 0 0 1 0,-83 Z"
+                fill="url(#sasukePetalGrad)"
                 transform={`rotate(${deg})`}
-                filter="drop-shadow(0 0 8px #ff1a35)"
               />
             ))}
           </g>
@@ -874,36 +869,47 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
             ))}
 
             {/* Центральный черный зрачок и блик */}
-            <circle r="15" fill="#050505" />
+            <circle r="14" fill="#050505" />
             <circle r="3.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ffffff)" />
           </g>
         </g>
       );
 
-    // 2б. САСКЕ УЧИХА — МШ (Каноничный инвертированный вид: алая 6-конечная звезда Чоку-Томоэ на обсидиановом поле)
+    // 2б. САСКЕ УЧИХА — МШ (Чоку-Томоэ — 100% точная копия канонического эталона Кирилла)
     case MANGEKYO_PATTERNS.SASUKE_MS:
       return (
         <g id="sasuke_ms_canon">
+          {/* 1. Глубокий черный фон сферы */}
+          <circle r="88" fill="#000000" />
+
+          {/* 2. Заливка 3 заостренных линз (мандорл) под 0°, 60°, 120° */}
           {[0, 60, 120].map((deg) => (
-            <ellipse
-              key={deg}
-              cx="0"
-              cy="0"
-              rx="18"
-              ry="82"
-              fill="#ff1836"
-              stroke="#ff5252"
-              strokeWidth="0.8"
+            <path
+              key={`fill-${deg}`}
+              d="M 0,-83 A 211 211 0 0 1 0,83 A 211 211 0 0 1 0,-83 Z"
+              fill="url(#sasukePetalGrad)"
               transform={`rotate(${deg})`}
-              filter="drop-shadow(0 0 8px #ff1836)"
             />
           ))}
-          <polygon
-            points="0,-26 22.5,-13 22.5,13 0,26 -22.5,13 -22.5,-13"
-            fill="#ff1836"
-          />
-          <circle r="14" fill="#020001" stroke="#991b1b" strokeWidth="1.2" />
-          <circle r="3.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ffffff)" />
+
+          {/* 3. Сквозной черный каркас пересечений (контуры всех 3 линз, образующие шестиугольный узел) */}
+          {[0, 60, 120].map((deg) => (
+            <path
+              key={`stroke-${deg}`}
+              d="M 0,-83 A 211 211 0 0 1 0,83 A 211 211 0 0 1 0,-83 Z"
+              fill="none"
+              stroke="#000000"
+              strokeWidth="2.8"
+              strokeLinejoin="round"
+              transform={`rotate(${deg})`}
+            />
+          ))}
+
+          {/* 4. Внешний черный лимбальный ободок */}
+          <circle r="88" fill="none" stroke="#000000" strokeWidth="2.5" />
+
+          {/* 5. Монолитный черный каноничный зрачок */}
+          <circle r="14" fill="#000000" />
         </g>
       );
 
@@ -1219,6 +1225,14 @@ export default function GlassSharinganOrb({
             <stop offset="60%" stopColor="#a855f7" stopOpacity="0.6" />
             <stop offset="85%" stopColor="#3b0764" stopOpacity="0.2" />
             <stop offset="100%" stopColor="#050014" stopOpacity="0" />
+          </radialGradient>
+
+          {/* 14. Градиент лепестков Саске МШ: от глубокого карминового в центре к алому на кончиках */}
+          <radialGradient id="sasukePetalGrad" cx="0" cy="0" r="83" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="#7a0000" />
+            <stop offset="30%" stopColor="#8c0101" />
+            <stop offset="70%" stopColor="#b20404" />
+            <stop offset="100%" stopColor="#ba0505" />
           </radialGradient>
 
           {/* Master Circular Sphere Clip (r=88) */}

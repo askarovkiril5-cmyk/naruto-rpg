@@ -423,12 +423,12 @@ export default function EyeActivationOverlay({
           </div>
         </div>
 
-        {/* ПЕРЕКЛЮЧАТЕЛЬ 14 КАНОНИЧНЫХ ПЕРСОНАЖНЫХ УЗОРОВ МАНГЁКЁ (ПО ЭТАЛОННОЙ СЕТКЕ 4x4) */}
+        {/* ПЕРЕКЛЮЧАТЕЛЬ ОФИЦИАЛЬНОЙ ТОП-5 ЭЛИТЫ МАНГЁКЁ (ПО АНИМЕ) */}
         {currentEyeId === 'mangekyo' && (
-          <div className="relative z-30 mb-2 flex flex-wrap items-center justify-center gap-1.5 bg-black/90 p-2.5 rounded-2xl border border-red-500/40 backdrop-blur-md shadow-2xl max-w-2xl max-h-36 overflow-y-auto scrollbar-thin scrollbar-thumb-red-600">
+          <div className="relative z-30 mb-2 flex flex-wrap items-center justify-center gap-1.5 bg-black/90 p-2.5 rounded-2xl border border-red-500/40 backdrop-blur-md shadow-2xl max-w-xl">
             <span className="text-[10px] font-black text-red-400 w-full mb-1 uppercase tracking-wider flex items-center justify-center gap-1.5 sticky top-0 bg-black/90 py-0.5 z-10">
               <Flame className="w-3.5 h-3.5 text-red-500 animate-pulse" />
-              Каноничный узор Мангёкё (сетка 4x4 Кисимото):
+              Официальный Мангёкё Шаринган (Канон Аниме):
             </span>
             {MANGEKYO_LIST.map(p => (
               <button

@@ -511,168 +511,121 @@ class AudioManager {
   }
 
   /**
-   * Воспроизведение оригинального голосового выкрика техники (Anime Voice Line)
+   * Воспроизведение аутентичного боевого выкрика техники (Anime Voice Line)
+   * Многоуровневая система: Real Seiyuu MP3 -> Japanese SpeechSynthesis + Chakra Sub-Bass
    */
   playJutsuVoice(voiceData) {
     if (!voiceData || !this.voiceEnabled || this.voiceVolume <= 0.01) return;
     this.initAudioContext();
 
-    // 1. Воспроизведение реального аудиофайла (если доступен в public/audio/voices/)
+    const voiceVol = Math.max(0, Math.min(1, this.voiceVolume * 1.15));
+
+    // СЛОЙ 1: Воспроизведение реального студийного MP3-файла сэйю
     if (voiceData.audioUrl) {
       try {
         const fullUrl = resolveAudioUrl(voiceData.audioUrl);
         const audio = new window.Audio(fullUrl);
-        audio.volume = Math.max(0, Math.min(1, this.voiceVolume * 1.15));
-        audio.play().catch(() => {
-          // Если файл отсутствует или офлайн, воспроизводится процедурный синтез
-        });
-      } catch (e) {}
-    }
+        audio.volume = voiceVol;
 
-    // 2. Кинематографический процедурный синтезатор чакра-импульса техники
-    this.synthJutsuImpact(voiceData);
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch((err) => {
+            console.warn('[Audio] Seiyuu MP3 playback failed, activating Japanese speech fallback:', voiceData.key, err);
+            this.fallbackJapaneseSpeech(voiceData, voiceVol);
+          });
+          return;
+        }
+      } catch (e) {
+        this.fallbackJapaneseSpeech(voiceData, voiceVol);
+        return;
+      }
+    } else {
+      this.fallbackJapaneseSpeech(voiceData, voiceVol);
+    }
   }
 
   /**
-   * Процедурный синтез чакра-импульса для легендарных техник
+   * СЛОЙ 2 & 3: Запасной японский речевой синтезатор + Кинематографичный саб-бас чакры
+   * Гарантирует живой голос на японском языке без визгливых электронных писков
    */
-  synthJutsuImpact(voiceData) {
+  fallbackJapaneseSpeech(voiceData, volume = 0.8) {
+    // 1. Кинематографический саб-басовый толчок чакры (глубокий низ 45-55 Гц)
+    this.playChakraSubImpact(voiceData.element);
+
+    // 2. Японский речевой синтез (Web Speech Synthesis API)
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+        const textToSpeak = voiceData.kanji 
+          ? voiceData.kanji.replace(/[『』]/g, '') 
+          : (voiceData.romaji || voiceData.jutsuName);
+
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        
+        // Поиск японского голоса
+        const voices = window.speechSynthesis.getVoices();
+        const jaVoice = voices.find(v => v.lang.startsWith('ja') || v.lang === 'ja_JP' || v.name.includes('Japanese'));
+        if (jaVoice) {
+          utterance.voice = jaVoice;
+          utterance.lang = 'ja-JP';
+        } else {
+          utterance.lang = 'ja-JP';
+        }
+
+        // Интонационная настройка под характер персонажа
+        const charName = String(voiceData.character || '').toLowerCase();
+        if (charName.includes('наруто') || charName.includes('рок ли') || charName.includes('гай')) {
+          utterance.pitch = 1.25;
+          utterance.rate = 1.15;
+        } else if (charName.includes('саске') || charName.includes('итачи') || charName.includes('пейн') || charName.includes('мадара')) {
+          utterance.pitch = 0.85;
+          utterance.rate = 0.95;
+        } else {
+          utterance.pitch = 1.0;
+          utterance.rate = 1.05;
+        }
+
+        utterance.volume = Math.min(1, volume * 1.2);
+        window.speechSynthesis.speak(utterance);
+      } catch (e) {
+        console.warn('[Audio] Speech synthesis fallback error:', e);
+      }
+    }
+  }
+
+  /**
+   * Кинематографический саб-бас чакры (45-55 Гц)
+   * Бархатный низкочастотный импульс с фильтром среза до 120 Гц (полная защита от писка)
+   */
+  playChakraSubImpact(element = 'BASIC') {
     const ctx = this.ctx;
     if (!ctx || !this.voiceGain) return;
     const now = ctx.currentTime;
-    const type = voiceData.soundType || 'default';
 
     try {
-      if (type.includes('lightning') || voiceData.element === 'LIGHTNING') {
-        // ЧИДОРИ / РАЙКИРИ: Свист 1000 щебечущих птиц и высоковольтный разряд
-        const carrier = ctx.createOscillator();
-        const mod = ctx.createOscillator();
-        const modGain = ctx.createGain();
-        const gain = ctx.createGain();
+      const subOsc = ctx.createOscillator();
+      const subGain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
 
-        mod.type = 'sawtooth';
-        mod.frequency.setValueAtTime(14, now);
-        modGain.gain.setValueAtTime(650, now);
-        mod.connect(modGain);
-        modGain.connect(carrier.frequency);
+      // Чистая суб-басовая синусоида
+      subOsc.type = 'sine';
+      subOsc.frequency.setValueAtTime(55, now);
+      subOsc.frequency.exponentialRampToValueAtTime(32, now + 0.45);
 
-        carrier.type = 'triangle';
-        carrier.frequency.setValueAtTime(2400, now);
-        carrier.frequency.exponentialRampToValueAtTime(3600, now + 0.35);
+      // Срез всех частот выше 120 Гц — гарантирует отсутствие любого писка
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(120, now);
 
-        gain.gain.setValueAtTime(0.32, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+      subGain.gain.setValueAtTime(0.35, now);
+      subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
 
-        carrier.connect(gain);
-        gain.connect(this.voiceGain);
+      subOsc.connect(filter);
+      filter.connect(subGain);
+      subGain.connect(this.voiceGain);
 
-        carrier.start(now);
-        mod.start(now);
-        carrier.stop(now + 0.95);
-        mod.stop(now + 0.95);
-      } else if (type.includes('wind') || voiceData.element === 'WIND') {
-        // РАСЕНГАН: Высокоскоростной вихрь вращающейся сферы
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const lfo = ctx.createOscillator();
-        const lfoGain = ctx.createGain();
-
-        lfo.frequency.setValueAtTime(24, now);
-        lfoGain.gain.setValueAtTime(120, now);
-        lfo.connect(osc.frequency);
-
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(320, now);
-        osc.frequency.exponentialRampToValueAtTime(1280, now + 0.4);
-        osc.frequency.exponentialRampToValueAtTime(440, now + 1.1);
-
-        gain.gain.setValueAtTime(0.35, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.15);
-
-        osc.connect(gain);
-        gain.connect(this.voiceGain);
-
-        osc.start(now);
-        lfo.start(now);
-        osc.stop(now + 1.2);
-        lfo.stop(now + 1.2);
-      } else if (type === 'gravity_repulsion' || type === 'gravity_core' || voiceData.element === 'RINNEGAN') {
-        // СИНРА ТЭНСЭЙ: Саб-басовый гравитационный взрыв
-        const sub = ctx.createOscillator();
-        const subGain = ctx.createGain();
-        sub.type = 'sine';
-        sub.frequency.setValueAtTime(42, now);
-        sub.frequency.exponentialRampToValueAtTime(140, now + 0.3);
-        sub.frequency.exponentialRampToValueAtTime(35, now + 1.4);
-
-        subGain.gain.setValueAtTime(0.42, now);
-        subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.45);
-        sub.connect(subGain);
-        subGain.connect(this.voiceGain);
-        sub.start(now);
-        sub.stop(now + 1.5);
-
-        const bell = ctx.createOscillator();
-        const bellGain = ctx.createGain();
-        bell.type = 'triangle';
-        bell.frequency.setValueAtTime(880, now);
-        bell.frequency.exponentialRampToValueAtTime(1760, now + 0.4);
-        bellGain.gain.setValueAtTime(0.24, now);
-        bellGain.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
-        bell.connect(bellGain);
-        bellGain.connect(this.voiceGain);
-        bell.start(now);
-        bell.stop(now + 1.15);
-      } else if (type === 'black_flame' || type === 'space_vortex' || voiceData.element === 'DOJUTSU') {
-        // АМАТЭРАСУ / КАМУИ: Зловещий гул искривления пространства
-        const tearOsc = ctx.createOscillator();
-        const tearGain = ctx.createGain();
-        tearOsc.type = 'sawtooth';
-        tearOsc.frequency.setValueAtTime(55, now);
-        tearOsc.frequency.exponentialRampToValueAtTime(320, now + 0.3);
-        tearOsc.frequency.exponentialRampToValueAtTime(45, now + 1.3);
-
-        tearGain.gain.setValueAtTime(0.34, now);
-        tearGain.gain.exponentialRampToValueAtTime(0.001, now + 1.35);
-        tearOsc.connect(tearGain);
-        tearGain.connect(this.voiceGain);
-        tearOsc.start(now);
-        tearOsc.stop(now + 1.4);
-      } else if (type === 'tenketsu_combo' || voiceData.element === 'BYAKUGAN') {
-        // 64 ЛАДОНИ БАГУА: 5 быстрых точечных ударов по Тэнкэцу
-        const notes = [880, 1046, 1174, 1318, 1568];
-        notes.forEach((freq, i) => {
-          const t = now + i * 0.08;
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, t);
-          gain.gain.setValueAtTime(0.25, t);
-          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
-          osc.connect(gain);
-          gain.connect(this.voiceGain);
-          osc.start(t);
-          osc.stop(t + 0.25);
-        });
-      } else {
-        // ОГОНЬ / СТАНДАРТ: Ревущий огненный импульс
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(140, now);
-        osc.frequency.exponentialRampToValueAtTime(480, now + 0.3);
-        osc.frequency.exponentialRampToValueAtTime(90, now + 0.85);
-
-        gain.gain.setValueAtTime(0.28, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
-        osc.connect(gain);
-        gain.connect(this.voiceGain);
-        osc.start(now);
-        osc.stop(now + 0.95);
-      }
-    } catch (e) {
-      console.warn('[Audio] synthJutsuImpact error:', e);
-    }
+      subOsc.start(now);
+      subOsc.stop(now + 0.55);
+    } catch (e) {}
   }
 
   // ==========================================

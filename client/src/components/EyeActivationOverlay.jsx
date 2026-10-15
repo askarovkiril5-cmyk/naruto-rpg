@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  X, Eye, Zap, Flame, Sparkles, Volume2, Check, Moon, Shield
+  X, Eye, Zap, Flame, Sparkles, Volume2, Check, Moon, Shield, Award
 } from 'lucide-react';
 import { audioManager } from '../utils/audioManager';
 import { DOJUTSU_OPTIONS, getDojutsuById } from '../data/dojutsuData';
@@ -128,8 +128,9 @@ export default function EyeActivationOverlay({
   autoDismissMs = 0
 }) {
   const [currentEyeId, setCurrentEyeId] = useState(dojutsuId);
-  // Для ВМШ: 'itachi' | 'sasuke' | 'madara' | 'kamui' | 'shisui' (по умолчанию 'itachi' - как на эталоне Кирилла)
-  const [selectedPattern, setSelectedPattern] = useState('itachi');
+  // Для ВМШ: 8 каноничных узоров персонажей
+  // 'sasuke_ems' | 'itachi' | 'sasuke_ms' | 'madara_ems' | 'madara_ms' | 'kamui' | 'shisui' | 'izuna'
+  const [selectedPattern, setSelectedPattern] = useState('sasuke_ems');
   // Для Пробуждённого Риннегана: 'sasuke' (6 томоэ Саске) | 'kaguya' (9 томоэ Кагуи / Мадары)
   const [selectedRinnePattern, setSelectedRinnePattern] = useState('sasuke');
   
@@ -674,7 +675,7 @@ export default function EyeActivationOverlay({
                           </g>
                           <g transform={`translate(${CX - 74}, ${CY})`}>
                             <line x1="-10" y1="-5" x2="-2" y2="-5" /><line x1="2" y1="-5" x2="10" y2="-5" />
-                            <line x1="-10" y1="0" x2="10" y2="0" />
+                            <line x1="-10" y1="0" x2="-2" y2="0" />
                             <line x1="-10" y1="5" x2="-2" y2="5" /><line x1="2" y1="5" x2="10" y2="5" />
                           </g>
                         </g>
@@ -809,7 +810,7 @@ export default function EyeActivationOverlay({
                   </g>
                 )}
 
-                {/* 4. ШАРИНГАН (1, 2, 3 ТОМОЭ И ВМШ) */}
+                {/* 4. ШАРИНГАН (1, 2, 3 ТОМОЭ И ВСЕ 8 КАНОНИЧНЫХ ПЕРСОНАЖНЫХ МАНГЁКЁ) */}
                 {familyKey === 'Sharingan' && (
                   <g>
                     <circle cx={CX} cy={CY} r="64" fill="none" stroke="#09090b" strokeWidth="3" opacity="0.9" />
@@ -832,52 +833,20 @@ export default function EyeActivationOverlay({
                       </>
                     )}
 
-                    {/* ВМШ: 5 СВЕРХДЕТАЛИЗИРОВАННЫХ УЗОРОВ С НЕОНОВЫМИ ФАСКАМИ И ТЕНЬЮ ПАРЕНИЯ */}
+                    {/* ВМШ / МШ: 8 КАНОНИЧНЫХ ПЕРСОНАЖНЫХ УЗОРОВ С НЕОНОВЫМИ ФАСКАМИ И ПАРАЛЛАКСОМ */}
                     {currentEyeId === 'mangekyo' && (
                       <g>
                         
-                        {/* ФОРМА 1: ИТАЧИ (В ТОЧНОСТИ КАК НА НОВОМ ЭТАЛОНЕ КИРИЛЛА!) */}
+                        {/* 1. ИТАЧИ (3 ИЗОГНУТЫХ СЕРПА МЕЛЬНИЦЫ С ФАСКОЙ) */}
                         {selectedPattern === 'itachi' && (
                           <g>
                             {[0, 120, 240].map((deg) => (
                               <g key={deg} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
-                                {/* Тень парения (Drop Shadow над светящимся дном) */}
-                                <path
-                                  d="M 0 0 C 35 -30, 80 -40, 60 -88 C 30 -66, 8 -30, 0 0 Z"
-                                  fill="black"
-                                  filter="url(#blade-floating-shadow)"
-                                />
-                                {/* Тело обсидианового клинка */}
-                                <path
-                                  d="M 0 0 C 35 -30, 80 -40, 60 -88 C 30 -66, 8 -30, 0 0 Z"
-                                  fill="url(#obsidian-blade)"
-                                  stroke="#1c0306"
-                                  strokeWidth="1.5"
-                                />
-                                {/* Внутренний кровавый рельеф в клинке */}
-                                <path
-                                  d="M 0 0 C 22 -20, 52 -28, 42 -62"
-                                  fill="none"
-                                  stroke="#b91c1c"
-                                  strokeWidth="2.5"
-                                  opacity="0.85"
-                                />
-                                {/* Огненная неоновая фаска (бело-коралловый светящийся контур) */}
-                                <path
-                                  d="M 60 -88 C 30 -66, 8 -30, 0 0"
-                                  fill="none"
-                                  stroke="#ffffff"
-                                  strokeWidth="1.8"
-                                  strokeLinecap="round"
-                                  filter="url(#chakra-neon-glow)"
-                                />
-                                <path
-                                  d="M 0 0 C 35 -30, 80 -40, 60 -88"
-                                  fill="none"
-                                  stroke="#ff3b5c"
-                                  strokeWidth="1.4"
-                                  opacity="0.9"
-                                />
+                                <path d="M 0 0 C 35 -30, 80 -40, 60 -88 C 30 -66, 8 -30, 0 0 Z" fill="black" filter="url(#blade-floating-shadow)" />
+                                <path d="M 0 0 C 35 -30, 80 -40, 60 -88 C 30 -66, 8 -30, 0 0 Z" fill="url(#obsidian-blade)" stroke="#1c0306" strokeWidth="1.5" />
+                                <path d="M 0 0 C 22 -20, 52 -28, 42 -62" fill="none" stroke="#b91c1c" strokeWidth="2.5" opacity="0.85" />
+                                <path d="M 60 -88 C 30 -66, 8 -30, 0 0" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" filter="url(#chakra-neon-glow)" />
+                                <path d="M 0 0 C 35 -30, 80 -40, 60 -88" fill="none" stroke="#ff3b5c" strokeWidth="1.4" opacity="0.9" />
                                 <circle cx="50" cy="-64" r="5" fill="#09090b" stroke="#ef4444" strokeWidth="1.5" />
                                 <circle cx="50" cy="-64" r="2.2" fill="#ffffff" filter="drop-shadow(0 0 4px #ff1f44)" />
                               </g>
@@ -885,108 +854,119 @@ export default function EyeActivationOverlay({
                           </g>
                         )}
 
-                        {/* ФОРМА 2: САСКЕ (ВМШ СЛИЯНИЕ — 6 КЛИНКОВ + ПРЯМЫЕ ЛУЧИ + ДВОЙНЫЕ КОЛЬЦА) */}
-                        {selectedPattern === 'sasuke' && (
+                        {/* 2. САСКЕ (ВМШ — КАНОНИЧНОЕ СЛИЯНИЕ: 6-КОНЕЧНАЯ ЗВЕЗДА + СЕРПЫ ИТАЧИ) */}
+                        {selectedPattern === 'sasuke_ems' && (
                           <g>
-                            <circle cx={CX} cy={CY} r="60" fill="none" stroke="#ff3355" strokeWidth="1.4" opacity="0.9" filter="url(#chakra-neon-glow)" />
-                            <circle cx={CX} cy={CY} r="38" fill="none" stroke="#ff3355" strokeWidth="1" opacity="0.75" />
-
-                            {[0, 60, 120, 180, 240, 300].map(deg => (
-                              <g key={`scythe-${deg}`} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
-                                <path 
-                                  d="M 0 0 C 14 -12, 34 -22, 58 -16 C 50 -42, 24 -60, -6 -70 C 4 -46, 8 -22, 0 0 Z" 
-                                  fill="black" 
-                                  filter="url(#blade-floating-shadow)"
-                                />
-                                <path 
-                                  d="M 0 0 C 14 -12, 34 -22, 58 -16 C 50 -42, 24 -60, -6 -70 C 4 -46, 8 -22, 0 0 Z" 
-                                  fill="url(#obsidian-blade)" 
-                                  stroke="#3b0208" 
-                                  strokeWidth="1.5"
-                                />
-                                {/* Неоновое лезвие */}
-                                <path 
-                                  d="M 0 0 C 10 -10, 28 -18, 52 -14 C 40 -36, 18 -52, -6 -70" 
-                                  fill="none" 
-                                  stroke="#ffffff" 
-                                  strokeWidth="1.8" 
-                                  strokeLinecap="round" 
-                                  filter="url(#chakra-neon-glow)"
-                                />
-                                <circle cx="28" cy="-35" r="2.6" fill="#ff1744" filter="drop-shadow(0 0 3px #ffffff)" />
+                            {/* 1-й слой: 3 серпа Итачи под 0°, 120°, 240° */}
+                            {[0, 120, 240].map((deg) => (
+                              <g key={`itachi-bg-${deg}`} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
+                                <path d="M 0 0 C 40 -25, 82 -35, 68 -86 C 36 -62, 12 -28, 0 0 Z" fill="#09090b" stroke="#7f1d1d" strokeWidth="2" filter="url(#blade-floating-shadow)" />
+                                <path d="M 0 0 C 26 -18, 56 -24, 46 -58" stroke="#ef4444" strokeWidth="1.8" fill="none" opacity="0.9" />
                               </g>
                             ))}
+                            {/* 2-й слой: 6 прямых лучей черного пламени Саске */}
+                            {[0, 60, 120, 180, 240, 300].map((deg) => (
+                              <g key={`sasuke-star-${deg}`} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
+                                <polygon points="0,0 11,-35 0,-85 -11,-35" fill="url(#obsidian-blade)" stroke="#ffffff" strokeWidth="1" filter="url(#blade-floating-shadow)" />
+                                <line x1="0" y1="0" x2="0" y2="-82" stroke="#ff3b5c" strokeWidth="1.8" filter="url(#chakra-neon-glow)" />
+                              </g>
+                            ))}
+                            <polygon points={`${CX},${CY-44} ${CX+38},${CY-22} ${CX+38},${CY+22} ${CX},${CY+44} ${CX-38},${CY+22} ${CX-38},${CY-22}`} fill="none" stroke="#ffffff" strokeWidth="2.2" filter="drop-shadow(0 0 6px #ffffff)" />
                           </g>
                         )}
 
-                        {/* ФОРМА 3: МАДАРА (ВМШ — 3 ПЕТЛИ + ЛЕЗВИЯ ИЗУНЫ) */}
-                        {selectedPattern === 'madara' && (
+                        {/* 3. САСКЕ (ОБЫЧНЫЙ МШ — 6-КОНЕЧНАЯ ПРЯМАЯ ЗВЕЗДА / ЧОКУ-ТОМОЭ) */}
+                        {selectedPattern === 'sasuke_ms' && (
                           <g>
-                            <circle cx={CX} cy={CY} r="74" fill="none" stroke="#09090b" strokeWidth="9" filter="url(#blade-floating-shadow)" />
-                            <circle cx={CX} cy={CY} r="74" fill="none" stroke="#ffffff" strokeWidth="1.8" opacity="0.8" filter="url(#chakra-neon-glow)" />
-                            {[0, 120, 240].map(deg => (
+                            {[0, 60, 120].map((deg) => (
+                              <g key={`ellipse-${deg}`} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
+                                <ellipse cx="0" cy="0" rx="20" ry="86" fill="black" filter="url(#blade-floating-shadow)" />
+                                <ellipse cx="0" cy="0" rx="18" ry="84" fill="url(#obsidian-blade)" stroke="#ef4444" strokeWidth="1.5" />
+                                <line x1="0" y1="-82" x2="0" y2="82" stroke="#ffffff" strokeWidth="1.4" opacity="0.85" filter="url(#chakra-neon-glow)" />
+                              </g>
+                            ))}
+                            <polygon points={`${CX},${CY-25} ${CX+22},${CY-12} ${CX+22},${CY+12} ${CX},${CY+25} ${CX-22},${CY+12} ${CX-22},${CY-12}`} fill="#ef4444" stroke="#ffffff" strokeWidth="1.6" filter="drop-shadow(0 0 6px #ef4444)" />
+                          </g>
+                        )}
+
+                        {/* 4. МАДАРА (ВМШ — СЛИЯНИЕ С ИЗУНОЙ: ОБРУЧ + 3 ПЕТЛИ + КЛИНКИ ИЗУНЫ) */}
+                        {selectedPattern === 'madara_ems' && (
+                          <g>
+                            <circle cx={CX} cy={CY} r="88" fill="none" stroke="black" strokeWidth="14" filter="url(#blade-floating-shadow)" />
+                            <circle cx={CX} cy={CY} r="88" fill="none" stroke="url(#obsidian-blade)" strokeWidth="12" />
+                            <circle cx={CX} cy={CY} r="88" fill="none" stroke="#ff2a4b" strokeWidth="1.8" filter="url(#chakra-neon-glow)" />
+
+                            {[0, 120, 240].map((deg) => (
                               <g key={`loop-${deg}`} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
-                                <circle cx="0" cy="-48" r="18" fill="#ef4444" stroke="#09090b" strokeWidth="8" filter="url(#blade-floating-shadow)" />
-                                <circle cx="0" cy="-48" r="18" fill="none" stroke="#ffffff" strokeWidth="1.5" filter="url(#chakra-neon-glow)" />
-                                <path d="M 0 0 L 0 -30" stroke="#09090b" strokeWidth="10" strokeLinecap="round" />
+                                <circle cx="0" cy="-48" r="22" fill="none" stroke="url(#obsidian-blade)" strokeWidth="10" />
+                                <line x1="0" y1="0" x2="0" y2="-32" stroke="url(#obsidian-blade)" strokeWidth="12" strokeLinecap="round" />
+                                <circle cx="0" cy="-48" r="22" fill="none" stroke="#ef4444" strokeWidth="1.4" />
                               </g>
                             ))}
-                            {[60, 180, 300].map(deg => (
+
+                            {[60, 180, 300].map((deg) => (
                               <g key={`izuna-${deg}`} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
-                                <polygon points="0,0 10,-38 0,-85 -10,-38" fill="url(#obsidian-blade)" stroke="#450a0a" strokeWidth="1.4" filter="url(#blade-floating-shadow)" />
-                                <line x1="0" y1="0" x2="0" y2="-80" stroke="#ffffff" strokeWidth="1.6" filter="url(#chakra-neon-glow)" />
+                                <polygon points="0,0 12,-38 0,-88 -12,-38" fill="url(#obsidian-blade)" stroke="#ffffff" strokeWidth="1" filter="url(#blade-floating-shadow)" />
+                                <line x1="0" y1="0" x2="0" y2="-86" stroke="#ffffff" strokeWidth="1.8" filter="url(#chakra-neon-glow)" />
                               </g>
                             ))}
                           </g>
                         )}
 
-                        {/* ФОРМА 4: КАМУИ (ПРОСТРАНСТВЕННЫЙ ВИХРЬ ОБИТО / КАКАШИ) */}
+                        {/* 5. МАДАРА (ОБЫЧНЫЙ МШ — 3 СОМКНУТЫХ КОЛЬЦА У ЗРАЧКА) */}
+                        {selectedPattern === 'madara_ms' && (
+                          <g>
+                            {[0, 120, 240].map((deg) => (
+                              <g key={`circle-ms-${deg}`} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
+                                <circle cx="0" cy="-48" r="26" fill="none" stroke="black" strokeWidth="16" filter="url(#blade-floating-shadow)" />
+                                <circle cx="0" cy="-48" r="26" fill="none" stroke="url(#obsidian-blade)" strokeWidth="14" />
+                                <circle cx="0" cy="-48" r="26" fill="none" stroke="#ff2a4b" strokeWidth="1.8" filter="url(#chakra-neon-glow)" />
+                                <rect x="-7" y="-28" width="14" height="28" fill="url(#obsidian-blade)" />
+                                <line x1="0" y1="-28" x2="0" y2="0" stroke="#ffffff" strokeWidth="1.2" />
+                              </g>
+                            ))}
+                          </g>
+                        )}
+
+                        {/* 6. КАМУИ (ОБИТО / КАКАШИ — 3 ВИХРЕВЫХ КЛЫКА ВОРОНКИ) */}
                         {selectedPattern === 'kamui' && (
                           <g>
-                            {[0, 120, 240].map(deg => (
-                              <g key={deg} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
-                                <path 
-                                  d="M 0 0 C 42 -8, 78 -38, 72 -84 C 44 -62, 16 -36, 0 0 Z" 
-                                  fill="black" 
-                                  filter="url(#blade-floating-shadow)"
-                                />
-                                <path 
-                                  d="M 0 0 C 42 -8, 78 -38, 72 -84 C 44 -62, 16 -36, 0 0 Z" 
-                                  fill="url(#obsidian-blade)" 
-                                  stroke="#3b0208" 
-                                  strokeWidth="2" 
-                                />
-                                <path 
-                                  d="M 0 0 C 30 -6, 56 -26, 54 -62" 
-                                  stroke="#ffffff" 
-                                  strokeWidth="1.8" 
-                                  fill="none" 
-                                  filter="url(#chakra-neon-glow)"
-                                />
-                                <circle cx="54" cy="-56" r="6" fill="#f87171" filter="drop-shadow(0 0 5px #ff1744)" />
+                            <circle cx={CX} cy={CY} r="92" fill="none" stroke="#450a0a" strokeWidth="3" opacity="0.7" />
+                            {[0, 120, 240].map((deg) => (
+                              <g key={`kamui-${deg}`} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
+                                <path d="M 0 0 C 45 -8, 85 -40, 78 -90 C 48 -66, 18 -38, 0 0 Z" fill="black" filter="url(#blade-floating-shadow)" />
+                                <path d="M 0 0 C 45 -8, 85 -40, 78 -90 C 48 -66, 18 -38, 0 0 Z" fill="url(#obsidian-blade)" stroke="#1c0306" strokeWidth="1.5" />
+                                <path d="M 0 0 C 32 -6, 60 -26, 56 -66" stroke="#ffffff" strokeWidth="1.8" fill="none" filter="url(#chakra-neon-glow)" />
+                                <path d="M 78 -90 C 48 -66, 18 -38, 0 0" stroke="#ff2a4b" strokeWidth="1.2" fill="none" />
+                              </g>
+                            ))}
+                            <circle cx={CX} cy={CY} r="14" fill="#000000" stroke="#ef4444" strokeWidth="2.5" filter="drop-shadow(0 0 10px #000000)" />
+                          </g>
+                        )}
+
+                        {/* 7. ШИСУИ (КОТОАМАЦУКАМИ — 4-ЛОПАСТНОЙ СЮРИКЕН) */}
+                        {selectedPattern === 'shisui' && (
+                          <g>
+                            {[0, 90, 180, 270].map((deg) => (
+                              <g key={`shisui-${deg}`} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
+                                <path d="M 0 0 C 25 -25, 68 -35, 54 -84 C 28 -58, 6 -24, 0 0 Z" fill="black" filter="url(#blade-floating-shadow)" />
+                                <path d="M 0 0 C 25 -25, 68 -35, 54 -84 C 28 -58, 6 -24, 0 0 Z" fill="url(#obsidian-blade)" stroke="#450a0a" strokeWidth="1.5" />
+                                <path d="M 54 -84 C 28 -58, 6 -24, 0 0" stroke="#ffffff" strokeWidth="1.8" fill="none" filter="url(#chakra-neon-glow)" />
+                                <circle cx="40" cy="-56" r="3" fill="#ffffff" filter="drop-shadow(0 0 4px #ff1f44)" />
                               </g>
                             ))}
                           </g>
                         )}
 
-                        {/* ФОРМА 5: ШИСУИ (КОТОАМАЦУКАМИ) */}
-                        {selectedPattern === 'shisui' && (
+                        {/* 8. ИЗУНА (3 СЕГМЕНТИРОВАННЫХ КЛИНА С ВЫЕМКАМИ) */}
+                        {selectedPattern === 'izuna' && (
                           <g>
-                            {[0, 90, 180, 270].map(deg => (
-                              <g key={deg} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
-                                <path 
-                                  d="M 0 0 C 22 -22, 58 -30, 48 -76 C 24 -54, 6 -22, 0 0 Z" 
-                                  fill="black" 
-                                  filter="url(#blade-floating-shadow)"
-                                />
-                                <path 
-                                  d="M 0 0 C 22 -22, 58 -30, 48 -76 C 24 -54, 6 -22, 0 0 Z" 
-                                  fill="url(#obsidian-blade)" 
-                                  stroke="#450a0a" 
-                                  strokeWidth="1.8"
-                                />
-                                <line x1="0" y1="0" x2="38" y2="-54" stroke="#ffffff" strokeWidth="1.6" filter="url(#chakra-neon-glow)" />
-                                <circle cx="36" cy="-50" r="5" fill="#ef4444" filter="drop-shadow(0 0 5px #ffffff)" />
+                            {[0, 120, 240].map((deg) => (
+                              <g key={`izuna-only-${deg}`} transform={`translate(${CX}, ${CY}) rotate(${deg})`}>
+                                <path d="M -8 -15 L -14 -78 C -6 -86, 6 -86, 14 -78 L 8 -15 Z" fill="black" filter="url(#blade-floating-shadow)" />
+                                <path d="M -8 -15 L -14 -78 C -6 -86, 6 -86, 14 -78 L 8 -15 Z" fill="url(#obsidian-blade)" stroke="#7f1d1d" strokeWidth="1.5" />
+                                <line x1="0" y1="-15" x2="0" y2="-80" stroke="#ffffff" strokeWidth="1.8" filter="url(#chakra-neon-glow)" />
+                                <circle cx="0" cy="-68" r="3.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ff1f44)" />
                               </g>
                             ))}
                           </g>
@@ -1032,19 +1012,22 @@ export default function EyeActivationOverlay({
           </div>
         </div>
 
-        {/* ПЕРЕКЛЮЧАТЕЛЬ 5 УЗОРОВ ВМШ (ТОЛЬКО ДЛЯ ВЕЧНОГО МАНГЁКЁ) */}
+        {/* ПЕРЕКЛЮЧАТЕЛЬ 8 КАНОНИЧНЫХ ПЕРСОНАЖНЫХ УЗОРОВ ВМШ */}
         {currentEyeId === 'mangekyo' && (
-          <div className="relative z-30 mb-2 flex flex-wrap items-center justify-center gap-1.5 bg-black/85 px-3 py-1.5 rounded-2xl border border-red-500/40 backdrop-blur-md shadow-xl">
-            <span className="text-[10px] font-black text-red-400 mr-1 uppercase tracking-wider flex items-center gap-1">
-              <Flame className="w-3.5 h-3.5 text-red-500" />
-              Каноничный узор ВМШ:
+          <div className="relative z-30 mb-2 flex flex-wrap items-center justify-center gap-1.5 bg-black/90 p-2 rounded-2xl border border-red-500/40 backdrop-blur-md shadow-2xl max-w-xl">
+            <span className="text-[10px] font-black text-red-400 w-full mb-1 uppercase tracking-wider flex items-center justify-center gap-1.5">
+              <Flame className="w-3.5 h-3.5 text-red-500 animate-pulse" />
+              Каноничный обладатель Мангёкё:
             </span>
             {[
-              { id: 'itachi', label: 'Итачи (Эталон)' },
-              { id: 'sasuke', label: 'Саске (ВМШ)' },
-              { id: 'madara', label: 'Мадара (ВМШ)' },
-              { id: 'kamui', label: 'Камуи' },
-              { id: 'shisui', label: 'Шисуи' }
+              { id: 'sasuke_ems', label: 'Саске (ВМШ)' },
+              { id: 'itachi', label: 'Итачи (МШ)' },
+              { id: 'sasuke_ms', label: 'Саске (МШ)' },
+              { id: 'madara_ems', label: 'Мадара (ВМШ)' },
+              { id: 'madara_ms', label: 'Мадара (МШ)' },
+              { id: 'kamui', label: 'Камуи (Обито)' },
+              { id: 'shisui', label: 'Шисуи (Кото)' },
+              { id: 'izuna', label: 'Изуна (МШ)' }
             ].map(p => (
               <button
                 key={p.id}
@@ -1055,8 +1038,8 @@ export default function EyeActivationOverlay({
                 }}
                 className={`px-2.5 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${
                   selectedPattern === p.id 
-                    ? 'bg-red-600 text-white shadow-md shadow-red-600/50 scale-105' 
-                    : 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800'
+                    ? 'bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white shadow-lg shadow-red-600/60 scale-105 border border-red-300/40' 
+                    : 'bg-zinc-900/90 text-zinc-400 hover:text-white hover:bg-zinc-800 border border-white/5'
                 }`}
               >
                 {p.label}
@@ -1102,17 +1085,35 @@ export default function EyeActivationOverlay({
               <h3 className="text-base sm:text-lg font-black text-zinc-100 flex items-center gap-2">
                 <span style={{ color: familyMeta.color }}>{dojutsuData?.icon || '👁️'}</span>
                 <span>
-                  {currentEyeId === 'rinnegan_awakened' 
-                    ? (selectedRinnePattern === 'sasuke' ? 'Пробуждённый Риннеган Саске (6 томоэ)' : 'Ринне-Шаринган Кагуи (9 томоэ)')
-                    : (dojutsuData?.name || familyMeta.name)}
+                  {currentEyeId === 'mangekyo'
+                    ? (selectedPattern === 'sasuke_ems' ? 'Вечный Мангёкё Саске (ВМШ)' :
+                       selectedPattern === 'itachi' ? 'Мангёкё Шаринган Итачи (МШ)' :
+                       selectedPattern === 'sasuke_ms' ? 'Мангёкё Шаринган Саске (МШ)' :
+                       selectedPattern === 'madara_ems' ? 'Вечный Мангёкё Мадары (ВМШ)' :
+                       selectedPattern === 'madara_ms' ? 'Мангёкё Шаринган Мадары (МШ)' :
+                       selectedPattern === 'kamui' ? 'Камуи (МШ Обито / Какаши)' :
+                       selectedPattern === 'shisui' ? 'Мангёкё Шаринган Шисуи (Кото)' :
+                       'Мангёкё Шаринган Изуны (МШ)')
+                    : (currentEyeId === 'rinnegan_awakened' 
+                        ? (selectedRinnePattern === 'sasuke' ? 'Пробуждённый Риннеган Саске (6 томоэ)' : 'Ринне-Шаринган Кагуи (9 томоэ)')
+                        : (dojutsuData?.name || familyMeta.name))}
                 </span>
               </h3>
               <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
-                {currentEyeId === 'rinnegan_awakened' && selectedRinnePattern === 'sasuke'
-                  ? 'Каноничный левый глаз Саске Учиха от Мудреца Шести Путей. Ровно 6 томоэ на 2 кольцах. Техника мгновенной телепортации Аменотедзикара.'
-                  : (currentEyeId === 'rinnegan_awakened' && selectedRinnePattern === 'kaguya'
-                    ? 'Каноничное первородное алое око Кагуи Ооцуцуки и Мадары. Ровно 9 томоэ на 3 кольцах. Отражение на Луне для Бесконечного Цукуёми.'
-                    : familyMeta.desc)}
+                {currentEyeId === 'mangekyo'
+                  ? (selectedPattern === 'sasuke_ems' ? 'Каноничное слияние 6-конечной прямой звезды Саске и клинков Итачи. Абсолютная точность пламени Энтон.' :
+                     selectedPattern === 'itachi' ? 'Трехлопастная ветряная мельница Итачи Учиха. Высшие иллюзии Цукуёми и неугасимое пламя Аматерасу.' :
+                     selectedPattern === 'sasuke_ms' ? 'Обычный МШ Саске. 6-конечная прямая звезда Чоку-Томоэ, высвободившая черное пламя мести.' :
+                     selectedPattern === 'madara_ems' ? 'ВМШ Мадары Учиха: 3 непрерывные петли бесконечности и клинки Изуны, скрепленные вечным обручем.' :
+                     selectedPattern === 'madara_ms' ? 'Обычный МШ Мадары. Три гладких замкнутых кольца бесконечности вокруг зрачка.' :
+                     selectedPattern === 'kamui' ? 'Пространственно-временная воронка Камуи. 3 вихревых клыка, засасывающих материю в измерение.' :
+                     selectedPattern === 'shisui' ? 'Четырехлопастной сюрикен Шисуи Учиха. Котоамацуками — абсолютное незаметное подчинение воли.' :
+                     'МШ Изуны Учиха. Три клиновидных сегментированных бруска с выемками эпохи Воюющих Государств.')
+                  : (currentEyeId === 'rinnegan_awakened' && selectedRinnePattern === 'sasuke'
+                    ? 'Каноничный левый глаз Саске Учиха от Мудреца Шести Путей. Ровно 6 томоэ на 2 кольцах. Техника мгновенной телепортации Аменотедзикара.'
+                    : (currentEyeId === 'rinnegan_awakened' && selectedRinnePattern === 'kaguya'
+                      ? 'Каноничное первородное алое око Кагуи Ооцуцуки и Мадары. Ровно 9 томоэ на 3 кольцах. Отражение на Луне для Бесконечного Цукуёми.'
+                      : familyMeta.desc))}
               </p>
             </div>
             <button

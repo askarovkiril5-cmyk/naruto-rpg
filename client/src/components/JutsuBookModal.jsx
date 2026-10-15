@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { 
   X, Scroll, Search, Flame, Droplets, Zap, Wind, Mountain, 
   Swords, Eye, Shield, Sparkles, Filter, Activity, Compass, Tag, Check, Plus, Minus,
-  Lock, Unlock, FlaskConical, Crosshair, BookOpen
+  Lock, Unlock, FlaskConical, Crosshair, BookOpen, Volume2
 } from 'lucide-react';
 import defaultJutsuData from '../data/jutsuData.json';
 import { getBackendUrl } from '../utils/config';
 import { getJutsuDesc, getJutsuRange, getJutsuTags, matchJutsuCategory, getJutsuTacticalInfo } from '../utils/jutsuHelper';
+import { getVoiceForJutsu } from '../data/jutsuVoiceData';
+import { audioManager } from '../utils/audioManager';
 
 // Цветовые и стилевые схемы для стихий
 const ELEMENT_CONFIG = {
@@ -123,7 +125,8 @@ export default function JutsuBookModal({
   onUnlockArsenal,
   roomStatus = 'LOBBY',
   canUnlock = false,
-  gameVersion = '0.3.3'
+  gameVersion = '0.3.3',
+  onCastVoice = null
 }) {
   const [jutsuList, setJutsuList] = useState(defaultJutsuData || []);
   const [search, setSearch] = useState('');
@@ -153,6 +156,7 @@ export default function JutsuBookModal({
   // Категории и стихии
   const categoryFilters = [
     { label: '⭐ Все техники', value: 'Все' },
+    { label: '🔊 С озвучкой (Voice Lines)', value: 'VOICE_ONLY' },
     { label: '📜 Базовые (№1-10)', value: 'БАЗОВ' },
     { label: '👊 Тайдзюцу (№11-26)', value: 'ТАЙДЗЮЦУ' },
     { label: '🗡️ Оружие и метание', value: 'ОРУЖИ' },
@@ -205,7 +209,12 @@ export default function JutsuBookModal({
       (item.rank && item.rank.toLowerCase() === selectedRank.toLowerCase());
 
     // Точный фильтр по стихии / категории (исключает ложное совпадение "разряд" с "яды")
-    const matchesCat = matchJutsuCategory(item, selectedCategory);
+    let matchesCat = true;
+    if (selectedCategory === 'VOICE_ONLY') {
+      matchesCat = Boolean(getVoiceForJutsu(item.id, item.name));
+    } else {
+      matchesCat = matchJutsuCategory(item, selectedCategory);
+    }
 
     return matchesSearch && matchesRank && matchesCat;
   });
@@ -448,6 +457,7 @@ export default function JutsuBookModal({
                 const elemConfig = getElementConfig(j.category, j.name);
                 const ElemIcon = elemConfig.icon;
                 const tactical = getJutsuTacticalInfo(j);
+                const voice = getVoiceForJutsu(j.id, j.name);
 
                 return (
                   <div
@@ -497,6 +507,27 @@ export default function JutsuBookModal({
                       <h3 className={`text-sm font-bold text-zinc-100 transition-colors duration-200 mb-1.5 leading-snug ${elemConfig.glow}`}>
                         #{j.id} {j.name}
                       </h3>
+
+                      {/* 🔊 ОРИГИНАЛЬНЫЙ БОЕВОЙ ВЫКРИК ТЕХНИКИ */}
+                      {voice && (
+                        <div className="mb-2">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              audioManager.playJutsuVoice(voice);
+                              if (onCastVoice) onCastVoice(voice);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold border transition-all cursor-pointer shadow-md hover:scale-[1.03] active:scale-95 bg-black/80 hover:bg-black group/vbtn"
+                            style={{ borderColor: `${voice.glowColor}80`, color: voice.glowColor }}
+                            title={`Оригинальный крик техники: ${voice.romaji} (${voice.kanji})`}
+                          >
+                            <Volume2 className="w-3.5 h-3.5 group-hover/vbtn:scale-110 transition-transform" />
+                            <span className="font-extrabold tracking-wide">{voice.kanji}</span>
+                            <span className="text-zinc-300 font-mono text-[10px]">{voice.romaji}</span>
+                          </button>
+                        </div>
+                      )}
 
                       {/* Категория / Стихия и Реактивные тактические бейджи */}
                       <div className="flex flex-wrap items-center gap-1.5 mb-2.5">

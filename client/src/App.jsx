@@ -27,6 +27,7 @@ import NarrativeRenderer from './components/NarrativeRenderer';
 import defaultJutsuData from './data/jutsuData.json';
 import { audioManager, AUDIO_TRACKS } from './utils/audioManager';
 import { notificationManager } from './utils/notificationManager';
+import { getVoiceForJutsu } from './data/jutsuVoiceData';
 
 export const CANONICAL_BOTS = [
   {
@@ -259,6 +260,16 @@ export default function App() {
   const [isFriendsOpen, setIsFriendsOpen] = useState(false);
   const [isClanOpen, setIsClanOpen] = useState(false);
   const [opponentEyeOverlay, setOpponentEyeOverlay] = useState(null);
+  const [incomingVoiceShout, setIncomingVoiceShout] = useState(null);
+
+  // Автоматическое скрытие баннера выкрика техники через 3.2 секунды
+  useEffect(() => {
+    if (!incomingVoiceShout) return;
+    const timer = setTimeout(() => {
+      setIncomingVoiceShout(null);
+    }, 3200);
+    return () => clearTimeout(timer);
+  }, [incomingVoiceShout]);
   const [isPersonalProfileOpen, setIsPersonalProfileOpen] = useState(false);
   const [activeTitleId, setActiveTitleId] = useState(() => {
     return localStorage.getItem('naruto_active_title_id') || null;
@@ -832,6 +843,31 @@ export default function App() {
       });
     });
 
+    // 🔊 Боевой каст в дуэли (PvP Sync Anime Voice Lines)
+    s.on('opponent_jutsu_voice_shout', (data) => {
+      const pvpVoiceEnabled = localStorage.getItem('naruto_pvp_voice_cast_enabled') !== 'false';
+      if (!pvpVoiceEnabled) return;
+
+      const voice = data?.voiceData;
+      if (!voice) return;
+
+      // Воспроизведение оригинального выкрика (файлом или Web Audio синтезом)
+      audioManager.playJutsuVoice(voice);
+
+      // Включаем кинематографичный оверлей боевого клича на экране
+      setIncomingVoiceShout({
+        senderName: data.senderName || 'Оппонент',
+        voice
+      });
+
+      addMessage({
+        id: Math.random().toString(),
+        type: 'system',
+        text: `🔊 ${data.senderName || 'Соперник'} применяет ${voice.kanji} «${voice.name || voice.jutsuName}» (${voice.romaji})!`,
+        time: getCurrentTime()
+      });
+    });
+
     // Получение свитка приглашения в Клан в реальном времени
     s.on('clan_invite_received', (invite) => {
       notificationManager.addClanInvitationNotification(invite);
@@ -1172,10 +1208,45 @@ export default function App() {
     }
   };
 
+  // 🔊 Воспроизведение и трансляция боевого клича техники сопернику (PvP Sync)
+  const handleCastJutsuVoice = (voiceData) => {
+    if (!voiceData) return;
+    // Локальное звучание
+    audioManager.playJutsuVoice(voiceData);
+
+    // Если включена трансляция боевого клича
+    const myVoiceCastEnabled = localStorage.getItem('naruto_my_voice_cast_enabled') !== 'false';
+    if (myVoiceCastEnabled && socket && roomId) {
+      socket.emit('cast_jutsu_voice_shout', {
+        roomId,
+        senderName: playerName || 'Шиноби',
+        voiceData
+      });
+    }
+  };
+
   // Отправка скрытого действия
   const handleSendAction = (e) => {
     e.preventDefault();
     if (!inputText.trim() || isActionLocked || !socket || roomStatus !== 'BATTLE') return;
+
+    const actionTextTrimmed = inputText.trim();
+
+    // 🔊 Авто-распознавание легендарной техники в тексте хода и выкрик боевого клича
+    const myVoiceCastEnabled = localStorage.getItem('naruto_my_voice_cast_enabled') !== 'false';
+    if (myVoiceCastEnabled) {
+      const detectedVoice = getVoiceForJutsu(null, actionTextTrimmed);
+      if (detectedVoice) {
+        audioManager.playJutsuVoice(detectedVoice);
+        if (socket && roomId) {
+          socket.emit('cast_jutsu_voice_shout', {
+            roomId,
+            senderName: playerName || 'Шиноби',
+            voiceData: detectedVoice
+          });
+        }
+      }
+    }
 
     // При отправке хода арсенал окончательно фиксируется на этот бой
     if (!isArsenalLocked) {
@@ -1194,7 +1265,7 @@ export default function App() {
     socket.emit('submit_hidden_action', {
       roomId,
       playerId,
-      actionText: inputText.trim()
+      actionText: actionTextTrimmed
     });
 
     setInputText('');
@@ -1449,6 +1520,7 @@ export default function App() {
           onConfirmArsenal={handleConfirmArsenal}
           onUnlockArsenal={handleUnlockArsenal}
           roomStatus={roomStatus}
+          onCastVoice={handleCastJutsuVoice}
         />
       )}
 
@@ -2460,6 +2532,7 @@ export default function App() {
         onConfirmArsenal={handleConfirmArsenal}
         onUnlockArsenal={handleUnlockArsenal}
         roomStatus={roomStatus}
+        onCastVoice={handleCastJutsuVoice}
       />
 
       {/* 8. МОДАЛЬНОЕ ОКНО: Мой Боевой Арсенал (по центру, только когда выбран режим MODAL) */}
@@ -2485,6 +2558,7 @@ export default function App() {
           onConfirmArsenal={handleConfirmArsenal}
           onUnlockArsenal={handleUnlockArsenal}
           roomStatus={roomStatus}
+          onCastVoice={handleCastJutsuVoice}
         />
       )}
 
@@ -2624,6 +2698,90 @@ export default function App() {
           initialPattern={opponentEyeOverlay.pattern}
           autoDismissMs={5500}
         />
+      )}
+
+      {/* 19. КИНЕМАТОГРАФИЧНЫЙ БОЕВОЙ БАННЕР ВЫКРИКА ТЕХНИКИ В ДУЭЛИ (PvP Sync) */}
+      {incomingVoiceShout && (
+        <div 
+          onClick={() => setIncomingVoiceShout(null)}
+          className="fixed inset-x-0 top-14 z-50 flex items-center justify-center p-4 pointer-events-none animate-fadeIn cursor-pointer"
+        >
+          <div 
+            className="pointer-events-auto max-w-xl w-full rounded-3xl p-5 sm:p-6 backdrop-blur-2xl border-2 shadow-2xl relative overflow-hidden transition-all duration-300 transform scale-100 hover:scale-[1.02]"
+            style={{
+              backgroundColor: 'rgba(5, 5, 12, 0.95)',
+              borderColor: incomingVoiceShout.voice.glowColor || '#00f5ff',
+              boxShadow: `0 0 60px ${incomingVoiceShout.voice.glowColor}55, inset 0 0 30px ${incomingVoiceShout.voice.glowColor}30`
+            }}
+          >
+            {/* Декоративные световые вспышки */}
+            <div 
+              className="absolute -top-12 -left-12 w-44 h-44 rounded-full blur-3xl opacity-35 pointer-events-none"
+              style={{ backgroundColor: incomingVoiceShout.voice.glowColor }}
+            />
+            <div 
+              className="absolute -bottom-12 -right-12 w-44 h-44 rounded-full blur-3xl opacity-35 pointer-events-none"
+              style={{ backgroundColor: incomingVoiceShout.voice.glowColor }}
+            />
+
+            <div className="relative z-10 flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                {/* Отправитель и бейдж ранга */}
+                <div className="flex items-center gap-2 mb-1.5">
+                  <span className="text-[10px] sm:text-xs font-black tracking-widest uppercase px-2.5 py-0.5 rounded-full bg-white/10 text-zinc-300 border border-white/20">
+                    ⚡ {incomingVoiceShout.senderName} объявляет каст:
+                  </span>
+                  <span 
+                    className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-full border"
+                    style={{ 
+                      borderColor: incomingVoiceShout.voice.glowColor,
+                      color: incomingVoiceShout.voice.glowColor,
+                      backgroundColor: 'rgba(0,0,0,0.6)'
+                    }}
+                  >
+                    {incomingVoiceShout.voice.badge}
+                  </span>
+                </div>
+
+                {/* Огромные каллиграфические кандзи и выкрик ромадзи */}
+                <div className="flex items-baseline gap-3 my-1">
+                  <span 
+                    className="text-3xl sm:text-5xl font-black tracking-wider drop-shadow-lg font-serif"
+                    style={{ 
+                      color: incomingVoiceShout.voice.glowColor,
+                      textShadow: `0 0 25px ${incomingVoiceShout.voice.glowColor}`
+                    }}
+                  >
+                    {incomingVoiceShout.voice.kanji}
+                  </span>
+                  <span className="text-xl sm:text-3xl font-black text-white italic tracking-wide">
+                    {incomingVoiceShout.voice.romaji}
+                  </span>
+                </div>
+
+                {/* Цитата и персонаж */}
+                <p className="text-xs sm:text-sm text-zinc-300 italic font-medium mt-1">
+                  {incomingVoiceShout.voice.quote}
+                </p>
+                <span className="text-[10px] text-zinc-400 font-mono mt-1 block">
+                  Техника персонажа: <span className="text-amber-300 font-bold">{incomingVoiceShout.voice.character}</span>
+                </span>
+              </div>
+
+              {/* Звуковая пульсирующая иконка */}
+              <div 
+                className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 border shadow-lg animate-pulse"
+                style={{ 
+                  backgroundColor: `${incomingVoiceShout.voice.glowColor}25`,
+                  borderColor: incomingVoiceShout.voice.glowColor,
+                  color: incomingVoiceShout.voice.glowColor
+                }}
+              >
+                <span className="text-2xl">🔊</span>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

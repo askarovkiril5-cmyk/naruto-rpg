@@ -3,9 +3,11 @@ import {
   X, Swords, Search, Sparkles, Compass, Trash2, Plus, 
   Copy, Check, ArrowRight, Shield, Flame, BookOpen, Layers,
   Maximize2, PanelRight, ChevronDown, ChevronRight, Tag, Lock, Unlock,
-  Zap, Activity, Eye
+  Zap, Activity, Eye, Volume2
 } from 'lucide-react';
 import { getJutsuDesc, getJutsuRange, getJutsuTags, getJutsuTacticalInfo } from '../utils/jutsuHelper';
+import { getVoiceForJutsu } from '../data/jutsuVoiceData';
+import { audioManager } from '../utils/audioManager';
 
 export default function MyArsenalModal({ 
   isOpen, 
@@ -24,7 +26,8 @@ export default function MyArsenalModal({
   canUnlock = false,
   viewMode: controlledViewMode,
   onToggleViewMode: controlledOnToggleViewMode,
-  gameVersion = '0.3.3'
+  gameVersion = '0.3.3',
+  onCastVoice = null
 }) {
   const [search, setSearch] = useState('');
   const [copiedId, setCopiedId] = useState(null);
@@ -167,6 +170,7 @@ export default function MyArsenalModal({
                 <div className={`grid grid-cols-1 ${viewMode === 'MODAL' ? 'md:grid-cols-2 lg:grid-cols-3' : ''} gap-3.5 pl-1 sm:pl-2`}>
                   {items.map((j) => {
                     const tactical = getJutsuTacticalInfo(j);
+                    const voice = getVoiceForJutsu(j.id, j.name);
                     return (
                     <div
                       key={j.id}
@@ -196,6 +200,27 @@ export default function MyArsenalModal({
                         <h4 className="text-sm sm:text-base font-black text-zinc-100 group-hover:text-amber-300 transition tracking-wide leading-snug mb-1.5">
                           {j.name}
                         </h4>
+
+                        {/* 🔊 ОРИГИНАЛЬНЫЙ БОЕВОЙ ВЫКРИК ТЕХНИКИ */}
+                        {voice && (
+                          <div className="mb-2">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                audioManager.playJutsuVoice(voice);
+                                if (onCastVoice) onCastVoice(voice);
+                              }}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold border transition-all cursor-pointer shadow-md hover:scale-[1.03] active:scale-95 bg-black/80 hover:bg-black group/vbtn"
+                              style={{ borderColor: `${voice.glowColor}80`, color: voice.glowColor }}
+                              title={`Оригинальный крик техники: ${voice.romaji} (${voice.kanji})`}
+                            >
+                              <Volume2 className="w-3.5 h-3.5 group-hover/vbtn:scale-110 transition-transform" />
+                              <span className="font-extrabold tracking-wide">{voice.kanji}</span>
+                              <span className="text-zinc-300 font-mono text-[10px]">{voice.romaji}</span>
+                            </button>
+                          </div>
+                        )}
 
                         {/* Тактические бейджи (Реактивная мобильность, Контратака, Гендзюцу) */}
                         <div className="flex flex-wrap items-center gap-1.5 mb-2.5">

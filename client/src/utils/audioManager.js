@@ -126,8 +126,10 @@ class AudioManager {
     this.playbackMode = 'repeat-all'; // 'repeat-one' | 'repeat-all' | 'shuffle'
     this.volume = 0.50;
     this.sfxVolume = 0.55;
+    this.voiceVolume = 0.90;
     this.isMuted = false;
     this.sfxEnabled = true;
+    this.voiceEnabled = true;
     this.currentTime = 0;
     this.duration = 0;
 
@@ -146,11 +148,17 @@ class AudioManager {
       const savedSfxVol = localStorage.getItem('naruto_sfx_volume');
       if (savedSfxVol !== null) this.sfxVolume = parseFloat(savedSfxVol);
 
+      const savedVoiceVol = localStorage.getItem('naruto_voice_volume');
+      if (savedVoiceVol !== null) this.voiceVolume = parseFloat(savedVoiceVol);
+
       const savedMute = localStorage.getItem('naruto_music_muted');
       if (savedMute !== null) this.isMuted = savedMute === 'true';
 
       const savedSfx = localStorage.getItem('naruto_sfx_enabled');
       if (savedSfx !== null) this.sfxEnabled = savedSfx !== 'false';
+
+      const savedVoice = localStorage.getItem('naruto_voice_enabled');
+      if (savedVoice !== null) this.voiceEnabled = savedVoice !== 'false';
 
       const savedTrack = localStorage.getItem('naruto_current_track');
       if (savedTrack && AUDIO_TRACKS.some(t => t.id === savedTrack)) {
@@ -177,8 +185,10 @@ class AudioManager {
       playbackMode: this.playbackMode,
       volume: this.volume,
       sfxVolume: this.sfxVolume,
+      voiceVolume: this.voiceVolume,
       isMuted: this.isMuted,
       sfxEnabled: this.sfxEnabled,
+      voiceEnabled: this.voiceEnabled,
       currentTime: this.currentTime,
       duration: this.duration
     }));
@@ -203,6 +213,11 @@ class AudioManager {
       this.sfxGain = this.ctx.createGain();
       this.sfxGain.gain.value = this.sfxEnabled ? this.sfxVolume : 0;
       this.sfxGain.connect(this.masterGain);
+
+      // Шина голосов техник (Anime Voice Lines)
+      this.voiceGain = this.ctx.createGain();
+      this.voiceGain.gain.value = this.voiceEnabled ? this.voiceVolume : 0;
+      this.voiceGain.connect(this.masterGain);
     }
 
     if (this.ctx.state === 'suspended') {
@@ -475,6 +490,189 @@ class AudioManager {
     }
     try { localStorage.setItem('naruto_sfx_volume', this.sfxVolume.toString()); } catch (e) {}
     this.notify();
+  }
+
+  setVoiceVolume(val) {
+    this.voiceVolume = Math.max(0, Math.min(1, val));
+    if (this.voiceGain && this.voiceEnabled) {
+      this.voiceGain.gain.value = this.voiceVolume;
+    }
+    try { localStorage.setItem('naruto_voice_volume', this.voiceVolume.toString()); } catch (e) {}
+    this.notify();
+  }
+
+  setVoiceEnabled(enabled) {
+    this.voiceEnabled = Boolean(enabled);
+    if (this.voiceGain) {
+      this.voiceGain.gain.value = this.voiceEnabled ? this.voiceVolume : 0;
+    }
+    try { localStorage.setItem('naruto_voice_enabled', this.voiceEnabled ? 'true' : 'false'); } catch (e) {}
+    this.notify();
+  }
+
+  /**
+   * Воспроизведение оригинального голосового выкрика техники (Anime Voice Line)
+   */
+  playJutsuVoice(voiceData) {
+    if (!voiceData || !this.voiceEnabled || this.voiceVolume <= 0.01) return;
+    this.initAudioContext();
+
+    // 1. Воспроизведение реального аудиофайла (если доступен в public/audio/voices/)
+    if (voiceData.audioUrl) {
+      try {
+        const fullUrl = resolveAudioUrl(voiceData.audioUrl);
+        const audio = new window.Audio(fullUrl);
+        audio.volume = Math.max(0, Math.min(1, this.voiceVolume * 1.15));
+        audio.play().catch(() => {
+          // Если файл отсутствует или офлайн, воспроизводится процедурный синтез
+        });
+      } catch (e) {}
+    }
+
+    // 2. Кинематографический процедурный синтезатор чакра-импульса техники
+    this.synthJutsuImpact(voiceData);
+  }
+
+  /**
+   * Процедурный синтез чакра-импульса для легендарных техник
+   */
+  synthJutsuImpact(voiceData) {
+    const ctx = this.ctx;
+    if (!ctx || !this.voiceGain) return;
+    const now = ctx.currentTime;
+    const type = voiceData.soundType || 'default';
+
+    try {
+      if (type.includes('lightning') || voiceData.element === 'LIGHTNING') {
+        // ЧИДОРИ / РАЙКИРИ: Свист 1000 щебечущих птиц и высоковольтный разряд
+        const carrier = ctx.createOscillator();
+        const mod = ctx.createOscillator();
+        const modGain = ctx.createGain();
+        const gain = ctx.createGain();
+
+        mod.type = 'sawtooth';
+        mod.frequency.setValueAtTime(14, now);
+        modGain.gain.setValueAtTime(650, now);
+        mod.connect(modGain);
+        modGain.connect(carrier.frequency);
+
+        carrier.type = 'triangle';
+        carrier.frequency.setValueAtTime(2400, now);
+        carrier.frequency.exponentialRampToValueAtTime(3600, now + 0.35);
+
+        gain.gain.setValueAtTime(0.32, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+
+        carrier.connect(gain);
+        gain.connect(this.voiceGain);
+
+        carrier.start(now);
+        mod.start(now);
+        carrier.stop(now + 0.95);
+        mod.stop(now + 0.95);
+      } else if (type.includes('wind') || voiceData.element === 'WIND') {
+        // РАСЕНГАН: Высокоскоростной вихрь вращающейся сферы
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const lfo = ctx.createOscillator();
+        const lfoGain = ctx.createGain();
+
+        lfo.frequency.setValueAtTime(24, now);
+        lfoGain.gain.setValueAtTime(120, now);
+        lfo.connect(osc.frequency);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(1280, now + 0.4);
+        osc.frequency.exponentialRampToValueAtTime(440, now + 1.1);
+
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 1.15);
+
+        osc.connect(gain);
+        gain.connect(this.voiceGain);
+
+        osc.start(now);
+        lfo.start(now);
+        osc.stop(now + 1.2);
+        lfo.stop(now + 1.2);
+      } else if (type === 'gravity_repulsion' || type === 'gravity_core' || voiceData.element === 'RINNEGAN') {
+        // СИНРА ТЭНСЭЙ: Саб-басовый гравитационный взрыв
+        const sub = ctx.createOscillator();
+        const subGain = ctx.createGain();
+        sub.type = 'sine';
+        sub.frequency.setValueAtTime(42, now);
+        sub.frequency.exponentialRampToValueAtTime(140, now + 0.3);
+        sub.frequency.exponentialRampToValueAtTime(35, now + 1.4);
+
+        subGain.gain.setValueAtTime(0.42, now);
+        subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.45);
+        sub.connect(subGain);
+        subGain.connect(this.voiceGain);
+        sub.start(now);
+        sub.stop(now + 1.5);
+
+        const bell = ctx.createOscillator();
+        const bellGain = ctx.createGain();
+        bell.type = 'triangle';
+        bell.frequency.setValueAtTime(880, now);
+        bell.frequency.exponentialRampToValueAtTime(1760, now + 0.4);
+        bellGain.gain.setValueAtTime(0.24, now);
+        bellGain.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
+        bell.connect(bellGain);
+        bellGain.connect(this.voiceGain);
+        bell.start(now);
+        bell.stop(now + 1.15);
+      } else if (type === 'black_flame' || type === 'space_vortex' || voiceData.element === 'DOJUTSU') {
+        // АМАТЭРАСУ / КАМУИ: Зловещий гул искривления пространства
+        const tearOsc = ctx.createOscillator();
+        const tearGain = ctx.createGain();
+        tearOsc.type = 'sawtooth';
+        tearOsc.frequency.setValueAtTime(55, now);
+        tearOsc.frequency.exponentialRampToValueAtTime(320, now + 0.3);
+        tearOsc.frequency.exponentialRampToValueAtTime(45, now + 1.3);
+
+        tearGain.gain.setValueAtTime(0.34, now);
+        tearGain.gain.exponentialRampToValueAtTime(0.001, now + 1.35);
+        tearOsc.connect(tearGain);
+        tearGain.connect(this.voiceGain);
+        tearOsc.start(now);
+        tearOsc.stop(now + 1.4);
+      } else if (type === 'tenketsu_combo' || voiceData.element === 'BYAKUGAN') {
+        // 64 ЛАДОНИ БАГУА: 5 быстрых точечных ударов по Тэнкэцу
+        const notes = [880, 1046, 1174, 1318, 1568];
+        notes.forEach((freq, i) => {
+          const t = now + i * 0.08;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, t);
+          gain.gain.setValueAtTime(0.25, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+          osc.connect(gain);
+          gain.connect(this.voiceGain);
+          osc.start(t);
+          osc.stop(t + 0.25);
+        });
+      } else {
+        // ОГОНЬ / СТАНДАРТ: Ревущий огненный импульс
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(480, now + 0.3);
+        osc.frequency.exponentialRampToValueAtTime(90, now + 0.85);
+
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+        osc.connect(gain);
+        gain.connect(this.voiceGain);
+        osc.start(now);
+        osc.stop(now + 0.95);
+      }
+    } catch (e) {
+      console.warn('[Audio] synthJutsuImpact error:', e);
+    }
   }
 
   // ==========================================

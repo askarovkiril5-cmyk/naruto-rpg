@@ -3,9 +3,10 @@ import {
   X, Image, Sliders, Palette, RotateCcw, Maximize2, Minimize2, 
   Check, Trash2, Upload, Sparkles, Monitor, Sun, ExternalLink,
   Eye, CheckCircle2, AlertCircle, Volume2, VolumeX, Music, Play, Pause, Globe,
-  Repeat, Repeat1, Shuffle, SkipBack, SkipForward
+  Repeat, Repeat1, Shuffle, SkipBack, SkipForward, Mic, Radio
 } from 'lucide-react';
 import { audioManager, AUDIO_TRACKS } from '../utils/audioManager';
+import { getVoiceForJutsu } from '../data/jutsuVoiceData';
 
 export const DEFAULT_SETTINGS = {
   bgImage: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=1920&auto=format&fit=crop',
@@ -225,11 +226,44 @@ function formatTime(sec) {
     playbackMode: audioManager.playbackMode || 'repeat-all',
     volume: audioManager.volume,
     sfxVolume: audioManager.sfxVolume,
+    voiceVolume: audioManager.voiceVolume !== undefined ? audioManager.voiceVolume : 0.90,
     isMuted: audioManager.isMuted,
     sfxEnabled: audioManager.sfxEnabled,
+    voiceEnabled: audioManager.voiceEnabled !== undefined ? audioManager.voiceEnabled : true,
     currentTime: audioManager.currentTime || 0,
     duration: audioManager.duration || 0
   });
+
+  // Настройки синхронизации боевых выкриков техник (Anime Voice Lines & PvP Sync)
+  const [pvpVoiceEnabled, setPvpVoiceEnabled] = useState(() => {
+    try {
+      return localStorage.getItem('naruto_pvp_voice_cast_enabled') !== 'false';
+    } catch {
+      return true;
+    }
+  });
+
+  const [myVoiceCastEnabled, setMyVoiceCastEnabled] = useState(() => {
+    try {
+      return localStorage.getItem('naruto_my_voice_cast_enabled') !== 'false';
+    } catch {
+      return true;
+    }
+  });
+
+  const handleTogglePvpVoice = (val) => {
+    setPvpVoiceEnabled(val);
+    try {
+      localStorage.setItem('naruto_pvp_voice_cast_enabled', val ? 'true' : 'false');
+    } catch {}
+  };
+
+  const handleToggleMyVoiceCast = (val) => {
+    setMyVoiceCastEnabled(val);
+    try {
+      localStorage.setItem('naruto_my_voice_cast_enabled', val ? 'true' : 'false');
+    } catch {}
+  };
 
   useEffect(() => {
     return audioManager.subscribe((state) => {
@@ -732,12 +766,12 @@ function formatTime(sec) {
               </div>
             </div>
 
-            {/* Громкость музыки и SFX */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-white/5">
+            {/* Громкость музыки, SFX и Голоса техник */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 border-t border-white/5">
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center text-xs">
                   <span className="font-semibold text-zinc-300 flex items-center gap-1">
-                    <Music className="w-3.5 h-3.5 text-cyan-400" /> Громкость музыки:
+                    <Music className="w-3.5 h-3.5 text-cyan-400" /> Музыка:
                   </span>
                   <span className="font-mono text-cyan-400 font-bold">
                     {Math.round(audioState.volume * 100)}%
@@ -757,7 +791,7 @@ function formatTime(sec) {
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center text-xs">
                   <span className="font-semibold text-zinc-300 flex items-center gap-1">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Звуковые эффекты (SFX):
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Эффекты (SFX):
                   </span>
                   <button
                     type="button"
@@ -766,7 +800,7 @@ function formatTime(sec) {
                     }}
                     className="text-[10px] text-amber-400 hover:text-amber-300 underline cursor-pointer"
                   >
-                    Тест печати 닌
+                    Тест 닌
                   </button>
                 </div>
                 <input
@@ -778,6 +812,155 @@ function formatTime(sec) {
                   onChange={(e) => audioManager.setSfxVolume(parseFloat(e.target.value))}
                   className="w-full accent-amber-500 cursor-pointer h-2 bg-zinc-800 rounded-lg"
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-semibold text-zinc-300 flex items-center gap-1">
+                    <Mic className="w-3.5 h-3.5 text-cyan-300" /> Голос техник:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      audioManager.playJutsuVoice(getVoiceForJutsu(57));
+                    }}
+                    className="text-[10px] text-cyan-400 hover:text-cyan-300 underline cursor-pointer"
+                  >
+                    Чидори ⚡
+                  </button>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={audioState.voiceVolume !== undefined ? audioState.voiceVolume : 0.9}
+                  onChange={(e) => audioManager.setVoiceVolume(parseFloat(e.target.value))}
+                  className="w-full accent-cyan-400 cursor-pointer h-2 bg-zinc-800 rounded-lg"
+                />
+              </div>
+            </div>
+
+            {/* 🔊 БОЕВЫЕ ВЫКРИКИ ТЕХНИК И СИНХРОНИЗАЦИЯ В ДУЭЛИ (PVP VOICE SYNC) */}
+            <div className="space-y-3 pt-3 border-t border-white/10 bg-gradient-to-r from-cyan-950/40 via-blue-950/30 to-purple-950/40 p-3.5 rounded-2xl border border-cyan-500/30 shadow-lg">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300">
+                    <Mic className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+                      <span>Голосовые фразы техник (Anime Voice Lines)</span>
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
+                        PvP Sync
+                      </span>
+                    </h4>
+                    <p className="text-[10px] text-zinc-400">
+                      Оригинальные выкрики на японском языке: «Chidori!», «Shinra Tensei!», «Amaterasu!», «Rasengan!».
+                    </p>
+                  </div>
+                </div>
+
+                {/* Быстрое включение/отключение всего голоса */}
+                <button
+                  type="button"
+                  onClick={() => audioManager.setVoiceEnabled(!audioState.voiceEnabled)}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition cursor-pointer flex items-center gap-1.5 self-start sm:self-auto ${
+                    audioState.voiceEnabled
+                      ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40 hover:bg-cyan-500/30'
+                      : 'bg-zinc-800 text-zinc-500 border-white/10 hover:text-zinc-300'
+                  }`}
+                >
+                  <Volume2 className="w-3.5 h-3.5" />
+                  <span>{audioState.voiceEnabled ? 'Озвучка активна' : 'Озвучка отключена'}</span>
+                </button>
+              </div>
+
+              {/* Переключатели PvP Sync */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                {/* 1. Слышать боевые выкрики соперника */}
+                <label className="flex items-start gap-2.5 p-2.5 rounded-xl bg-black/40 border border-white/5 hover:border-cyan-500/30 transition cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={pvpVoiceEnabled}
+                    onChange={(e) => handleTogglePvpVoice(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded accent-cyan-500 cursor-pointer"
+                  />
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold text-zinc-200 block">
+                      Слышать выкрики соперника (PvP Sync)
+                    </span>
+                    <span className="text-[10px] text-zinc-400 leading-tight block mt-0.5">
+                      Когда соперник кастует легендарную технику, на вашем экране звучит её крик и загорается кандзи атаки.
+                    </span>
+                  </div>
+                </label>
+
+                {/* 2. Отправлять мой боевой клич сопернику */}
+                <label className="flex items-start gap-2.5 p-2.5 rounded-xl bg-black/40 border border-white/5 hover:border-cyan-500/30 transition cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={myVoiceCastEnabled}
+                    onChange={(e) => handleToggleMyVoiceCast(e.target.checked)}
+                    className="mt-0.5 w-4 h-4 rounded accent-cyan-500 cursor-pointer"
+                  />
+                  <div className="min-w-0">
+                    <span className="text-xs font-bold text-zinc-200 block">
+                      Отправлять мой боевой клич сопернику
+                    </span>
+                    <span className="text-[10px] text-zinc-400 leading-tight block mt-0.5">
+                      При отправке хода или нажатии кнопки техники соперник услышит ваш крик и увидит кандзи удара.
+                    </span>
+                  </div>
+                </label>
+              </div>
+
+              {/* Быстрое прослушивание боевых кличей легендарных техник */}
+              <div className="pt-2 border-t border-white/5">
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1.5">
+                  Прослушать боевые кличи легендарных техник:
+                </span>
+                <div className="flex flex-wrap gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => audioManager.playJutsuVoice(getVoiceForJutsu(57))}
+                    className="px-2 py-1 rounded-lg bg-cyan-950/60 hover:bg-cyan-900/80 text-cyan-300 border border-cyan-500/40 text-[11px] font-bold transition flex items-center gap-1 cursor-pointer active:scale-95"
+                  >
+                    <span>⚡ 『千鳥』 Chidori!</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => audioManager.playJutsuVoice(getVoiceForJutsu(94))}
+                    className="px-2 py-1 rounded-lg bg-blue-950/60 hover:bg-blue-900/80 text-blue-300 border border-blue-500/40 text-[11px] font-bold transition flex items-center gap-1 cursor-pointer active:scale-95"
+                  >
+                    <span>🌀 『螺旋丸』 Rasengan!</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => audioManager.playJutsuVoice(getVoiceForJutsu(null, 'Синра Тэнсэй'))}
+                    className="px-2 py-1 rounded-lg bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 border border-purple-500/40 text-[11px] font-bold transition flex items-center gap-1 cursor-pointer active:scale-95"
+                  >
+                    <span>👑 『神羅天征』 Shinra Tensei!</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => audioManager.playJutsuVoice(getVoiceForJutsu(null, 'Аматэрасу'))}
+                    className="px-2 py-1 rounded-lg bg-red-950/60 hover:bg-red-900/80 text-red-300 border border-red-500/40 text-[11px] font-bold transition flex items-center gap-1 cursor-pointer active:scale-95"
+                  >
+                    <span>🔥 『天照』 Amaterasu!</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => audioManager.playJutsuVoice(getVoiceForJutsu(null, 'Камуи'))}
+                    className="px-2 py-1 rounded-lg bg-indigo-950/60 hover:bg-indigo-900/80 text-indigo-300 border border-indigo-500/40 text-[11px] font-bold transition flex items-center gap-1 cursor-pointer active:scale-95"
+                  >
+                    <span>👁️ 『神威』 Kamui!</span>
+                  </button>
+                </div>
               </div>
             </div>
 

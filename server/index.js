@@ -435,6 +435,19 @@ io.on('connection', (socket) => {
     }
   });
 
+  // ==========================================
+  // БОЕВОЙ ГОЛОСОВОЙ КЛИЧ ТЕХНИКИ В ДУЭЛИ (PVP VOICE SHOUT)
+  // ==========================================
+  socket.on('cast_jutsu_voice_shout', ({ roomId, senderName, voiceData }) => {
+    if (roomId && voiceData) {
+      socket.to(roomId).emit('opponent_jutsu_voice_shout', {
+        senderName: senderName || 'Оппонент',
+        voiceData
+      });
+      console.log(`[Voice Shout] Боевой клич «${voiceData.romaji}» от ${senderName} отправлен в комнату ${roomId}`);
+    }
+  });
+
   // Смена модели ИИ-ведущего (на лету в любой момент игры)
   socket.on('change_ai_model', ({ roomId, modelId, apiKey }) => {
     const room = rooms.get(roomId);

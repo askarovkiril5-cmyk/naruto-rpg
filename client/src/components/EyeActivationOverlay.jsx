@@ -210,12 +210,20 @@ export default function EyeActivationOverlay({
   // Демонстрация сопернику
   const handleDemonstrate = () => {
     if (onShowToOpponent) {
-      const activePat = familyKey === 'Rinnegan' ? selectedRinnePattern : selectedPattern;
+      const activePat = familyKey === 'Rinnegan' 
+        ? (selectedRinnePattern === 'kaguya' ? 'rinne_sharingan' : selectedRinnePattern) 
+        : selectedPattern;
+      const displayName = currentEyeId === 'mangekyo'
+        ? activeMangekyo.name
+        : (currentEyeId === 'rinnegan_awakened'
+            ? (selectedRinnePattern === 'kaguya' ? 'Ринне-Шаринган (9 томоэ)' : 'Пробуждённый Риннеган Саске (6 томоэ)')
+            : (dojutsuData?.name || familyMeta.name));
+
       onShowToOpponent({
         dojutsuId: currentEyeId,
-        dojutsuName: dojutsuData?.name || familyMeta.name,
+        dojutsuName: displayName,
         pattern: activePat,
-        family: familyKey
+        family: selectedRinnePattern === 'kaguya' && currentEyeId === 'rinnegan_awakened' ? 'Rinne_Sharingan' : familyKey
       });
       setShowDemonstrateNotice(true);
       setTimeout(() => setShowDemonstrateNotice(false), 2600);
@@ -224,6 +232,9 @@ export default function EyeActivationOverlay({
 
   const isAwakened = currentEyeId.includes('awakened') || currentEyeId === 'mangekyo';
   const activeMangekyo = MANGEKYO_LIST.find(m => m.id === selectedPattern) || MANGEKYO_LIST[0];
+  const isKaguyaRinne = currentEyeId === 'rinnegan_awakened' && selectedRinnePattern === 'kaguya';
+  const activeThemeColor = isKaguyaRinne ? '#ef4444' : familyMeta.color;
+  const activeBgAura = isKaguyaRinne ? 'rgba(239, 68, 68, 0.55)' : familyMeta.bgAura;
   const CX = 160;
   const CY = 160;
 
@@ -231,7 +242,7 @@ export default function EyeActivationOverlay({
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 overflow-hidden select-none animate-in fade-in duration-300"
       style={{ 
-        background: `radial-gradient(circle at center, ${familyMeta.bgAura} 0%, rgba(6,7,10,0.97) 50%, #020305 100%)` 
+        background: `radial-gradient(circle at center, ${activeBgAura} 0%, rgba(6,7,10,0.97) 50%, #020305 100%)` 
       }}
     >
       {/* CSS-стили кинематографичного 3D-парения и органических эффектов */}
@@ -254,7 +265,7 @@ export default function EyeActivationOverlay({
         }
         @keyframes coronaPulse {
           0%, 100% { transform: scale(1); opacity: 0.7; }
-          50% { transform: scale(1.08); opacity: 0.95; filter: drop-shadow(0 0 35px ${familyMeta.color}); }
+          50% { transform: scale(1.08); opacity: 0.95; filter: drop-shadow(0 0 35px ${activeThemeColor}); }
         }
         @keyframes starGlintTwinkle {
           0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.85; }
@@ -271,7 +282,7 @@ export default function EyeActivationOverlay({
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div 
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[720px] rounded-full blur-[140px] opacity-45 transition-all duration-700"
-          style={{ backgroundColor: familyMeta.color }}
+          style={{ backgroundColor: activeThemeColor }}
         />
         {isAwakened && (
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.1)_0%,transparent_70%)] animate-pulse" />
@@ -305,11 +316,21 @@ export default function EyeActivationOverlay({
       <div className="absolute top-3 inset-x-3 sm:inset-x-6 flex items-center justify-between z-30">
         <div className="flex items-center gap-2">
           <span className="px-3.5 py-1.5 rounded-full bg-black/80 border border-white/20 text-xs font-mono font-bold text-zinc-100 backdrop-blur-md flex items-center gap-2.5 shadow-2xl">
-            <span className="w-2.5 h-2.5 rounded-full animate-ping" style={{ backgroundColor: familyMeta.color }} />
-            <span>{opponentName ? `👁️ ДЕМОНСТРАЦИЯ СОПЕРНИКА: ${opponentName}` : `👁️ ВЕЛИКОЕ ДОДЗЮЦУ: ${familyMeta.name.toUpperCase()}`}</span>
+            <span className="w-2.5 h-2.5 rounded-full animate-ping" style={{ backgroundColor: activeThemeColor }} />
+            <span>
+              {opponentName 
+                ? `👁️ ДЕМОНСТРАЦИЯ СОПЕРНИКА: ${opponentName}` 
+                : (isKaguyaRinne ? '👁️ ПЕРВОРОДНОЕ ДОДЗЮЦУ: РИННЕ-ШАРИНГАН' : `👁️ ВЕЛИКОЕ ДОДЗЮЦУ: ${familyMeta.name.toUpperCase()}`)}
+            </span>
             {isAwakened && (
-              <span className="px-2 py-0.5 rounded-full bg-amber-500/25 border border-amber-400/50 text-[10px] text-amber-300 animate-pulse font-black">
-                {currentEyeId === 'rinnegan_awakened' ? (selectedRinnePattern === 'sasuke' ? 'САСКЕ (6 ТОМОЭ)' : 'КАГУЯ (9 ТОМОЭ)') : 'ВЫСШАЯ ФОРМА'}
+              <span className={`px-2 py-0.5 rounded-full text-[10px] animate-pulse font-black ${
+                isKaguyaRinne 
+                  ? 'bg-red-500/25 border border-red-400/50 text-red-300' 
+                  : 'bg-amber-500/25 border border-amber-400/50 text-amber-300'
+              }`}>
+                {currentEyeId === 'rinnegan_awakened' 
+                  ? (selectedRinnePattern === 'sasuke' ? 'САСКЕ (6 ТОМОЭ)' : 'КАГУЯ / МАДАРА (9 ТОМОЭ)') 
+                  : 'ВЫСШАЯ ФОРМА'}
               </span>
             )}
           </span>
@@ -336,11 +357,11 @@ export default function EyeActivationOverlay({
         <div 
           className="text-8xl sm:text-9xl font-black font-serif opacity-15 tracking-widest absolute -top-12 sm:-top-16 pointer-events-none select-none transition-all duration-700"
           style={{ 
-            color: familyMeta.color,
+            color: activeThemeColor,
             transform: 'translateZ(-100px)'
           }}
         >
-          {familyMeta.kanji}
+          {isKaguyaRinne ? '神樹' : familyMeta.kanji}
         </div>
 
         {/* ПЕРЕКЛЮЧАТЕЛЬ СТУПЕНЕЙ ГЛАЗА (1, 2, 3 и Пробуждённая) */}
@@ -358,8 +379,8 @@ export default function EyeActivationOverlay({
                     : 'text-zinc-400 hover:text-zinc-100 hover:bg-white/10'
                 }`}
                 style={{
-                  boxShadow: isSelected ? `0 0 20px ${familyMeta.color}66` : 'none',
-                  borderColor: isSelected ? familyMeta.color : 'rgba(255,255,255,0.1)'
+                  boxShadow: isSelected ? `0 0 20px ${activeThemeColor}66` : 'none',
+                  borderColor: isSelected ? activeThemeColor : 'rgba(255,255,255,0.1)'
                 }}
               >
                 <span>{st.stageNum === 'awakened' ? '✨' : `${st.stageNum} ст.`}</span>
@@ -383,7 +404,7 @@ export default function EyeActivationOverlay({
           <div 
             className="absolute -inset-8 sm:-inset-12 rounded-full opacity-70 blur-2xl transition-all duration-700 pointer-events-none"
             style={{ 
-              backgroundColor: familyMeta.color,
+              backgroundColor: activeThemeColor,
               animation: 'coronaPulse 4s infinite ease-in-out',
               transform: 'translateZ(-45px)'
             }}
@@ -394,15 +415,15 @@ export default function EyeActivationOverlay({
             className="absolute -inset-8 sm:-inset-12 rounded-full pointer-events-none border border-white/25 opacity-70"
             style={{
               animation: 'chakraOrbital1 16s linear infinite',
-              boxShadow: `0 0 25px ${familyMeta.color}88`,
-              borderColor: familyMeta.color
+              boxShadow: `0 0 25px ${activeThemeColor}88`,
+              borderColor: activeThemeColor
             }}
           />
           <div 
             className="absolute -inset-10 sm:-inset-14 rounded-full pointer-events-none border border-white/15 opacity-40"
             style={{
               animation: 'chakraOrbital2 22s linear infinite',
-              borderColor: familyMeta.color
+              borderColor: activeThemeColor
             }}
           />
 
@@ -471,7 +492,9 @@ export default function EyeActivationOverlay({
                 }}
                 className={`px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${
                   selectedRinnePattern === p.id 
-                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/50 scale-105' 
+                    ? (p.id === 'kaguya'
+                        ? 'bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white shadow-md shadow-red-600/50 scale-105 border border-red-400/40'
+                        : 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/50 scale-105 border border-purple-400/40')
                     : 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800'
                 }`}
               >

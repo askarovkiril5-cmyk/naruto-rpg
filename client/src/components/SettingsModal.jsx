@@ -960,6 +960,30 @@ function formatTime(sec) {
                   >
                     <span>👁️ 『神威』 Kamui!</span>
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={() => audioManager.playJutsuVoice(getVoiceForJutsu(8))}
+                    className="px-2 py-1 rounded-lg bg-amber-950/60 hover:bg-amber-900/80 text-amber-300 border border-amber-500/40 text-[11px] font-bold transition flex items-center gap-1 cursor-pointer active:scale-95"
+                  >
+                    <span>👥 『影分身』 Bunshin!</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => audioManager.playJutsuVoice(getVoiceForJutsu(59))}
+                    className="px-2 py-1 rounded-lg bg-sky-950/60 hover:bg-sky-900/80 text-sky-300 border border-sky-500/40 text-[11px] font-bold transition flex items-center gap-1 cursor-pointer active:scale-95"
+                  >
+                    <span>⚡ SFX: Нагаси</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => audioManager.playJutsuVoice(getVoiceForJutsu(173))}
+                    className="px-2 py-1 rounded-lg bg-orange-950/60 hover:bg-orange-900/80 text-orange-300 border border-orange-500/40 text-[11px] font-bold transition flex items-center gap-1 cursor-pointer active:scale-95"
+                  >
+                    <span>🔥 SFX: Пламя</span>
+                  </button>
                 </div>
               </div>
             </div>

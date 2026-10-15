@@ -201,23 +201,35 @@ export default function MyArsenalModal({
                           {j.name}
                         </h4>
 
-                        {/* 🔊 ОРИГИНАЛЬНЫЙ БОЕВОЙ ВЫКРИК ТЕХНИКИ */}
+                        {/* 🔊 ОРИГИНАЛЬНЫЙ БОЕВОЙ ВЫКРИК ИЛИ ЗВУКОВОЙ ЭФФЕКТ ТЕХНИКИ */}
                         {voice && (
                           <div className="mb-2">
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                audioManager.playJutsuVoice(voice);
-                                if (onCastVoice) onCastVoice(voice);
+                                if (onCastVoice) {
+                                  onCastVoice(voice);
+                                } else {
+                                  audioManager.playJutsuVoice(voice);
+                                }
                               }}
                               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold border transition-all cursor-pointer shadow-md hover:scale-[1.03] active:scale-95 bg-black/80 hover:bg-black group/vbtn"
                               style={{ borderColor: `${voice.glowColor}80`, color: voice.glowColor }}
-                              title={`Оригинальный крик техники: ${voice.romaji} (${voice.kanji})`}
+                              title={voice.type === 'sfx' ? voice.quote : `Оригинальный крик техники: ${voice.romaji} (${voice.kanji})`}
                             >
-                              <Volume2 className="w-3.5 h-3.5 group-hover/vbtn:scale-110 transition-transform" />
-                              <span className="font-extrabold tracking-wide">{voice.kanji}</span>
-                              <span className="text-zinc-300 font-mono text-[10px]">{voice.romaji}</span>
+                              {voice.type === 'sfx' ? (
+                                <>
+                                  <Sparkles className="w-3.5 h-3.5 group-hover/vbtn:scale-110 transition-transform" />
+                                  <span className="font-extrabold tracking-wide">{voice.sfxLabel || voice.jutsuName}</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Volume2 className="w-3.5 h-3.5 group-hover/vbtn:scale-110 transition-transform" />
+                                  <span className="font-extrabold tracking-wide">{voice.kanji}</span>
+                                  <span className="text-zinc-300 font-mono text-[10px]">{voice.romaji}</span>
+                                </>
+                              )}
                             </button>
                           </div>
                         )}

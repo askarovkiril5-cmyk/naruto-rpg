@@ -137,6 +137,10 @@ class AudioManager {
     this.loopTimer = null;
     this.activeNodes = [];
 
+    // Одиночный аудиоплеер для голосов и эффектов техник (защита от наложения)
+    this.activeVoiceAudio = null;
+    this.voiceLastPlayTime = 0;
+
     // Слушатели изменений для React-компонентов
     this.listeners = new Set();
 
@@ -511,35 +515,83 @@ class AudioManager {
   }
 
   /**
+   * Остановка любого активного звука или голоса техники.
+   * Полностью сбрасывает HTML5 Audio и Web SpeechSynthesis, предотвращая наложение звуков.
+   */
+  stopJutsuVoice() {
+    if (this.activeVoiceAudio) {
+      try {
+        this.activeVoiceAudio.pause();
+        this.activeVoiceAudio.currentTime = 0;
+        this.activeVoiceAudio.src = '';
+      } catch (_) {}
+      this.activeVoiceAudio = null;
+    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (_) {}
+    }
+  }
+
+  /**
    * Воспроизведение аутентичного боевого выкрика техники (Anime Voice Line)
-   * Многоуровневая система: Real Seiyuu MP3 -> Japanese SpeechSynthesis + Chakra Sub-Bass
+   * или чистого звукового эффекта (Pure SFX).
+   * Гарантирует абсолютное отсутствие наложений (Singleton audio tracking) и мгновенную смену звуков.
    */
   playJutsuVoice(voiceData) {
     if (!voiceData || !this.voiceEnabled || this.voiceVolume <= 0.01) return;
-    this.initAudioContext();
 
+    // Защита от дребезга при повторных быстрых кликах (менее 90ms)
+    const nowTs = Date.now();
+    if (nowTs - this.voiceLastPlayTime < 90) return;
+    this.voiceLastPlayTime = nowTs;
+
+    // Мгновенно глушим предыдущий голос/эффект перед запуском нового (никаких наложений!)
+    this.stopJutsuVoice();
+
+    this.initAudioContext();
     const voiceVol = Math.max(0, Math.min(1, this.voiceVolume * 1.15));
 
-    // СЛОЙ 1: Воспроизведение реального студийного MP3-файла сэйю
+    // СЛОЙ 1: Воспроизведение студийного аудиофайла (сэйю или чистый SFX)
     if (voiceData.audioUrl) {
       try {
         const fullUrl = resolveAudioUrl(voiceData.audioUrl);
         const audio = new window.Audio(fullUrl);
         audio.volume = voiceVol;
+        this.activeVoiceAudio = audio;
+
+        audio.onended = () => {
+          if (this.activeVoiceAudio === audio) {
+            this.activeVoiceAudio = null;
+          }
+        };
+        audio.onerror = () => {
+          if (this.activeVoiceAudio === audio) {
+            this.activeVoiceAudio = null;
+          }
+        };
 
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise.catch((err) => {
-            console.warn('[Audio] Seiyuu MP3 playback failed, activating Japanese speech fallback:', voiceData.key, err);
-            this.fallbackJapaneseSpeech(voiceData, voiceVol);
+            console.warn('[Audio] Audio playback failed:', voiceData.key, err);
+            if (this.activeVoiceAudio === audio) {
+              this.activeVoiceAudio = null;
+            }
+            if (voiceData.type !== 'sfx') {
+              this.fallbackJapaneseSpeech(voiceData, voiceVol);
+            }
           });
           return;
         }
       } catch (e) {
-        this.fallbackJapaneseSpeech(voiceData, voiceVol);
+        if (voiceData.type !== 'sfx') {
+          this.fallbackJapaneseSpeech(voiceData, voiceVol);
+        }
         return;
       }
-    } else {
+    } else if (voiceData.type !== 'sfx') {
       this.fallbackJapaneseSpeech(voiceData, voiceVol);
     }
   }

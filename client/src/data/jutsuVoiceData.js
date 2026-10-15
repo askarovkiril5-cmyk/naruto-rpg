@@ -1,20 +1,26 @@
 /**
  * jutsuVoiceData.js
- * Официальный каталог голосовых реплик и кандзи легендарных техник (Anime Voice Lines).
- * Содержит точные сопоставления техник, аутентичные японские иероглифы (Кандзи),
- * ромадзи выкрики, имена персонажей-авторов и цветовую палитру спецэффектов.
+ * Официальный каталог боевых реплик сэйю (Anime Voice Lines) и чистых звуковых эффектов (Pure SFX).
+ *
+ * Принципы:
+ * 1. Строгая каноничность: только легендарные техники имеют оригинальный голос сэйю.
+ * 2. Никаких ложных повторений: исключены неточные совпадения подстрок (феникс, сюрикены клонов и т.д.).
+ * 3. Разделение на голос (type: 'voice') и чистый звук эффекта (type: 'sfx').
  */
 
 export const JUTSU_VOICE_LIST = [
-  // 1. ЧИДОРИ (Саске Учиха)
+  // ========================================================
+  // 1. ЛЕГЕНДАРНЫЕ ГОЛОСОВЫЕ РЕПЛИКИ СЭЙЮ (ANIME VOICE LINES)
+  // ========================================================
   {
     id: 57,
     key: 'chidori',
+    type: 'voice',
     jutsuName: 'Чидори',
     kanji: '『千鳥』',
     romaji: 'Chidori!',
     quote: '«Испытай силу тысячи щебечущих птиц... Чидори!»',
-    character: 'Учиха Саске',
+    character: 'Учиха Саске (Нориаки Сугияма)',
     element: 'LIGHTNING',
     badge: 'Райтон A-ранг',
     glowColor: '#00f5ff',
@@ -22,47 +28,15 @@ export const JUTSU_VOICE_LIST = [
     audioUrl: 'audio/voices/chidori.mp3',
     soundType: 'lightning_chirp'
   },
-  // 2. РАЙКИРИ (Хатаке Какаши)
-  {
-    id: 58,
-    key: 'raikiri',
-    jutsuName: 'Райкири',
-    kanji: '『雷切』',
-    romaji: 'Raikiri!',
-    quote: '«Клинок, рассекающий саму молнию... Райкири!»',
-    character: 'Хатаке Какаши',
-    element: 'LIGHTNING',
-    badge: 'Райтон S-ранг',
-    glowColor: '#38bdf8',
-    badgeColor: 'bg-sky-950/90 text-sky-300 border-sky-400/50',
-    audioUrl: 'audio/voices/raikiri.mp3',
-    soundType: 'lightning_strike'
-  },
-  // 3. КИРИН (Учиха Саске)
-  {
-    id: 61,
-    key: 'kirin',
-    jutsuName: 'Кирин',
-    kanji: '『麒麟』',
-    romaji: 'Kirin!',
-    quote: '«Исчезни вместе с раскатом грома... Кирин!»',
-    character: 'Учиха Саске',
-    element: 'LIGHTNING',
-    badge: 'Райтон S-ранг',
-    glowColor: '#00ffff',
-    badgeColor: 'bg-teal-950/90 text-teal-300 border-teal-400/50',
-    audioUrl: 'audio/voices/kirin.mp3',
-    soundType: 'thunder_roar'
-  },
-  // 4. РАСЕНГАН (Узумаки Наруто)
   {
     id: 94,
     key: 'rasengan',
+    type: 'voice',
     jutsuName: 'Расенган',
     kanji: '『螺旋丸』',
     romaji: 'Rasengan!',
     quote: '«Вращающаяся сфера чистой чакры... Расенган!»',
-    character: 'Узумаки Наруто',
+    character: 'Узумаки Наруто (Дзюнко Такэути)',
     element: 'WIND',
     badge: 'Фуутон A-ранг',
     glowColor: '#00d4ff',
@@ -70,31 +44,15 @@ export const JUTSU_VOICE_LIST = [
     audioUrl: 'audio/voices/rasengan.mp3',
     soundType: 'wind_vortex'
   },
-  // 5. ОДАМА РАСЕНГАН (Узумаки Наруто)
-  {
-    id: 95,
-    key: 'oodama_rasengan',
-    jutsuName: 'Одама Расенган',
-    kanji: '『大玉螺旋丸』',
-    romaji: 'Oodama Rasengan!',
-    quote: '«Исполинский Расенган сокрушительной силы!»',
-    character: 'Узумаки Наруто',
-    element: 'WIND',
-    badge: 'Фуутон A-ранг',
-    glowColor: '#0284c7',
-    badgeColor: 'bg-blue-950/90 text-blue-200 border-blue-500/50',
-    audioUrl: 'audio/voices/oodama_rasengan.mp3',
-    soundType: 'wind_vortex_mega'
-  },
-  // 6. ТЕНЕВЫЕ КЛОНЫ (Узумаки Наруто)
   {
     id: 8,
     key: 'kage_bunshin',
+    type: 'voice',
     jutsuName: 'Кагэ Бунсин',
     kanji: '『影分身の術』',
     romaji: 'Kage Bunshin no Jutsu!',
     quote: '«Армия теневых клонов шиноби... В бой!»',
-    character: 'Узумаки Наруто',
+    character: 'Узумаки Наруто (Дзюнко Такэути)',
     element: 'BASIC',
     badge: 'Клонирование',
     glowColor: '#f59e0b',
@@ -102,233 +60,193 @@ export const JUTSU_VOICE_LIST = [
     audioUrl: 'audio/voices/kage_bunshin.mp3',
     soundType: 'smoke_poof'
   },
-  // 7. ВЕЛИКИЙ ОГНЕННЫЙ ШАР (Учиха)
-  {
-    id: 173,
-    key: 'katon_gokakyu',
-    jutsuName: 'Огненный шар',
-    kanji: '『火遁・豪火球の術』',
-    romaji: 'Katon: Gokakyu no Jutsu!',
-    quote: '«Священное пламя клана Учиха... Гокакью!»',
-    character: 'Учиха Саске / Итачи',
-    element: 'FIRE',
-    badge: 'Катон A-ранг',
-    glowColor: '#ef4444',
-    badgeColor: 'bg-red-950/90 text-red-300 border-red-500/50',
-    audioUrl: 'audio/voices/katon_gokakyu.mp3',
-    soundType: 'fire_roar'
-  },
-  // 8. ЦВЕТЫ ФЕНИКСА (Катон)
-  {
-    id: 36,
-    key: 'katon_hosenka',
-    jutsuName: 'Хосэнка (Цветы феникса)',
-    kanji: '『火遁・鳳仙火の術』',
-    romaji: 'Katon: Hosenka no Jutsu!',
-    quote: '«Веер пылающих снарядов феникса!»',
-    character: 'Учиха Саске',
-    element: 'FIRE',
-    badge: 'Катон B-ранг',
-    glowColor: '#f97316',
-    badgeColor: 'bg-orange-950/90 text-orange-300 border-orange-500/50',
-    audioUrl: 'audio/voices/katon_hosenka.mp3',
-    soundType: 'fire_bursts'
-  },
-  // 9. ВОДЯНОЙ ДРАКОН (Суйтон)
-  {
-    id: 83,
-    key: 'suiton_suiryudan',
-    jutsuName: 'Суйрюдан (Водяной дракон)',
-    kanji: '『水遁・水龍弾の術』',
-    romaji: 'Suiton: Suiryudan no Jutsu!',
-    quote: '«Исполинский водяной дракон сокрушает преграды!»',
-    character: 'Забуза Момочи / Тобирама',
-    element: 'WATER',
-    badge: 'Суйтон B-ранг',
-    glowColor: '#06b6d4',
-    badgeColor: 'bg-cyan-950/90 text-cyan-300 border-cyan-400/50',
-    audioUrl: 'audio/voices/suiryudan.mp3',
-    soundType: 'water_dragon'
-  },
-  // 10. АМАТЭРАСУ (Итачи Учиха)
-  {
-    id: 'eye_amaterasu',
-    key: 'amaterasu',
-    jutsuName: 'Аматерасу',
-    kanji: '『天照』',
-    romaji: 'Amaterasu...',
-    quote: '«Неугасимое черное пламя, сжигающее сам огонь...»',
-    character: 'Учиха Итачи / Саске',
-    element: 'DOJUTSU',
-    badge: 'Мангёкё S-ранг',
-    glowColor: '#dc2626',
-    badgeColor: 'bg-red-950/90 text-red-200 border-red-500/60 shadow-lg shadow-red-900/40',
-    audioUrl: 'audio/voices/amaterasu.mp3',
-    soundType: 'black_flame'
-  },
-  // 11. ЦУКУЁМИ (Итачи Учиха)
-  {
-    id: 'eye_tsukuyomi',
-    key: 'tsukuyomi',
-    jutsuName: 'Цукуёми',
-    kanji: '『月読』',
-    romaji: 'Tsukuyomi!',
-    quote: '«В мире Цукуёми время, пространство и материя подвластны мне...»',
-    character: 'Учиха Итачи',
-    element: 'DOJUTSU',
-    badge: 'Мангёкё S-ранг',
-    glowColor: '#ef4444',
-    badgeColor: 'bg-purple-950/90 text-purple-200 border-purple-500/60',
-    audioUrl: 'audio/voices/tsukuyomi.mp3',
-    soundType: 'hypnotic_pulse'
-  },
-  // 12. КАМУИ (Обито / Какаши)
-  {
-    id: 'eye_kamui',
-    key: 'kamui',
-    jutsuName: 'Камуи',
-    kanji: '『神威』',
-    romaji: 'Kamui!',
-    quote: '«Пространственно-временное преломление реальности... Камуи!»',
-    character: 'Хатаке Какаши / Обито',
-    element: 'DOJUTSU',
-    badge: 'Мангёкё A-ранг',
-    glowColor: '#a855f7',
-    badgeColor: 'bg-purple-950/90 text-purple-300 border-purple-400/50',
-    audioUrl: 'audio/voices/kamui.mp3',
-    soundType: 'space_vortex'
-  },
-  // 13. СУСАНОО (Мадара / Саске / Итачи)
-  {
-    id: 'eye_susanoo',
-    key: 'susanoo',
-    jutsuName: 'Сусаноо',
-    kanji: '『須佐能乎』',
-    romaji: 'Susanoo!',
-    quote: '«Божественный колосс несокрушимой чакры... Сусаноо!»',
-    character: 'Учиха Мадара / Саске',
-    element: 'DOJUTSU',
-    badge: 'Мангёкё S-ранг',
-    glowColor: '#6366f1',
-    badgeColor: 'bg-indigo-950/90 text-indigo-200 border-indigo-400/50',
-    audioUrl: 'audio/voices/susanoo.mp3',
-    soundType: 'divine_armor'
-  },
-  // 14. СИНРА ТЭНСЭЙ (Пейн)
   {
     id: 'eye_shinra_tensei',
     key: 'shinra_tensei',
+    type: 'voice',
     jutsuName: 'Синра Тэнсэй',
     kanji: '『神羅天征』',
     romaji: 'Shinra Tensei!',
-    quote: '«Этот мир познает истинную боль... Божественное покорение!»',
-    character: 'Пейн (Нагато)',
+    quote: '«Познай же боль... Божественное Покорение!»',
+    character: 'Пейн / Нагато (Кэнъю Хориути)',
     element: 'RINNEGAN',
-    badge: 'Риннеган S-ранг',
+    badge: 'Риннеган Додзюцу',
     glowColor: '#c084fc',
-    badgeColor: 'bg-purple-950/90 text-purple-200 border-purple-400/60 shadow-lg shadow-purple-900/50',
+    badgeColor: 'bg-purple-950/90 text-purple-300 border-purple-400/50',
     audioUrl: 'audio/voices/shinra_tensei.mp3',
     soundType: 'gravity_repulsion'
   },
-  // 15. ТИБАКУ ТЭНСЭЙ (Пейн / Мадара)
   {
-    id: 'eye_chibaku_tensei',
-    key: 'chibaku_tensei',
-    jutsuName: 'Тибаку Тэнсэй',
-    kanji: '『地爆天星』',
-    romaji: 'Chibaku Tensei!',
-    quote: '«Гравитационная сингулярность шести путей... Тибаку Тэнсэй!»',
-    character: 'Пейн / Учиха Мадара',
-    element: 'RINNEGAN',
-    badge: 'Риннеган S-ранг',
-    glowColor: '#7e22ce',
-    badgeColor: 'bg-violet-950/90 text-violet-200 border-violet-500/60',
-    audioUrl: 'audio/voices/chibaku_tensei.mp3',
-    soundType: 'gravity_core'
+    id: 'eye_amaterasu',
+    key: 'amaterasu',
+    type: 'voice',
+    jutsuName: 'Аматэрасу',
+    kanji: '『天照』',
+    romaji: 'Amaterasu!',
+    quote: '«Чёрное негасимое пламя преисподней... Аматэрасу!»',
+    character: 'Учиха Итачи (Хидэо Исикава)',
+    element: 'FIRE',
+    badge: 'Мангёкё Шаринган',
+    glowColor: '#ef4444',
+    badgeColor: 'bg-red-950/90 text-red-300 border-red-500/50',
+    audioUrl: 'audio/voices/amaterasu.mp3',
+    soundType: 'black_fire'
   },
-  // 16. БЬЯКУГАН — 64 ЛАДОНИ БАГУА (Неджи Хьюга)
   {
-    id: 'eye_64_palms',
-    key: 'hakke_64',
-    jutsuName: 'Хакке Рокудзюёнсё (64 ладони)',
-    kanji: '『八卦六十四掌』',
-    romaji: 'Hakke Rokujuyon Sho!',
-    quote: '«Вы находитесь в моём поле Багуа... 64 удара по узлам Тэнкэцу!»',
-    character: 'Неджи Хьюга',
-    element: 'BYAKUGAN',
-    badge: 'Бьякуган A-ранг',
+    id: 'eye_kamui',
+    key: 'kamui',
+    type: 'voice',
+    jutsuName: 'Камуи',
+    kanji: '『神威』',
+    romaji: 'Kamui!',
+    quote: '«Искажение пространства и времени... Камуи!»',
+    character: 'Хатаке Какаши (Кадзухико Иноуэ)',
+    element: 'SPACE_TIME',
+    badge: 'Мангёкё Шаринган',
+    glowColor: '#818cf8',
+    badgeColor: 'bg-indigo-950/90 text-indigo-300 border-indigo-400/50',
+    audioUrl: 'audio/voices/kamui.mp3',
+    soundType: 'dimension_warp'
+  },
+
+  // ========================================================
+  // 2. ЧИСТЫЕ ЗВУКОВЫЕ ЭФФЕКТЫ (PURE SFX ONLY - БЕЗ ГОЛОСА)
+  // ========================================================
+  {
+    id: 59,
+    key: 'chidori_nagashi',
+    type: 'sfx',
+    jutsuName: 'Чидори Нагаси',
+    sfxLabel: '⚡ Звук: Разряд Нагаси',
+    kanji: '『千鳥流し』',
+    romaji: 'Chidori Nagashi',
+    quote: '«Электрический круговой разряд молнии по телу и земле»',
+    character: 'Звуковой эффект Райтона',
+    element: 'LIGHTNING',
+    badge: 'Райтон SFX',
     glowColor: '#38bdf8',
-    badgeColor: 'bg-sky-950/90 text-sky-200 border-sky-400/50',
-    audioUrl: 'audio/voices/hakke_64.mp3',
-    soundType: 'tenketsu_combo'
+    badgeColor: 'bg-sky-950/90 text-sky-300 border-sky-400/50',
+    audioUrl: 'audio/voices/sfx_chidori_stream.mp3',
+    soundType: 'lightning_stream'
   },
-  // 17. ХАККЭ СЁ КАЙТЕН (Неджи Хьюга)
+  {
+    id: 173,
+    key: 'katon_gokakyu',
+    type: 'sfx',
+    jutsuName: 'Учиха: сдвоенный огненный шар',
+    sfxLabel: '🔥 Звук: Взрыв Пламени',
+    kanji: '『豪火球』',
+    romaji: 'Gokakyu',
+    quote: '«Грозный гул и сокрушительный выброс пламени Катона»',
+    character: 'Звуковой эффект Катона',
+    element: 'FIRE',
+    badge: 'Катон SFX',
+    glowColor: '#f97316',
+    badgeColor: 'bg-orange-950/90 text-orange-300 border-orange-400/50',
+    audioUrl: 'audio/voices/sfx_fire_blast.mp3',
+    soundType: 'fire_roar'
+  },
+  {
+    id: 83,
+    key: 'suiryudan',
+    type: 'sfx',
+    jutsuName: 'Суйрюдан (водяной дракон)',
+    sfxLabel: '🌊 Звук: Всплеск Дракона',
+    kanji: '『水龍弾』',
+    romaji: 'Suiryudan',
+    quote: '«Мощный водяной выброс и сокрушительный удар цунами»',
+    character: 'Звуковой эффект Суйтона',
+    element: 'WATER',
+    badge: 'Суйтон SFX',
+    glowColor: '#06b6d4',
+    badgeColor: 'bg-cyan-950/90 text-cyan-300 border-cyan-400/50',
+    audioUrl: 'audio/voices/sfx_water_dragon.mp3',
+    soundType: 'water_surge'
+  },
   {
     id: 'eye_kaiten',
     key: 'kaiten',
-    jutsuName: 'Хаккэ Сё Кайтен (Небесный вихрь)',
-    kanji: '『八卦掌回天』',
-    romaji: 'Hakke Sho Kaiten!',
-    quote: '«Абсолютная круговая защита чакры на 360 градусов!»',
-    character: 'Неджи Хьюга',
-    element: 'BYAKUGAN',
-    badge: 'Бьякуган A-ранг',
-    glowColor: '#e0f2fe',
-    badgeColor: 'bg-blue-950/90 text-blue-200 border-blue-300/50',
-    audioUrl: 'audio/voices/kaiten.mp3',
-    soundType: 'chakra_dome'
-  },
-  // 18. ХАТИМОН ТОНКО: 8 ВРАТ (Рок Ли / Майт Гай)
-  {
-    id: 217,
-    key: 'hachimon_kai',
-    jutsuName: 'Открытие Врат (Хатимон Тонко)',
-    kanji: '『八門遁甲・開』',
-    romaji: 'Hachimon Tonkou: Kai!',
-    quote: '«Снятие ограничителей тела... Ворота, Открыть!»',
-    character: 'Рок Ли / Майт Гай',
+    type: 'sfx',
+    jutsuName: 'Хаккэ Кайтен',
+    sfxLabel: '🌀 Звук: Купол Кайтен',
+    kanji: '『回天』',
+    romaji: 'Kaiten',
+    quote: '«Свист и вращение защитного купола чакры Бьякугана»',
+    character: 'Звуковой эффект Дзюкена',
     element: 'TAIJUTSU',
-    badge: 'Тайдзюцу Режим',
-    glowColor: '#22c55e',
-    badgeColor: 'bg-emerald-950/90 text-emerald-300 border-emerald-400/50',
-    audioUrl: 'audio/voices/hachimon_kai.mp3',
-    soundType: 'body_release'
+    badge: 'Тайдзюцу SFX',
+    glowColor: '#2dd4bf',
+    badgeColor: 'bg-teal-950/90 text-teal-300 border-teal-400/50',
+    audioUrl: 'audio/voices/sfx_kaiten_spin.mp3',
+    soundType: 'chakra_shield'
   }
 ];
 
 /**
- * Быстрый поиск голосовой линии по ID техники или названию
+ * Строгий поиск звукового сопровождения по точному ID техники или каноничному названию.
+ * Полностью исключает ложные срабатывания и повторяющиеся кнопки на других техниках.
  */
 export function getVoiceForJutsu(jutsuId, jutsuName = '') {
   if (!jutsuId && !jutsuName) return null;
 
-  // 1. Точное совпадение по ID
+  // 1. Точное прямое совпадение по ID
   const numId = Number(jutsuId);
   const byId = JUTSU_VOICE_LIST.find(v => v.id === jutsuId || (numId && v.id === numId));
   if (byId) return byId;
 
-  // 2. Поиск по нормализованному названию
+  // 2. Строгое сопоставление по точному названию техники (без частичных подстрок!)
   const raw = String(jutsuName || jutsuId || '').toLowerCase().trim();
-  
-  if (raw.includes('чидори') || raw.includes('chidori')) return JUTSU_VOICE_LIST.find(v => v.key === 'chidori');
-  if (raw.includes('райкири') || raw.includes('raikiri')) return JUTSU_VOICE_LIST.find(v => v.key === 'raikiri');
-  if (raw.includes('кирин') || raw.includes('kirin')) return JUTSU_VOICE_LIST.find(v => v.key === 'kirin');
-  if (raw.includes('одама') || raw.includes('oodama')) return JUTSU_VOICE_LIST.find(v => v.key === 'oodama_rasengan');
-  if (raw.includes('расенган') || raw.includes('rasengan')) return JUTSU_VOICE_LIST.find(v => v.key === 'rasengan');
-  if (raw.includes('кагэ бунсин') || raw.includes('теневые клон') || raw.includes('bunshin')) return JUTSU_VOICE_LIST.find(v => v.key === 'kage_bunshin');
-  if (raw.includes('огненный шар') || raw.includes('гокакью') || raw.includes('gokakyu')) return JUTSU_VOICE_LIST.find(v => v.key === 'katon_gokakyu');
-  if (raw.includes('хосэнка') || raw.includes('феникс') || raw.includes('hosenka')) return JUTSU_VOICE_LIST.find(v => v.key === 'katon_hosenka');
-  if (raw.includes('суйрюдан') || raw.includes('водяной дракон')) return JUTSU_VOICE_LIST.find(v => v.key === 'suiton_suiryudan');
-  
-  if (raw.includes('аматерас') || raw.includes('amaterasu')) return JUTSU_VOICE_LIST.find(v => v.key === 'amaterasu');
-  if (raw.includes('цукуё') || raw.includes('tsukuyomi')) return JUTSU_VOICE_LIST.find(v => v.key === 'tsukuyomi');
-  if (raw.includes('камуи') || raw.includes('kamui')) return JUTSU_VOICE_LIST.find(v => v.key === 'kamui');
-  if (raw.includes('сусано') || raw.includes('susanoo')) return JUTSU_VOICE_LIST.find(v => v.key === 'susanoo');
-  if (raw.includes('синра') || raw.includes('shinra')) return JUTSU_VOICE_LIST.find(v => v.key === 'shinra_tensei');
-  if (raw.includes('тибаку') || raw.includes('chibaku')) return JUTSU_VOICE_LIST.find(v => v.key === 'chibaku_tensei');
-  if (raw.includes('64 ладон') || raw.includes('рокудзюён')) return JUTSU_VOICE_LIST.find(v => v.key === 'hakke_64');
-  if (raw.includes('кайтен') || raw.includes('небесный вихрь')) return JUTSU_VOICE_LIST.find(v => v.key === 'kaiten');
-  if (raw.includes('врат') || raw.includes('хатимон') || raw.includes('hachimon')) return JUTSU_VOICE_LIST.find(v => v.key === 'hachimon_kai');
 
+  // Чидори (Саске) - только основная каноничная техника #57
+  if (raw === 'чидори' || raw === 'chidori') {
+    return JUTSU_VOICE_LIST.find(v => v.key === 'chidori');
+  }
+
+  // Расенган (Наруто) - только основная каноничная техника #94
+  if (raw === 'расенган' || raw === 'rasengan') {
+    return JUTSU_VOICE_LIST.find(v => v.key === 'rasengan');
+  }
+
+  // Кагэ Бунсин (Наруто) - только теневые клоны #8
+  if (raw === 'кагэ бунсин (теневые клоны)' || raw === 'кагэ бунсин' || raw === 'kage bunshin' || raw === 'kage bunshin no jutsu') {
+    return JUTSU_VOICE_LIST.find(v => v.key === 'kage_bunshin');
+  }
+
+  // Синра Тэнсэй (Пейн)
+  if (raw === 'синра тэнсэй' || raw === 'шинра тенсей' || raw === 'shinra tensei') {
+    return JUTSU_VOICE_LIST.find(v => v.key === 'shinra_tensei');
+  }
+
+  // Аматэрасу (Итачи / Саске)
+  if (raw === 'аматэрасу' || raw === 'аматерасу' || raw === 'amaterasu') {
+    return JUTSU_VOICE_LIST.find(v => v.key === 'amaterasu');
+  }
+
+  // Камуи (Какаши / Обито)
+  if (raw === 'камуи' || raw === 'kamui') {
+    return JUTSU_VOICE_LIST.find(v => v.key === 'kamui');
+  }
+
+  // Чидори Нагаси (SFX Only) #59
+  if (raw === 'чидори нагаси' || raw === 'чидори нагаши' || raw === 'chidori nagashi') {
+    return JUTSU_VOICE_LIST.find(v => v.key === 'chidori_nagashi');
+  }
+
+  // Огненный шар (SFX Only) #173
+  if (raw === 'учиха: сдвоенный огненный шар' || raw === 'сдвоенный огненный шар' || raw === 'огненный шар' || raw === 'гокакью') {
+    return JUTSU_VOICE_LIST.find(v => v.key === 'katon_gokakyu');
+  }
+
+  // Суйрюдан (SFX Only) #83
+  if (raw === 'суйрюдан (водяной дракон)' || raw === 'суйрюдан' || raw === 'водяной дракон' || raw === 'suiryudan') {
+    return JUTSU_VOICE_LIST.find(v => v.key === 'suiryudan');
+  }
+
+  // Кайтен (SFX Only)
+  if (raw === 'хаккэ кайтен' || raw === 'небесный вихрь' || raw === 'кайтен' || raw === 'kaiten') {
+    return JUTSU_VOICE_LIST.find(v => v.key === 'kaiten');
+  }
+
+  // Никаких других техник!
   return null;
 }

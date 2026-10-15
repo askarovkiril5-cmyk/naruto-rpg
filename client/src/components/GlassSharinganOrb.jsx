@@ -497,68 +497,317 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
     );
   }
 
+  // ========================================================
+  // [5] ИКАДЗУТИГАН — 4 ВЕЛИКИХ СТУПЕНИ ГРОМА РАЙДЗИНА (ТЭНРАЙ)
+  // ========================================================
   if (fam.includes('ikadzutigan') || stage.includes('ikadzutigan')) {
+    // 1 СТАДИЯ: 1 разряд / Статическое напряжение (пробой диэлектрика)
     if (stage === 'ikadzutigan_1') {
       return (
         <g id="ikadzutigan_1">
-          <circle r="13" fill="#090117" stroke="#00ffff" strokeWidth="2.6" />
+          {/* Ионизационные кольца предпробоя с фазовыми импульсами */}
+          <circle r="54" fill="none" stroke="#00ffff" strokeWidth="1.2" strokeDasharray="3 6" opacity="0.6" />
+          <circle r="74" fill="none" stroke="#a855f7" strokeWidth="0.8" strokeDasharray="2 8" opacity="0.45" />
+
+          {/* Вторичные ветви-ответвления от главного ствола молнии */}
+          <g stroke="#00ffff" strokeWidth="1.2" fill="none" opacity="0.85" filter="url(#lightningGlowCyan)">
+            {/* Ответвление вправо на r=42 */}
+            <path d="M 6,-42 L 20,-48 L 26,-44 L 34,-52" />
+            <circle cx="34" cy="-52" r="1.5" fill="#ffffff" />
+            {/* Ответвление влево на r=62 */}
+            <path d="M -6,-62 L -20,-66 L -24,-76" />
+            <circle cx="-24" cy="-76" r="1.5" fill="#ffffff" />
+            {/* Прикорневая микро-искра у ядра */}
+            <path d="M -5,-26 L -16,-22 L -22,-28" />
+          </g>
+
+          {/* Главный ствол молнии Райдзина (темное тело + неоновый кант + раскаленный сердечник) */}
+          <g filter="url(#lightningGlowCyan)">
+            <path
+              d="M -3,-14 L -8,-28 L 0,-32 L -7,-48 L 6,-42 L -6,-62 L 4,-66 L -2,-84 L 2,-84 L 8,-64 L -2,-60 L 9,-40 L -3,-46 L 4,-30 L 1,-14 Z"
+              fill="#050014"
+              stroke="#00ffff"
+              strokeWidth="1.8"
+            />
+            <path
+              d="M 0,-14 L -4,-28 L 3,-31 L -3,-48 L 8,-41 L -3,-62 L 5,-65 L 0,-84"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </g>
+
+          {/* Искровой фокус-конденсатор на острие разряда (0°, r=84) */}
+          <g transform="translate(0, -84)" filter="url(#lightningGlowCyan)">
+            <polygon points="0,-7 -5,0 0,7 5,0" fill="#ffffff" stroke="#00ffff" strokeWidth="1.5" />
+            <circle r="2" fill="#00ffff" />
+            <line x1="-9" y1="0" x2="9" y2="0" stroke="#ffffff" strokeWidth="1.2" />
+            <line x1="0" y1="-9" x2="0" y2="9" stroke="#ffffff" strokeWidth="1.2" />
+          </g>
+
+          {/* Центральный экранированный зрачок с плазменной точкой */}
+          <circle r="14" fill="#050014" stroke="#a855f7" strokeWidth="2.5" />
+          <circle r="14" fill="none" stroke="#00ffff" strokeWidth="1.2" strokeDasharray="4 2" />
           <circle r="4.5" fill="#ffffff" filter="drop-shadow(0 0 5px #00ffff)" />
-          <circle r="58" fill="none" stroke="#7928ca" strokeWidth="1.6" strokeDasharray="4 6" />
-          <path d="M -3,-14 L -8,-36 L 4,-38 L -4,-58 L 7,-59 L 0,-82 L -2,-66 L -9,-65 L -1,-46 L -12,-44 Z" fill="#00ffff" stroke="#ffffff" strokeWidth="0.8" />
-          <path d="M -2,-16 L -6,-36 L 2,-38 L -3,-56 L 4,-58 L 0,-78" fill="none" stroke="#ffffff" strokeWidth="1.6" />
         </g>
       );
     }
+
+    // 2 СТАДИЯ: 2 разряда / Ионный дуговой ток (двуполярный LC-разрядник Тесла)
     if (stage === 'ikadzutigan_2') {
       return (
         <g id="ikadzutigan_2">
-          <circle r="14" fill="#090117" stroke="#00ffff" strokeWidth="2.8" />
-          <circle r="5" fill="#ffffff" filter="drop-shadow(0 0 5px #00ffff)" />
+          {/* Высокочастотные дуговые плазменные мосты Тесла (слева и справа) */}
+          <g filter="url(#lightningGlowCyan)">
+            {/* Левая дуга разрядника */}
+            <path
+              d="M 0,-76 C -52,-64 -72,-36 -72,0 C -72,36 -52,64 0,76"
+              fill="none"
+              stroke="#00ffff"
+              strokeWidth="2.4"
+            />
+            <path
+              d="M 0,-76 C -48,-60 -66,-32 -66,0 C -66,32 -48,60 0,76"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="1.2"
+              strokeDasharray="12 4"
+            />
+            {/* Правая дуга разрядника */}
+            <path
+              d="M 0,-76 C 52,-64 72,-36 72,0 C 72,36 52,64 0,76"
+              fill="none"
+              stroke="#00ffff"
+              strokeWidth="2.4"
+            />
+            <path
+              d="M 0,-76 C 48,-60 66,-32 66,0 C 66,32 48,60 0,76"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="1.2"
+              strokeDasharray="12 4"
+            />
+            {/* Искровые пробои по бокам (электрический джиттер) */}
+            <polyline points="-72,0 -80,-5 -74,-12 -82,-18" fill="none" stroke="#ffffff" strokeWidth="1.4" />
+            <polyline points="72,0 80,5 74,12 82,18" fill="none" stroke="#ffffff" strokeWidth="1.4" />
+          </g>
+
+          {/* Внутреннее резонаторное кольцо */}
+          <circle r="36" fill="none" stroke="#a855f7" strokeWidth="1.8" strokeDasharray="6 3" />
+
+          {/* 2 Зеркальные громовые ветви под 180° (0° и 180°) */}
           {[0, 180].map((deg) => (
-            <g key={deg} transform={`rotate(${deg})`}>
-              <path d="M -3,-14 L -8,-36 L 4,-38 L -4,-58 L 7,-59 L 0,-82 L -2,-66 L -9,-65 L -1,-46 L -12,-44 Z" fill="#00ffff" stroke="#ffffff" strokeWidth="0.8" />
-              <path d="M -2,-16 L -6,-36 L 2,-38 L -3,-56 L 4,-58 L 0,-78" fill="none" stroke="#ffffff" strokeWidth="1.6" />
+            <g key={deg} transform={`rotate(${deg})`} filter="url(#lightningGlowCyan)">
+              {/* Боковые отростки разряда */}
+              <path d="M 6,-42 L 22,-46 L 28,-40" fill="none" stroke="#00ffff" strokeWidth="1.4" />
+              <path d="M -6,-58 L -20,-62 L -24,-72" fill="none" stroke="#00ffff" strokeWidth="1.4" />
+
+              {/* Тело молнии */}
+              <path
+                d="M -3,-14 L -8,-28 L 0,-32 L -7,-48 L 6,-42 L -6,-62 L 4,-66 L 0,-82 L 4,-66 L -2,-60 L 9,-40 L -3,-46 L 4,-30 L 1,-14 Z"
+                fill="#050014"
+                stroke="#00ffff"
+                strokeWidth="1.8"
+              />
+              <path
+                d="M 0,-14 L -4,-28 L 3,-31 L -3,-48 L 8,-41 L -3,-62 L 5,-65 L 0,-80"
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+              />
+
+              {/* Плазменный полюсный узел (spark capacitor на r=78) */}
+              <g transform="translate(0, -78)">
+                <circle r="6" fill="#050014" stroke="#00ffff" strokeWidth="2" />
+                <circle r="3" fill="#ffffff" />
+                <line x1="-10" y1="0" x2="10" y2="0" stroke="#ffffff" strokeWidth="1.4" />
+              </g>
             </g>
           ))}
-          <path d="M -6,-30 C -46,-30 -64,-10 -64,0 C -64,10 -46,30 -6,30" fill="none" stroke="#c77dff" strokeWidth="2.4" />
-          <path d="M 6,-30 C 46,-30 64,-10 64,0 C 64,10 46,30 6,30" fill="none" stroke="#c77dff" strokeWidth="2.4" />
+
+          {/* Центральный плазменный зрачок */}
+          <circle r="15" fill="#050014" stroke="#00ffff" strokeWidth="2.5" />
+          <circle r="5" fill="#ffffff" filter="drop-shadow(0 0 6px #00ffff)" />
         </g>
       );
     }
+
+    // 3 СТАДИЯ: 3 разряда / Каскад Тесла (трехфазный Дельта-резонатор Райдзина)
     if (stage === 'ikadzutigan_3') {
       return (
         <g id="ikadzutigan_3">
-          <circle r="15" fill="#090117" stroke="#00ffff" strokeWidth="3" />
-          <circle r="5.5" fill="#ffffff" filter="drop-shadow(0 0 6px #00ffff)" />
-          {[0, 120, 240].map((deg) => (
-            <g key={deg} transform={`rotate(${deg})`}>
-              <path d="M -3,-14 L -8,-36 L 4,-38 L -4,-58 L 7,-59 L 0,-82 L -2,-66 L -9,-65 L -1,-46 L -12,-44 Z" fill="#00ffff" stroke="#ffffff" strokeWidth="0.8" />
-              <path d="M -2,-16 L -6,-36 L 2,-38 L -3,-56 L 4,-58 L 0,-78" fill="none" stroke="#ffffff" strokeWidth="1.6" />
+          {/* Вращающийся треугольный плазменный резонатор (Дельта Тесла) */}
+          <g filter="url(#plasmaVioletGlow)">
+            {/* Внешний равносторонний треугольник плазмы */}
+            <polygon
+              points="0,-48 41.6,24 -41.6,24"
+              fill="rgba(168, 85, 247, 0.12)"
+              stroke="#a855f7"
+              strokeWidth="2.4"
+            />
+            {/* Внутренний контр-треугольник со сдвигом фазы на 60° */}
+            <polygon
+              points="0,48 -41.6,-24 41.6,-24"
+              fill="none"
+              stroke="#00ffff"
+              strokeWidth="1.4"
+              strokeDasharray="8 4"
+            />
+          </g>
+
+          {/* 3 Священные Триграммы Грома «Чжэнь» (☳) под 60°, 180°, 300° */}
+          {[60, 180, 300].map((deg) => (
+            <g key={`trigram-${deg}`} transform={`rotate(${deg})`}>
+              <g transform="translate(0, -74)" stroke="#38bdf8" strokeWidth="1.8" strokeLinecap="round" filter="drop-shadow(0 0 4px #0284c7)">
+                {/* Прерывистая черта 1 (верх) */}
+                <line x1="-8" y1="-4" x2="-2" y2="-4" /><line x1="2" y1="-4" x2="8" y2="-4" />
+                {/* Прерывистая черта 2 (середина) */}
+                <line x1="-8" y1="0" x2="-2" y2="0" /><line x1="2" y1="0" x2="8" y2="0" />
+                {/* Сплошная черта 3 (низ) */}
+                <line x1="-8" y1="4" x2="8" y2="4" />
+              </g>
             </g>
           ))}
-          <polygon points="0,-50 43.3,25 -43.3,25" fill="none" stroke="#e0aaff" strokeWidth="2.4" strokeDasharray="5 3" />
+
+          {/* Ветвящиеся дуговые микроразряды (паутина коронного пробоя между клыками) */}
+          {[0, 120, 240].map((deg) => (
+            <g key={`arc-${deg}`} transform={`rotate(${deg})`} stroke="#00ffff" strokeWidth="1.2" fill="none" opacity="0.75" filter="url(#lightningGlowCyan)">
+              <path d="M 0,-70 C 24,-68 45,-52 52,-32" />
+              <polyline points="28,-62 36,-68 42,-64" />
+              <circle cx="52" cy="-32" r="1.5" fill="#ffffff" />
+            </g>
+          ))}
+
+          {/* 3 Хищных громовых серпа-клыка (0°, 120°, 240°) */}
+          {[0, 120, 240].map((deg) => (
+            <g key={`blade-${deg}`} transform={`rotate(${deg})`} filter="url(#lightningGlowCyan)">
+              {/* Массивное зазубренное тело клыка из черного обсидиана с циановым кантом */}
+              <path
+                d="M -4,-16 L -10,-34 L -3,-38 L -14,-56 L -4,-60 L -12,-76 L 0,-85 L 3,-74 L -2,-70 L 6,-52 L 0,-48 L 7,-30 L 3,-16 Z"
+                fill="#050014"
+                stroke="#00ffff"
+                strokeWidth="2.2"
+                strokeLinejoin="round"
+              />
+              {/* Раскаленный сердечник молнии внутри клыка */}
+              <path
+                d="M 0,-18 L -6,-36 L 1,-39 L -8,-58 L 1,-61 L -5,-76 L 0,-83"
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
+              {/* Искровые шпоры на изломах */}
+              <polygon points="-14,-56 -20,-58 -16,-52" fill="#ffffff" />
+              <polygon points="-12,-76 -18,-80 -13,-72" fill="#ffffff" />
+            </g>
+          ))}
+
+          {/* Внешнее ограничительное кольцо вспышки */}
+          <circle r="76" fill="none" stroke="#a855f7" strokeWidth="1.8" strokeDasharray="20 10" opacity="0.6" />
+
+          {/* Центральный искрящийся зрачок */}
+          <circle r="16" fill="#04000a" stroke="#00ffff" strokeWidth="2.8" />
+          <circle r="6" fill="#ffffff" filter="drop-shadow(0 0 6px #00ffff)" />
         </g>
       );
     }
+
+    // 4 СТАДИЯ: Пробуждённый Икадзутиган / Высший Райдзин Курорайтон (Чёрная Молния)
     return (
       <g id="ikadzutigan_awakened">
-        <circle r="18" fill="#060012" stroke="#00ffff" strokeWidth="3.2" />
-        <circle r="6.5" fill="#ffffff" filter="drop-shadow(0 0 8px #00ffff)" />
-        <polygon points="0,-80 31,-74 74,-31 80,0 74,31 31,74 0,80 -31,74 -74,31 -80,0 -74,-31 -31,-74" fill="none" stroke="#00ffff" strokeWidth="2.6" />
-        {[0, 90, 180, 270].map((deg) => (
-          <g key={deg} transform={`rotate(${deg})`}>
-            <path d="M -4,-15 L -9,-38 L 6,-40 L -4,-60 L 7,-61 L 0,-86 L -2,-70 L -10,-68 L 0,-48 L -14,-46 Z" fill="#080017" stroke="#00ffff" strokeWidth="2" />
-            <line x1="0" y1="-20" x2="0" y2="-82" stroke="#ffffff" strokeWidth="1.2" />
-          </g>
-        ))}
+        {/* Слой 0: Октаграмма грома (сакральная печать Райдзина) */}
+        <g filter="url(#plasmaVioletGlow)">
+          {/* Октагональный периметр */}
+          <polygon
+            points="0,-82 58,-58 82,0 58,58 0,82 -58,58 -82,0 -58,-58"
+            fill="rgba(5, 0, 20, 0.55)"
+            stroke="#a855f7"
+            strokeWidth="2.5"
+          />
+          {/* Звездный внутренний ромб печати */}
+          <polygon
+            points="0,-82 82,0 0,82 -82,0"
+            fill="none"
+            stroke="#00ffff"
+            strokeWidth="1.8"
+            strokeDasharray="6 3"
+          />
+          <polygon
+            points="58,-58 58,58 -58,58 -58,-58"
+            fill="none"
+            stroke="#c084fc"
+            strokeWidth="1.5"
+            strokeDasharray="6 3"
+          />
+        </g>
+
+        {/* Слой 1: 4 Промежуточных плазменных дуги с барабанами томоэ (45°, 135°, 225°, 315°) */}
         {[45, 135, 225, 315].map((deg) => (
-          <g key={deg} transform={`rotate(${deg})`}>
-            <path d="M -3,-15 L -7,-32 L 4,-34 L -3,-50 L 5,-51 L 0,-70 L -2,-58 L -8,-57 L 0,-40 L -10,-38 Z" fill="#080017" stroke="#c77dff" strokeWidth="1.6" />
+          <g key={deg} transform={`rotate(${deg})`} filter="url(#plasmaVioletGlow)">
+            {/* Извивающийся язык фиолетовой плазмы */}
+            <path
+              d="M 0,-18 C -14,-32 -16,-52 0,-72 C 16,-52 14,-32 0,-18 Z"
+              fill="rgba(168, 85, 247, 0.4)"
+              stroke="#c084fc"
+              strokeWidth="2"
+            />
+            <line x1="0" y1="-20" x2="0" y2="-70" stroke="#ffffff" strokeWidth="1.8" />
+            {/* Священный барабан Райдзина с символом томоэ на вершине (r=72) */}
+            <g transform="translate(0, -72)">
+              <circle r="7" fill="#04000a" stroke="#00ffff" strokeWidth="1.8" />
+              {/* Золотисто-белый микро-томоэ внутри барабана */}
+              <path d="M 0,-3 C 3,-3 4,0 2,2 C 0,4 -3,2 -2,0 Z" fill="#ffffff" />
+            </g>
           </g>
         ))}
-        {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
-          <circle key={deg} cx="0" cy="-80" r="3.2" fill="#ffffff" filter="drop-shadow(0 0 5px #00ffff)" transform={`rotate(${deg})`} />
+
+        {/* Слой 2: 4 Кардинальных Черных Разряда Курорайтон (0°, 90°, 180°, 270°) */}
+        {[0, 90, 180, 270].map((deg) => (
+          <g key={deg} transform={`rotate(${deg})`} filter="url(#lightningGlowCyan)">
+            {/* Мощное обсидиановое тело Черной Молнии Курорайтон */}
+            <path
+              d="M -5,-18 L -12,-38 L -4,-40 L -16,-62 L -6,-64 L -18,-78 L 0,-86 L 4,-74 L -3,-72 L 7,-54 L 0,-52 L 9,-32 L 4,-18 Z"
+              fill="#030008"
+              stroke="#00ffff"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+            />
+            {/* Раскаленный добела сверхпроводящий сердечник */}
+            <path
+              d="M 0,-18 L -8,-39 L 2,-41 L -10,-63 L 2,-65 L -4,-78 L 0,-85"
+              fill="none"
+              stroke="#ffffff"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
+            {/* Боковые шипы черной плазмы */}
+            <polygon points="-16,-62 -24,-65 -19,-58" fill="#030008" stroke="#00ffff" strokeWidth="1.2" />
+            <polygon points="-18,-78 -26,-82 -21,-74" fill="#030008" stroke="#00ffff" strokeWidth="1.2" />
+            {/* Вершинный плазменный конденсатор */}
+            <circle cx="0" cy="-86" r="3" fill="#ffffff" />
+          </g>
         ))}
+
+        {/* Слой 3: Сакральное внешнее кольцо барабанов томоэ (Raijin Taiko Ring) */}
+        <circle r="72" fill="none" stroke="#00ffff" strokeWidth="1.8" strokeDasharray="16 4" opacity="0.85" />
+
+        {/* Слой 4: Центральная шаровая плазма Райдзина (Singularity Core) */}
+        <g filter="url(#lightningGlowCyan)">
+          {/* Ореол рассеяния */}
+          <circle r="24" fill="url(#plasmaBallSingularity)" />
+          {/* Черная граница горизонта событий зрачка */}
+          <circle r="16" fill="#030008" stroke="#00ffff" strokeWidth="3" />
+          <circle r="16" fill="none" stroke="#a855f7" strokeWidth="1.5" strokeDasharray="6 3" />
+          {/* Чисто белое ядро плазмы */}
+          <circle r="6.5" fill="#ffffff" />
+          {/* 4 микро-орбитальных плазменных вихря */}
+          {[0, 90, 180, 270].map((deg) => (
+            <circle key={deg} cx="0" cy="-11" r="1.5" fill="#00ffff" transform={`rotate(${deg})`} />
+          ))}
+        </g>
       </g>
     );
   }
@@ -822,12 +1071,12 @@ export default function GlassSharinganOrb({
     </>
   ) : isIkadzutigan ? (
     <>
-      <stop offset="0%" stopColor="#f5f3ff" />
-      <stop offset="25%" stopColor="#a855f7" />
-      <stop offset="55%" stopColor="#6b21a8" />
-      <stop offset="80%" stopColor="#3b0764" />
-      <stop offset="94%" stopColor="#1e0538" />
-      <stop offset="100%" stopColor="#090014" />
+      <stop offset="0%" stopColor="#e0f2fe" />
+      <stop offset="14%" stopColor="#38bdf8" />
+      <stop offset="36%" stopColor="#9333ea" />
+      <stop offset="68%" stopColor="#3b0764" />
+      <stop offset="88%" stopColor="#150228" />
+      <stop offset="100%" stopColor="#04000a" />
     </>
   ) : isSasukeMS ? (
     // Инвертированная строма Саске: темный обсидиан
@@ -944,6 +1193,33 @@ export default function GlassSharinganOrb({
           <filter id="glassOrbBladeShadow" x="-30%" y="-30%" width="160%" height="160%">
             <feDropShadow dx="0" dy="5" stdDeviation="4.5" floodColor="#000000" floodOpacity="0.92" />
           </filter>
+
+          {/* 11. Неоновое циановое свечение молнии (Икадзутиган) */}
+          <filter id="lightningGlowCyan" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="1.6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          {/* 12. Фиолетовая плазменная аура Тесла */}
+          <filter id="plasmaVioletGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="2.4" result="glow" />
+            <feMerge>
+              <feMergeNode in="glow" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          {/* 13. Раскаленное ядро шаровой плазмы Райдзина */}
+          <radialGradient id="plasmaBallSingularity" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="1" />
+            <stop offset="28%" stopColor="#00ffff" stopOpacity="0.95" />
+            <stop offset="60%" stopColor="#a855f7" stopOpacity="0.6" />
+            <stop offset="85%" stopColor="#3b0764" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#050014" stopOpacity="0" />
+          </radialGradient>
 
           {/* Master Circular Sphere Clip (r=88) */}
           <clipPath id="sphereClip">

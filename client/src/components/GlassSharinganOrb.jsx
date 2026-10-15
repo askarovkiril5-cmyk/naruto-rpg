@@ -100,52 +100,23 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
   const fam = String(family || '').toLowerCase();
   const pat = String(pattern || '').toLowerCase();
 
-  const isRinneSharingan = pat === 'rinne_sharingan' || pat === 'kaguya' || stage === 'rinne_sharingan';
-
   // ========================================================
-  // [1] РИННЕ-ШАРИНГАН (9 ТОМОЭ — КАГУЯ И МАДАРА / БЕСКОНЕЧНОЕ ЦУКУЁМИ)
+  // [1] БАЗОВЫЙ ШАРИНГАН (1, 2, 3 ТОМОЭ)
   // ========================================================
-  if (isRinneSharingan) {
+  if (stage === 'sharingan_1' || stage === 'sharingan_2' || stage === 'sharingan_3') {
+    const tomoeCount = stage === 'sharingan_1' ? 1 : (stage === 'sharingan_2' ? 2 : 3);
+    const angles = tomoeCount === 1 ? [0] : (tomoeCount === 2 ? [0, 180] : [0, 120, 240]);
     return (
-      <g id="rinne_sharingan_9_tomoe">
-        {/* 4 Концентрических кольца Бесконечного Цукуёми */}
-        <circle r="80" fill="none" stroke="#050505" strokeWidth="2.8" />
-        <circle r="62" fill="none" stroke="#050505" strokeWidth="2.8" />
-        <circle r="44" fill="none" stroke="#050505" strokeWidth="2.8" />
-        <circle r="26" fill="none" stroke="#050505" strokeWidth="2.8" />
+      <g>
+        <circle r="52" fill="none" stroke="#09090b" strokeWidth="2.5" opacity="0.85" />
         <circle r="12" fill="#050505" stroke="#7f1d1d" strokeWidth="1.5" />
-        <circle r="4" fill="#ffffff" filter="drop-shadow(0 0 4px #ffffff)" />
-
-        {/* РОВНО 9 ТОМОЭ: 3 кольца по 3 томоэ */}
-        {/* Кольцо 1 (внутреннее r=44): 3 томоэ под 0°, 120°, 240° */}
-        {[0, 120, 240].map((deg) => (
-          <g key={`inner-r1-${deg}`} transform={`rotate(${deg})`}>
-            <g transform="translate(0, -44) scale(0.68)">
-              <circle r="7.5" fill="#050505" stroke="#991b1b" strokeWidth="1" />
-              <path d="M -6.5 0 C -6.5 -9.5, 3.5 -13, 7.5 -20 C 5.5 -13, 2 -7.5, 0 -4.5 Z" fill="#050505" stroke="#ef4444" strokeWidth="0.8" />
-              <circle r="2.2" fill="#ffffff" />
-            </g>
-          </g>
-        ))}
-
-        {/* Кольцо 2 (среднее r=62): 3 томоэ со сдвигом на 60°: 60°, 180°, 300° */}
-        {[60, 180, 300].map((deg) => (
-          <g key={`mid-r2-${deg}`} transform={`rotate(${deg})`}>
-            <g transform="translate(0, -62) scale(0.68)">
-              <circle r="7.5" fill="#050505" stroke="#991b1b" strokeWidth="1" />
-              <path d="M -6.5 0 C -6.5 -9.5, 3.5 -13, 7.5 -20 C 5.5 -13, 2 -7.5, 0 -4.5 Z" fill="#050505" stroke="#ef4444" strokeWidth="0.8" />
-              <circle r="2.2" fill="#ffffff" />
-            </g>
-          </g>
-        ))}
-
-        {/* Кольцо 3 (внешнее r=80): 3 томоэ под 0°, 120°, 240° */}
-        {[0, 120, 240].map((deg) => (
-          <g key={`outer-r3-${deg}`} transform={`rotate(${deg})`}>
-            <g transform="translate(0, -80) scale(0.68)">
-              <circle r="7.5" fill="#050505" stroke="#991b1b" strokeWidth="1" />
-              <path d="M -6.5 0 C -6.5 -9.5, 3.5 -13, 7.5 -20 C 5.5 -13, 2 -7.5, 0 -4.5 Z" fill="#050505" stroke="#ef4444" strokeWidth="0.8" />
-              <circle r="2.2" fill="#ffffff" />
+        <circle r="4" fill="#ffffff" filter="drop-shadow(0 0 3px #ff2a4b)" />
+        {angles.map((deg, i) => (
+          <g key={i} transform={`rotate(${deg})`}>
+            <g transform="translate(0, -52)">
+              <circle r="8" fill="#050505" stroke="#ef4444" strokeWidth="1" />
+              <path d="M -7 0 C -7 -10, 4 -14, 8 -22 C 6 -14, 2 -8, 0 -5 Z" fill="#050505" stroke="#ff2a4b" strokeWidth="0.8" />
+              <circle r="2.5" fill="#ffffff" />
             </g>
           </g>
         ))}
@@ -154,9 +125,58 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
   }
 
   // ========================================================
-  // [2] РИННЕГАН (САСКЕ 6 ТОМОЭ ИЛИ ПЕЙН 0 ТОМОЭ)
+  // [2] РИННЕГАН И РИННЕ-ШАРИНГАН
   // ========================================================
-  if (fam.includes('rinne')) {
+  if (fam.includes('rinne') || stage.includes('rinne') || pat === 'rinne_sharingan' || pat === 'kaguya') {
+    const isRinneSharingan = pat === 'rinne_sharingan' || pat === 'kaguya' || stage === 'rinne_sharingan';
+    if (isRinneSharingan) {
+      return (
+        <g id="rinne_sharingan_9_tomoe">
+          {/* 4 Концентрических кольца Бесконечного Цукуёми */}
+          <circle r="80" fill="none" stroke="#050505" strokeWidth="2.8" />
+          <circle r="62" fill="none" stroke="#050505" strokeWidth="2.8" />
+          <circle r="44" fill="none" stroke="#050505" strokeWidth="2.8" />
+          <circle r="26" fill="none" stroke="#050505" strokeWidth="2.8" />
+          <circle r="12" fill="#050505" stroke="#7f1d1d" strokeWidth="1.5" />
+          <circle r="4" fill="#ffffff" filter="drop-shadow(0 0 4px #ffffff)" />
+
+          {/* РОВНО 9 ТОМОЭ: 3 кольца по 3 томоэ */}
+          {/* Кольцо 1 (внутреннее r=44): 3 томоэ под 0°, 120°, 240° */}
+          {[0, 120, 240].map((deg) => (
+            <g key={`inner-r1-${deg}`} transform={`rotate(${deg})`}>
+              <g transform="translate(0, -44) scale(0.68)">
+                <circle r="7.5" fill="#050505" stroke="#991b1b" strokeWidth="1" />
+                <path d="M -6.5 0 C -6.5 -9.5, 3.5 -13, 7.5 -20 C 5.5 -13, 2 -7.5, 0 -4.5 Z" fill="#050505" stroke="#ef4444" strokeWidth="0.8" />
+                <circle r="2.2" fill="#ffffff" />
+              </g>
+            </g>
+          ))}
+
+          {/* Кольцо 2 (среднее r=62): 3 томоэ со сдвигом на 60°: 60°, 180°, 300° */}
+          {[60, 180, 300].map((deg) => (
+            <g key={`mid-r2-${deg}`} transform={`rotate(${deg})`}>
+              <g transform="translate(0, -62) scale(0.68)">
+                <circle r="7.5" fill="#050505" stroke="#991b1b" strokeWidth="1" />
+                <path d="M -6.5 0 C -6.5 -9.5, 3.5 -13, 7.5 -20 C 5.5 -13, 2 -7.5, 0 -4.5 Z" fill="#050505" stroke="#ef4444" strokeWidth="0.8" />
+                <circle r="2.2" fill="#ffffff" />
+              </g>
+            </g>
+          ))}
+
+          {/* Кольцо 3 (внешнее r=80): 3 томоэ под 0°, 120°, 240° */}
+          {[0, 120, 240].map((deg) => (
+            <g key={`outer-r3-${deg}`} transform={`rotate(${deg})`}>
+              <g transform="translate(0, -80) scale(0.68)">
+                <circle r="7.5" fill="#050505" stroke="#991b1b" strokeWidth="1" />
+                <path d="M -6.5 0 C -6.5 -9.5, 3.5 -13, 7.5 -20 C 5.5 -13, 2 -7.5, 0 -4.5 Z" fill="#050505" stroke="#ef4444" strokeWidth="0.8" />
+                <circle r="2.2" fill="#ffffff" />
+              </g>
+            </g>
+          ))}
+        </g>
+      );
+    }
+
     const isSasukeAwakened = stage === 'rinnegan_awakened' || pat === 'sasuke';
     return (
       <g id="rinnegan_six_paths">
@@ -544,30 +564,6 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
   }
 
   // ========================================================
-  // [5] БАЗОВЫЙ ШАРИНГАН (1, 2, 3 ТОМОЭ)
-  // ========================================================
-  if (stage === 'sharingan_1' || stage === 'sharingan_2' || stage === 'sharingan_3') {
-    const tomoeCount = stage === 'sharingan_1' ? 1 : (stage === 'sharingan_2' ? 2 : 3);
-    const angles = tomoeCount === 1 ? [0] : (tomoeCount === 2 ? [0, 180] : [0, 120, 240]);
-    return (
-      <g>
-        <circle r="52" fill="none" stroke="#09090b" strokeWidth="2.5" opacity="0.85" />
-        <circle r="12" fill="#050505" stroke="#7f1d1d" strokeWidth="1.5" />
-        <circle r="4" fill="#ffffff" filter="drop-shadow(0 0 3px #ff2a4b)" />
-        {angles.map((deg, i) => (
-          <g key={i} transform={`rotate(${deg})`}>
-            <g transform="translate(0, -52)">
-              <circle r="8" fill="#050505" stroke="#ef4444" strokeWidth="1" />
-              <path d="M -7 0 C -7 -10, 4 -14, 8 -22 C 6 -14, 2 -8, 0 -5 Z" fill="#050505" stroke="#ff2a4b" strokeWidth="0.8" />
-              <circle r="2.5" fill="#ffffff" />
-            </g>
-          </g>
-        ))}
-      </g>
-    );
-  }
-
-  // ========================================================
   // [6] ТОЛЬКО 5 КАНОНИЧЕСКИХ ОБЛАДАТЕЛЕЙ МАНГЁКЁ (ПО АНИМЕ И ЭТАЛОНУ)
   // ========================================================
   switch (pattern) {
@@ -764,8 +760,12 @@ export default function GlassSharinganOrb({
   const fam = String(family || '').toLowerCase();
   const pat = String(pattern || '').toLowerCase();
 
-  const isRinneSharingan = pat === 'rinne_sharingan' || pat === 'kaguya' || stage === 'rinne_sharingan';
-  const isSasukeMS = pat === MANGEKYO_PATTERNS.SASUKE_MS;
+  const isRinneSharingan = (fam.includes('rinne') || stage.includes('rinne') || pat === 'rinne_sharingan' || pat === 'kaguya')
+    && (pat === 'rinne_sharingan' || pat === 'kaguya' || stage === 'rinne_sharingan');
+
+  const isSasukeMS = (fam.includes('sharingan') || !family || stage === 'mangekyo')
+    && stage !== 'sharingan_1' && stage !== 'sharingan_2' && stage !== 'sharingan_3'
+    && pat === MANGEKYO_PATTERNS.SASUKE_MS;
 
   // Цветовая гамма стромы в зависимости от семейства
   const isGold = fam.includes('kingan') || stage.includes('kingan');
@@ -869,14 +869,14 @@ export default function GlassSharinganOrb({
             <feColorMatrix
               type="matrix"
               values="
-                1 0 0 0 0.85
-                0 0 0 0 0.03
-                0 0 0 0 0.06
-                0 0 0 0.42 0"
+                0.33 0.33 0.33 0 0.55
+                0.33 0.33 0.33 0 0.55
+                0.33 0.33 0.33 0 0.55
+                0    0    0    0 1"
               in="noise"
-              result="coloredNoise"
+              result="monoNoise"
             />
-            <feBlend mode="multiply" in="SourceGraphic" in2="coloredNoise" result="blended" />
+            <feBlend mode="multiply" in="SourceGraphic" in2="monoNoise" result="blended" />
           </filter>
 
           {/* 2. Мягкое размытие блика софтбокса */}

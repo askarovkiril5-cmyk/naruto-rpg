@@ -2621,6 +2621,7 @@ export default function App() {
           onClose={() => setOpponentEyeOverlay(null)}
           dojutsuId={opponentEyeOverlay.dojutsuId}
           opponentName={opponentEyeOverlay.senderName}
+          initialPattern={opponentEyeOverlay.pattern}
           autoDismissMs={5500}
         />
       )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   X, Eye, Zap, Flame, Sparkles, Volume2, Check, Moon, Shield, Award
 } from 'lucide-react';
@@ -126,14 +126,18 @@ export default function EyeActivationOverlay({
   dojutsuId = 'mangekyo',
   opponentName = null,
   onShowToOpponent = null,
+  initialPattern = null,
   autoDismissMs = 0
 }) {
   const [currentEyeId, setCurrentEyeId] = useState(dojutsuId);
   // Для ВМШ: 8 каноничных узоров персонажей
-  // 'sasuke_ems' | 'itachi' | 'sasuke_ms' | 'madara_ems' | 'madara_ms' | 'kamui' | 'shisui' | 'izuna'
-  const [selectedPattern, setSelectedPattern] = useState('sasuke_ems');
+  const [selectedPattern, setSelectedPattern] = useState(
+    initialPattern && MANGEKYO_LIST.some(m => m.id === initialPattern) ? initialPattern : 'sasuke_ems'
+  );
   // Для Пробуждённого Риннегана: 'sasuke' (6 томоэ Саске) | 'kaguya' (9 томоэ Кагуи / Мадары)
-  const [selectedRinnePattern, setSelectedRinnePattern] = useState('sasuke');
+  const [selectedRinnePattern, setSelectedRinnePattern] = useState(
+    initialPattern === 'kaguya' || initialPattern === 'rinne_sharingan' ? 'kaguya' : 'sasuke'
+  );
   
   const [isSpinning, setIsSpinning] = useState(true);
   const [isSurging, setIsSurging] = useState(false);
@@ -143,56 +147,87 @@ export default function EyeActivationOverlay({
   });
 
   const containerRef = useRef(null);
-
-  // Синхронизация при открытии
-  useEffect(() => {
-    if (isOpen) {
-      setCurrentEyeId(dojutsuId);
-    }
-  }, [isOpen, dojutsuId]);
+  const spinTimerRef = useRef(null);
+  const surgeTimerRef = useRef(null);
 
   const familyKey = resolveDojutsuFamily(currentEyeId);
   const familyMeta = DOJUTSU_FAMILIES_META[familyKey] || DOJUTSU_FAMILIES_META.Sharingan;
   const dojutsuData = getDojutsuById(currentEyeId) || DOJUTSU_OPTIONS.find(d => d.id === currentEyeId) || DOJUTSU_OPTIONS[3];
 
+  const activePatternProp = useMemo(() => {
+    if (familyKey === 'Sharingan') {
+      if (currentEyeId === 'mangekyo') return selectedPattern;
+      return currentEyeId; // 'sharingan_1', 'sharingan_2', 'sharingan_3'
+    }
+    if (familyKey === 'Rinnegan') {
+      if (currentEyeId === 'rinnegan_awakened') {
+        return selectedRinnePattern === 'kaguya' ? 'rinne_sharingan' : 'sasuke';
+      }
+      return 'rinnegan';
+    }
+    return currentEyeId;
+  }, [currentEyeId, familyKey, selectedPattern, selectedRinnePattern]);
+
   // Звук и 3D импульс при смене формы или узора
-  const triggerActivation = (eyeIdToPlay, subPat = null) => {
+  const triggerActivation = (eyeIdToPlay, subPat = null, customFamKey = null) => {
+    if (spinTimerRef.current) clearTimeout(spinTimerRef.current);
+    if (surgeTimerRef.current) clearTimeout(surgeTimerRef.current);
+
     setIsSpinning(true);
     setIsSurging(true);
     
-    const activePat = subPat !== null ? subPat : (familyKey === 'Rinnegan' ? selectedRinnePattern : selectedPattern);
-    audioManager.playEyeSound(eyeIdToPlay, familyKey, activePat);
+    const targetFamKey = customFamKey || resolveDojutsuFamily(eyeIdToPlay);
+    const activePat = subPat !== null 
+      ? subPat 
+      : (targetFamKey === 'Rinnegan' 
+          ? (selectedRinnePattern === 'kaguya' ? 'rinne_sharingan' : selectedRinnePattern) 
+          : (targetFamKey === 'Sharingan' && eyeIdToPlay === 'mangekyo' ? selectedPattern : eyeIdToPlay));
 
-    const spinTimer = setTimeout(() => setIsSpinning(false), 2400);
-    const surgeTimer = setTimeout(() => setIsSurging(false), 520);
+    audioManager.playEyeSound(eyeIdToPlay, targetFamKey, activePat);
 
-    return () => {
-      clearTimeout(spinTimer);
-      clearTimeout(surgeTimer);
-    };
+    spinTimerRef.current = setTimeout(() => setIsSpinning(false), 2400);
+    surgeTimerRef.current = setTimeout(() => setIsSurging(false), 520);
   };
 
+  // Синхронизация при открытии
   useEffect(() => {
-    if (!isOpen) return;
-
-    const cleanup = triggerActivation(currentEyeId);
-
-    let dismissTimer = null;
-    if (autoDismissMs > 0) {
-      dismissTimer = setTimeout(() => {
-        onClose?.();
-      }, autoDismissMs);
+    if (isOpen) {
+      setCurrentEyeId(dojutsuId);
+      if (initialPattern) {
+        if (initialPattern === 'kaguya' || initialPattern === 'rinne_sharingan') {
+          setSelectedRinnePattern('kaguya');
+        } else if (MANGEKYO_LIST.some(m => m.id === initialPattern)) {
+          setSelectedPattern(initialPattern);
+        }
+      }
+      triggerActivation(dojutsuId, initialPattern);
     }
-
     return () => {
-      cleanup();
-      if (dismissTimer) clearTimeout(dismissTimer);
+      if (spinTimerRef.current) clearTimeout(spinTimerRef.current);
+      if (surgeTimerRef.current) clearTimeout(surgeTimerRef.current);
     };
-  }, [isOpen, currentEyeId, autoDismissMs]);
+  }, [isOpen, dojutsuId, initialPattern]);
+
+  useEffect(() => {
+    if (!isOpen || autoDismissMs <= 0) return;
+    const dismissTimer = setTimeout(() => {
+      onClose?.();
+    }, autoDismissMs);
+    return () => clearTimeout(dismissTimer);
+  }, [isOpen, autoDismissMs, onClose]);
 
   if (!isOpen) return null;
 
-  // Смена ступени
+  // Смена семейства глаз (Шаринган, Бьякуган, Риннеган, Кинган, Аойган, Икадзутиган)
+  const handleSelectFamily = (famKey) => {
+    const meta = DOJUTSU_FAMILIES_META[famKey];
+    if (!meta) return;
+    const targetStage = meta.stages[meta.stages.length - 1].id;
+    setCurrentEyeId(targetStage);
+    triggerActivation(targetStage, null, famKey);
+  };
+
+  // Смена ступени внутри семейства
   const handleSelectStage = (stageId) => {
     setCurrentEyeId(stageId);
     triggerActivation(stageId);
@@ -210,9 +245,6 @@ export default function EyeActivationOverlay({
   // Демонстрация сопернику
   const handleDemonstrate = () => {
     if (onShowToOpponent) {
-      const activePat = familyKey === 'Rinnegan' 
-        ? (selectedRinnePattern === 'kaguya' ? 'rinne_sharingan' : selectedRinnePattern) 
-        : selectedPattern;
       const displayName = currentEyeId === 'mangekyo'
         ? activeMangekyo.name
         : (currentEyeId === 'rinnegan_awakened'
@@ -222,7 +254,7 @@ export default function EyeActivationOverlay({
       onShowToOpponent({
         dojutsuId: currentEyeId,
         dojutsuName: displayName,
-        pattern: activePat,
+        pattern: activePatternProp,
         family: selectedRinnePattern === 'kaguya' && currentEyeId === 'rinnegan_awakened' ? 'Rinne_Sharingan' : familyKey
       });
       setShowDemonstrateNotice(true);
@@ -364,6 +396,33 @@ export default function EyeActivationOverlay({
           {isKaguyaRinne ? '神樹' : familyMeta.kanji}
         </div>
 
+        {/* ВЫБОР СЕМЕЙСТВА ДОДЗЮЦУ (6 ВЕЛИКИХ СЕМЕЙСТВ ГЛАЗ) */}
+        <div className="relative z-30 mb-2 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 bg-black/90 p-1.5 sm:p-2 rounded-2xl border border-white/20 backdrop-blur-md shadow-2xl max-w-full">
+          {Object.entries(DOJUTSU_FAMILIES_META).map(([fKey, fData]) => {
+            const isFamActive = familyKey === fKey;
+            return (
+              <button
+                key={fKey}
+                type="button"
+                onClick={() => handleSelectFamily(fKey)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer ${
+                  isFamActive
+                    ? 'text-white border scale-105 shadow-lg'
+                    : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/10 border border-transparent'
+                }`}
+                style={{
+                  backgroundColor: isFamActive ? `${fData.color}33` : 'rgba(255,255,255,0.04)',
+                  borderColor: isFamActive ? fData.color : 'transparent',
+                  boxShadow: isFamActive ? `0 0 15px ${fData.color}55` : 'none'
+                }}
+              >
+                <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: fData.color }} />
+                <span>{fData.name}</span>
+              </button>
+            );
+          })}
+        </div>
+
         {/* ПЕРЕКЛЮЧАТЕЛЬ СТУПЕНЕЙ ГЛАЗА (1, 2, 3 и Пробуждённая) */}
         <div className="relative z-30 mb-3 flex flex-wrap items-center justify-center gap-1.5 bg-black/80 p-1.5 rounded-2xl border border-white/15 backdrop-blur-md shadow-2xl max-w-full">
           {familyMeta.stages.map(st => {
@@ -430,11 +489,8 @@ export default function EyeActivationOverlay({
           {/* СВЕРХДЕТАЛИЗИРОВАННЫЙ 3D СТЕКЛЯННЫЙ КРИСТАЛЛИЧЕСКИЙ ШАР (GLASS MARBLE ORB ПО ЭТАЛОНУ) */}
           <div className="w-64 h-64 sm:w-80 sm:h-80 relative flex items-center justify-center rounded-full shadow-[0_0_120px_rgba(0,0,0,0.98)]">
             <GlassSharinganOrb
-              pattern={
-                currentEyeId === 'mangekyo'
-                  ? selectedPattern
-                  : (currentEyeId === 'rinnegan_awakened' && selectedRinnePattern === 'kaguya' ? 'rinne_sharingan' : selectedPattern)
-              }
+              key={`${familyKey}_${currentEyeId}_${activePatternProp}`}
+              pattern={activePatternProp}
               family={familyKey}
               stageId={currentEyeId}
               size={300}

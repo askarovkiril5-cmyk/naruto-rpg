@@ -19,6 +19,7 @@ if (!fs.existsSync(DATA_DIR)) {
 const BATTLES_FILE = path.join(DATA_DIR, 'battles_history.json');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const DIRECT_MESSAGES_FILE = path.join(DATA_DIR, 'direct_messages.json');
+const CLANS_FILE = path.join(DATA_DIR, 'clans.json');
 
 function readJsonFile(filePath, defaultValue = []) {
   try {
@@ -618,6 +619,408 @@ function getDirectMessages(userA, userB) {
   return messagesStore[chatKey] || [];
 }
 
+// ==========================================
+// КЛАНОВАЯ СИСТЕМА КОНОХИ (CLAN SYSTEM)
+// ==========================================
+
+function enrichClan(clan) {
+  if (!clan) return null;
+  const memberKeys = clan.members || [];
+  let totalClanXp = 0;
+  let totalPvpWins = 0;
+  let totalLevels = 0;
+
+  const enrichedMembers = memberKeys.map(key => {
+    const p = getUserProfile(key);
+    if (!p) {
+      return {
+        identifier: key,
+        name: key.split('@')[0],
+        email: key.includes('@') ? key : null,
+        level: 1,
+        totalXp: 0,
+        rank: getShinobiRank(1),
+        activeTitle: null,
+        pvpStats: { battlesWon: 0, battlesLost: 0, winrate: 0 }
+      };
+    }
+    const xp = p.totalXp || 0;
+    const wins = p.stats?.pvp?.battlesWon || 0;
+    totalClanXp += xp;
+    totalPvpWins += wins;
+    totalLevels += (p.level || 1);
+
+    return {
+      identifier: p.identifier,
+      name: p.name,
+      email: p.email,
+      level: p.level || 1,
+      totalXp: xp,
+      rank: p.rank,
+      activeTitle: p.activeTitle,
+      pvpStats: p.stats?.pvp || { battlesWon: 0, battlesLost: 0, winrate: 0 }
+    };
+  });
+
+  // Сортировка соклановцев: сначала Глава, затем по опыту (XP)
+  enrichedMembers.sort((a, b) => {
+    if (a.identifier === clan.leaderKey) return -1;
+    if (b.identifier === clan.leaderKey) return 1;
+    return (b.totalXp || 0) - (a.totalXp || 0);
+  });
+
+  return {
+    ...clan,
+    memberCount: enrichedMembers.length,
+    totalClanXp,
+    totalPvpWins,
+    avgLevel: enrichedMembers.length > 0 ? Math.round(totalLevels / enrichedMembers.length) : 1,
+    membersDetails: enrichedMembers
+  };
+}
+
+function getAllClansRaw() {
+  return readJsonFile(CLANS_FILE, []);
+}
+
+function saveAllClans(clans) {
+  writeJsonFile(CLANS_FILE, clans);
+}
+
+function createClan({ name, leaderKey, leaderName, motto, emblemId }) {
+  if (!name || name.trim().length < 2) {
+    return { error: 'Название клана должно содержать минимум 2 символа!' };
+  }
+  if (!leaderKey) {
+    return { error: 'Не указан основатель клана!' };
+  }
+
+  const clans = getAllClansRaw();
+  const cleanName = name.trim();
+  const cleanLeaderKey = String(leaderKey).trim().toLowerCase();
+
+  // Проверка уникальности названия клана
+  const existsName = clans.some(c => c.name.toLowerCase() === cleanName.toLowerCase());
+  if (existsName) {
+    return { error: `Клан с названием «${cleanName}» уже основан в Конохе! Выберите другое имя.` };
+  }
+
+  // Проверка: состоит ли уже лидер в каком-то клане
+  const existingClan = clans.find(c => (c.members || []).map(m => m.toLowerCase()).includes(cleanLeaderKey));
+  if (existingClan) {
+    return { error: `Вы уже состоите в клане «${existingClan.name}»! Сначала покиньте его.` };
+  }
+
+  const clanId = `clan_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  const newClan = {
+    id: clanId,
+    name: cleanName,
+    leaderKey: cleanLeaderKey,
+    leaderName: leaderName || cleanLeaderKey.split('@')[0],
+    motto: motto && motto.trim() ? motto.trim() : 'Воля нашего Клана несокрушима!',
+    emblemId: emblemId || 'emblem_uchiha',
+    createdAt: new Date().toISOString(),
+    members: [cleanLeaderKey],
+    invites: [],
+    chat: [
+      {
+        id: `cmsg_${Date.now()}`,
+        fromKey: 'system',
+        fromName: 'Канцелярия Конохи',
+        text: `Великий клан «${cleanName}» официально основан шиноби ${leaderName || 'Главой'}! Да озарит Воля Огня путь соклановцев!`,
+        timestamp: Date.now(),
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+    ]
+  };
+
+  clans.push(newClan);
+  saveAllClans(clans);
+
+  // Обновляем профиль игрока в базе пользователей
+  const userProf = getUser(cleanLeaderKey);
+  if (userProf) {
+    saveUser({
+      ...userProf,
+      clanId: clanId,
+      clanName: cleanName
+    });
+  }
+
+  return { success: true, clan: enrichClan(newClan) };
+}
+
+function getClan(clanId) {
+  if (!clanId) return null;
+  const clans = getAllClansRaw();
+  const found = clans.find(c => c.id === clanId);
+  return found ? enrichClan(found) : null;
+}
+
+function getUserClan(userKey) {
+  if (!userKey) return null;
+  const cleanKey = String(userKey).trim().toLowerCase();
+  const clans = getAllClansRaw();
+  const found = clans.find(c => (c.members || []).some(m => String(m).trim().toLowerCase() === cleanKey));
+  return found ? enrichClan(found) : null;
+}
+
+function updateClan({ clanId, userKey, motto, emblemId }) {
+  if (!clanId || !userKey) return { error: 'Некорректные параметры обновления клана' };
+  const clans = getAllClansRaw();
+  const clanIndex = clans.findIndex(c => c.id === clanId);
+  if (clanIndex === -1) return { error: 'Клан не найден!' };
+
+  const clan = clans[clanIndex];
+  if (String(clan.leaderKey).toLowerCase() !== String(userKey).toLowerCase()) {
+    return { error: 'Только Глава Клана имеет право изменять девиз и герб!' };
+  }
+
+  if (motto !== undefined && motto !== null) {
+    clan.motto = motto.trim() || clan.motto;
+  }
+  if (emblemId) {
+    clan.emblemId = emblemId;
+  }
+
+  clans[clanIndex] = clan;
+  saveAllClans(clans);
+
+  return { success: true, clan: enrichClan(clan) };
+}
+
+function inviteUserToClan({ clanId, fromKey, toKey }) {
+  if (!clanId || !fromKey || !toKey) return { error: 'Параметры приглашения не заполнены' };
+  const clans = getAllClansRaw();
+  const clanIndex = clans.findIndex(c => c.id === clanId);
+  if (clanIndex === -1) return { error: 'Клан не найден' };
+
+  const clan = clans[clanIndex];
+  const cleanFrom = String(fromKey).trim().toLowerCase();
+  const cleanTo = String(toKey).trim().toLowerCase();
+
+  // Проверяем, что приглашающий в клане
+  if (!clan.members.map(m => m.toLowerCase()).includes(cleanFrom)) {
+    return { error: 'Вы не состоите в этом клане' };
+  }
+
+  // Проверяем, не в клане ли уже приглашаемый
+  if (clan.members.map(m => m.toLowerCase()).includes(cleanTo)) {
+    return { error: 'Этот шиноби уже состоит в вашем клане!' };
+  }
+
+  // Проверяем, не отправлено ли уже приглашение
+  clan.invites = clan.invites || [];
+  const alreadyInvited = clan.invites.some(inv => inv.toUserKey.toLowerCase() === cleanTo);
+  if (alreadyInvited) {
+    return { error: 'Приглашение этому шиноби уже отправлено и ожидает ответа!' };
+  }
+
+  const senderProfile = getUserProfile(cleanFrom);
+  const inviteEntry = {
+    id: `inv_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    clanId: clan.id,
+    clanName: clan.name,
+    emblemId: clan.emblemId,
+    motto: clan.motto,
+    fromUserKey: cleanFrom,
+    fromName: senderProfile?.name || cleanFrom.split('@')[0],
+    toUserKey: cleanTo,
+    timestamp: Date.now()
+  };
+
+  clan.invites.push(inviteEntry);
+  clans[clanIndex] = clan;
+  saveAllClans(clans);
+
+  return { success: true, invite: inviteEntry };
+}
+
+function respondClanInvite({ clanId, userKey, accept }) {
+  if (!clanId || !userKey) return { error: 'Некорректные параметры ответа на приглашение' };
+  const clans = getAllClansRaw();
+  const clanIndex = clans.findIndex(c => c.id === clanId);
+  if (clanIndex === -1) return { error: 'Клан не найден' };
+
+  const clan = clans[clanIndex];
+  const cleanUserKey = String(userKey).trim().toLowerCase();
+
+  // Удаляем приглашение из списка
+  clan.invites = (clan.invites || []).filter(inv => inv.toUserKey.toLowerCase() !== cleanUserKey);
+
+  if (accept) {
+    // Если игрок уже был в каком-то другом клане — удаляем его оттуда
+    clans.forEach((c, idx) => {
+      if (idx !== clanIndex && c.members) {
+        c.members = c.members.filter(m => m.toLowerCase() !== cleanUserKey);
+      }
+    });
+
+    if (!clan.members.map(m => m.toLowerCase()).includes(cleanUserKey)) {
+      clan.members.push(cleanUserKey);
+    }
+
+    const joiningUser = getUserProfile(cleanUserKey);
+    const userName = joiningUser?.name || cleanUserKey.split('@')[0];
+
+    clan.chat = clan.chat || [];
+    clan.chat.push({
+      id: `cmsg_${Date.now()}`,
+      fromKey: 'system',
+      fromName: 'Канцелярия Конохи',
+      text: `Шиноби ${userName} принял свиток-приглашение и вступил в ряды клана!`,
+      timestamp: Date.now(),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+
+    // Обновляем профиль пользователя
+    const u = getUser(cleanUserKey);
+    if (u) {
+      saveUser({
+        ...u,
+        clanId: clan.id,
+        clanName: clan.name
+      });
+    }
+  }
+
+  clans[clanIndex] = clan;
+  saveAllClans(clans);
+
+  return { success: true, accepted: Boolean(accept), clan: enrichClan(clan) };
+}
+
+function leaveClan({ clanId, userKey }) {
+  if (!clanId || !userKey) return { error: 'Параметры не указаны' };
+  const clans = getAllClansRaw();
+  const clanIndex = clans.findIndex(c => c.id === clanId);
+  if (clanIndex === -1) return { error: 'Клан не найден' };
+
+  const clan = clans[clanIndex];
+  const cleanUserKey = String(userKey).trim().toLowerCase();
+
+  clan.members = (clan.members || []).filter(m => m.toLowerCase() !== cleanUserKey);
+
+  // Сброс у пользователя
+  const u = getUser(cleanUserKey);
+  if (u) {
+    saveUser({
+      ...u,
+      clanId: null,
+      clanName: null
+    });
+  }
+
+  // Если клан опустел — удаляем его
+  if (clan.members.length === 0) {
+    clans.splice(clanIndex, 1);
+    saveAllClans(clans);
+    return { success: true, disbanded: true };
+  }
+
+  // Если ушел лидер — передаем лидерство следующему члену
+  if (String(clan.leaderKey).toLowerCase() === cleanUserKey) {
+    clan.leaderKey = clan.members[0];
+    const newLeader = getUserProfile(clan.leaderKey);
+    clan.leaderName = newLeader?.name || clan.leaderKey.split('@')[0];
+  }
+
+  clans[clanIndex] = clan;
+  saveAllClans(clans);
+
+  return { success: true, clan: enrichClan(clan) };
+}
+
+function disbandClan({ clanId, userKey }) {
+  if (!clanId || !userKey) return { error: 'Параметры не указаны' };
+  const clans = getAllClansRaw();
+  const clanIndex = clans.findIndex(c => c.id === clanId);
+  if (clanIndex === -1) return { error: 'Клан не найден' };
+
+  const clan = clans[clanIndex];
+  const cleanUserKey = String(userKey).trim().toLowerCase();
+
+  if (String(clan.leaderKey).toLowerCase() !== cleanUserKey) {
+    return { error: 'Только Глава Клана может распустить клан!' };
+  }
+
+  // Сбрасываем clanId у всех членов
+  for (const mKey of clan.members || []) {
+    const u = getUser(mKey);
+    if (u) {
+      saveUser({
+        ...u,
+        clanId: null,
+        clanName: null
+      });
+    }
+  }
+
+  clans.splice(clanIndex, 1);
+  saveAllClans(clans);
+
+  return { success: true };
+}
+
+function getClanLeaderboard() {
+  const clans = getAllClansRaw();
+  const enriched = clans.map(c => enrichClan(c)).filter(Boolean);
+
+  // Сортировка по суммарному PvP XP всех соклановцев, затем по победам
+  enriched.sort((a, b) => {
+    if (b.totalClanXp !== a.totalClanXp) return b.totalClanXp - a.totalClanXp;
+    return b.totalPvpWins - a.totalPvpWins;
+  });
+
+  return enriched.slice(0, 50).map((clan, idx) => ({
+    rankPosition: idx + 1,
+    id: clan.id,
+    name: clan.name,
+    leaderName: clan.leaderName,
+    leaderKey: clan.leaderKey,
+    motto: clan.motto,
+    emblemId: clan.emblemId,
+    createdAt: clan.createdAt,
+    memberCount: clan.memberCount,
+    totalClanXp: clan.totalClanXp,
+    totalPvpWins: clan.totalPvpWins,
+    avgLevel: clan.avgLevel
+  }));
+}
+
+function saveClanMessage({ clanId, fromKey, fromName, text }) {
+  if (!clanId || !text || !text.trim()) return null;
+  const clans = getAllClansRaw();
+  const clanIndex = clans.findIndex(c => c.id === clanId);
+  if (clanIndex === -1) return null;
+
+  const clan = clans[clanIndex];
+  clan.chat = clan.chat || [];
+
+  const newMsg = {
+    id: `cmsg_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    fromKey: String(fromKey).trim().toLowerCase(),
+    fromName: fromName || fromKey.split('@')[0],
+    text: text.trim(),
+    timestamp: Date.now(),
+    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  };
+
+  clan.chat.push(newMsg);
+  if (clan.chat.length > 200) clan.chat.shift();
+
+  clans[clanIndex] = clan;
+  saveAllClans(clans);
+
+  return newMsg;
+}
+
+function getClanMessages(clanId) {
+  if (!clanId) return [];
+  const clan = getClan(clanId);
+  return clan ? (clan.chat || []) : [];
+}
+
 module.exports = {
   DATA_DIR,
   saveBattleRecord,
@@ -638,5 +1041,18 @@ module.exports = {
   getFriendsList,
   getLeaderboard,
   saveDirectMessage,
-  getDirectMessages
+  getDirectMessages,
+  // Клановая Система Конохи
+  createClan,
+  getClan,
+  getUserClan,
+  updateClan,
+  inviteUserToClan,
+  respondClanInvite,
+  leaveClan,
+  disbandClan,
+  getClanLeaderboard,
+  saveClanMessage,
+  getClanMessages
 };
+

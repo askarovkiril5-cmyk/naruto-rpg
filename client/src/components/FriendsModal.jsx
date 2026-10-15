@@ -4,6 +4,7 @@ import {
   Send, Swords, Check, Trash2, Shield, Sparkles, ExternalLink,
   Award, Circle, Flame
 } from 'lucide-react';
+import { getClanEmblemById } from '../data/clanEmblemsData';
 
 export default function FriendsModal({ 
   isOpen, 
@@ -12,10 +13,11 @@ export default function FriendsModal({
   playerName, 
   backendUrl, 
   socket,
-  onJoinRoom 
+  onJoinRoom,
+  onOpenClan
 }) {
   const [activeTab, setActiveTab] = useState('leaderboard'); // 'leaderboard' | 'friends' | 'search'
-  const [leaderboardFilter, setLeaderboardFilter] = useState('global'); // 'global' | 'friends'
+  const [leaderboardFilter, setLeaderboardFilter] = useState('global'); // 'global' | 'friends' | 'clans'
   const [leaderboard, setLeaderboard] = useState([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
 
@@ -40,15 +42,23 @@ export default function FriendsModal({
 
   const myIdentifier = userProfile?.email || userProfile?.name || playerName || 'shinobi';
 
-  // 1. Загрузка Зала Славы
+  // 1. Загрузка Зала Славы (с поддержкой Топа Кланов)
   const fetchLeaderboard = async (filterType) => {
     try {
       setLoadingLeaderboard(true);
-      const url = `${backendUrl}/api/leaderboard?filter=${filterType}&user=${encodeURIComponent(myIdentifier)}`;
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        setLeaderboard(Array.isArray(data) ? data : []);
+      if (filterType === 'clans') {
+        const res = await fetch(`${backendUrl}/api/clans/leaderboard`);
+        if (res.ok) {
+          const data = await res.json();
+          setLeaderboard(Array.isArray(data) ? data : []);
+        }
+      } else {
+        const url = `${backendUrl}/api/leaderboard?filter=${filterType}&user=${encodeURIComponent(myIdentifier)}`;
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          setLeaderboard(Array.isArray(data) ? data : []);
+        }
       }
     } catch (e) {
       console.warn('Leaderboard fetch error:', e);
@@ -329,12 +339,15 @@ export default function FriendsModal({
         {/* 1. ВКЛАДКА: ЗАЛ СЛАВЫ (РЕЙТИНГ) */}
         {activeTab === 'leaderboard' && (
           <div className="mt-3 flex-1 flex flex-col overflow-hidden min-h-0">
-            {/* Переключатель: Вся Коноха vs Друзья */}
-            <div className="flex items-center justify-between gap-2 mb-3 shrink-0">
+            {/* Переключатель: Вся Коноха vs Друзья vs Топ Кланов */}
+            <div className="flex items-center justify-between gap-2 mb-3 shrink-0 flex-wrap">
               <div className="flex items-center gap-1 bg-black/60 p-1 rounded-xl border border-white/10">
                 <button
                   type="button"
-                  onClick={() => setLeaderboardFilter('global')}
+                  onClick={() => {
+                    setLeaderboardFilter('global');
+                    fetchLeaderboard('global');
+                  }}
                   className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
                     leaderboardFilter === 'global'
                       ? 'bg-zinc-800 text-amber-300 shadow-sm'
@@ -345,7 +358,10 @@ export default function FriendsModal({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setLeaderboardFilter('friends')}
+                  onClick={() => {
+                    setLeaderboardFilter('friends');
+                    fetchLeaderboard('friends');
+                  }}
                   className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
                     leaderboardFilter === 'friends'
                       ? 'bg-zinc-800 text-blue-300 shadow-sm'
@@ -354,11 +370,39 @@ export default function FriendsModal({
                 >
                   👥 Только Друзья
                 </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLeaderboardFilter('clans');
+                    fetchLeaderboard('clans');
+                  }}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
+                    leaderboardFilter === 'clans'
+                      ? 'bg-zinc-800 text-amber-300 shadow-sm'
+                      : 'text-zinc-400 hover:text-zinc-200'
+                  }`}
+                >
+                  🏛️ Топ Кланов
+                </button>
               </div>
 
-              <span className="text-[11px] text-zinc-400 font-mono hidden sm:inline">
-                * Уровень и рейтинг учитывают строго PvP поединки
-              </span>
+              <div className="flex items-center gap-2">
+                {onOpenClan && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onOpenClan();
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-400 text-white font-bold text-xs transition shadow-md shadow-amber-600/20 cursor-pointer flex items-center gap-1.5"
+                  >
+                    <span>🏯 Мой Клан</span>
+                  </button>
+                )}
+                <span className="text-[11px] text-zinc-400 font-mono hidden sm:inline">
+                  {leaderboardFilter === 'clans' ? '* Суммарный PvP XP соклановцев' : '* Уровень и рейтинг учитывают строго PvP поединки'}
+                </span>
+              </div>
             </div>
 
             {/* Карточка личной статистики шиноби в Зале Славы */}
@@ -400,94 +444,186 @@ export default function FriendsModal({
 
             {/* Таблица Зала Славы */}
             <div className="flex-1 overflow-y-auto scrollbar-thin border border-white/10 rounded-2xl bg-black/40">
-              <table className="w-full text-left border-collapse">
-                <thead className="sticky top-0 z-10 bg-zinc-900/95 backdrop-blur-md border-b border-white/10">
-                  <tr className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold">
-                    <th className="py-3 px-3 w-16 text-center text-amber-400">Место</th>
-                    <th className="py-3 px-3">Шиноби & Титул</th>
-                    <th className="py-3 px-3 text-center">Ранг & Уровень</th>
-                    <th className="py-3 px-3 text-center">PvP Дуэли</th>
-                    <th className="py-3 px-3 text-center text-emerald-400">Винрейт (% побед)</th>
-                    <th className="py-3 px-3 text-center text-zinc-500">ИИ Спарринги</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5 text-xs">
-                  {loadingLeaderboard ? (
-                    <tr>
-                      <td colSpan="6" className="py-8 text-center text-zinc-500 text-xs">
-                        Свитки Зала Славы загружаются...
-                      </td>
+              {leaderboardFilter === 'clans' ? (
+                /* ТАБЛИЦА ТОПА КЛАНОВ */
+                <table className="w-full text-left border-collapse">
+                  <thead className="sticky top-0 z-10 bg-zinc-900/95 backdrop-blur-md border-b border-white/10">
+                    <tr className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold">
+                      <th className="py-3 px-3 w-16 text-center text-amber-400">Место</th>
+                      <th className="py-3 px-3">Клан & Священный Герб</th>
+                      <th className="py-3 px-3">Глава Клана</th>
+                      <th className="py-3 px-3 text-center">Состав</th>
+                      <th className="py-3 px-3 text-center text-amber-400">Суммарный PvP XP</th>
+                      <th className="py-3 px-3 text-center text-emerald-400">PvP Победы</th>
                     </tr>
-                  ) : leaderboard.length === 0 ? (
-                    <tr>
-                      <td colSpan="6" className="py-8 text-center text-zinc-500 text-xs">
-                        Нет записей в этой категории. Сыграйте первый PvP бой!
-                      </td>
-                    </tr>
-                  ) : (
-                    leaderboard.map((item, idx) => {
-                      const isMe = item.identifier === myIdentifier.toLowerCase();
-                      const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
-                      return (
-                        <tr
-                          key={item.identifier || idx}
-                          className={`transition ${
-                            isMe ? 'bg-amber-500/15 border-l-4 border-l-amber-400 font-semibold' : 'hover:bg-white/[0.03]'
-                          }`}
-                        >
-                          <td className="py-3 px-3 text-center text-sm font-black font-mono">
-                            {medal}
-                          </td>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 text-xs">
+                    {loadingLeaderboard ? (
+                      <tr>
+                        <td colSpan="6" className="py-8 text-center text-zinc-500 text-xs">
+                          Свитки кланового Зала Славы загружаются...
+                        </td>
+                      </tr>
+                    ) : leaderboard.length === 0 ? (
+                      <tr>
+                        <td colSpan="6" className="py-8 text-center text-zinc-500 text-xs">
+                          В Конохе пока не основано ни одного клана. Откройте «Мой Клан» и станьте первым Главой!
+                        </td>
+                      </tr>
+                    ) : (
+                      leaderboard.map((clan, idx) => {
+                        const emblem = getClanEmblemById(clan.emblemId);
+                        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+                        const isMyClan = userProfile?.clanId === clan.id || userProfile?.clanName === clan.name;
 
-                          <td className="py-3 px-3">
-                            <div className="flex items-center gap-2">
-                              <span className="text-base">{item.rank?.icon || '🥷'}</span>
-                              <div className="min-w-0">
-                                <span className="font-bold text-zinc-100 flex items-center gap-1.5 truncate">
-                                  <span>{item.name}</span>
-                                  {isMe && (
-                                    <span className="text-[9px] bg-amber-500/30 text-amber-300 px-1 rounded font-mono font-bold">ВЫ</span>
+                        return (
+                          <tr
+                            key={clan.id || idx}
+                            className={`transition ${
+                              isMyClan ? 'bg-amber-500/15 border-l-4 border-l-amber-400 font-semibold' : 'hover:bg-white/[0.03]'
+                            }`}
+                          >
+                            <td className="py-3 px-3 text-center text-sm font-black font-mono">
+                              {medal}
+                            </td>
+
+                            <td className="py-3 px-3">
+                              <div className="flex items-center gap-2.5">
+                                <div className="p-1 rounded-lg bg-black/60 border border-white/10 shrink-0">
+                                  {emblem.renderSvg("w-6 h-6 sm:w-8 sm:h-8")}
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="font-black text-zinc-100 truncate text-xs sm:text-sm">
+                                      {clan.name}
+                                    </span>
+                                    {isMyClan && (
+                                      <span className="text-[9px] bg-amber-500/30 text-amber-300 px-1 rounded font-mono font-bold shrink-0">
+                                        ВАШ
+                                      </span>
+                                    )}
+                                  </div>
+                                  {clan.motto && (
+                                    <p className="text-[10px] text-zinc-400 italic truncate font-serif">
+                                      «{clan.motto}»
+                                    </p>
                                   )}
-                                </span>
-                                {item.activeTitle && (
-                                  <span className="text-[10px] text-amber-400 font-mono block truncate">
-                                    {item.activeTitle}
-                                  </span>
-                                )}
+                                </div>
                               </div>
-                            </div>
-                          </td>
+                            </td>
 
-                          <td className="py-3 px-3 text-center">
-                            <span className="inline-block px-2 py-0.5 rounded-lg bg-zinc-900 border border-white/10 font-mono font-bold text-[11px] text-zinc-200">
-                              Ур. {item.level} ({item.rank?.title || 'Генин'})
-                            </span>
-                            {item.totalXp > 0 && (
-                              <span className="block text-[9px] font-mono text-amber-400/80 mt-0.5">
-                                {item.totalXp.toLocaleString()} XP
+                            <td className="py-3 px-3 font-mono text-zinc-300">
+                              👑 {clan.leaderName}
+                            </td>
+
+                            <td className="py-3 px-3 text-center font-mono text-cyan-300">
+                              {clan.memberCount} шиноби
+                            </td>
+
+                            <td className="py-3 px-3 text-center font-mono font-black text-amber-400">
+                              {(clan.totalClanXp || 0).toLocaleString()} XP
+                            </td>
+
+                            <td className="py-3 px-3 text-center font-mono font-bold text-emerald-400">
+                              {clan.totalPvpWins || 0}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              ) : (
+                /* ТАБЛИЦА ШИНОБИ */
+                <table className="w-full text-left border-collapse">
+                  <thead className="sticky top-0 z-10 bg-zinc-900/95 backdrop-blur-md border-b border-white/10">
+                    <tr className="text-[11px] uppercase tracking-wider text-zinc-400 font-bold">
+                      <th className="py-3 px-3 w-16 text-center text-amber-400">Место</th>
+                      <th className="py-3 px-3">Шиноби & Титул</th>
+                      <th className="py-3 px-3 text-center">Ранг & Уровень</th>
+                      <th className="py-3 px-3 text-center">PvP Дуэли</th>
+                      <th className="py-3 px-3 text-center text-emerald-400">Винрейт (% побед)</th>
+                      <th className="py-3 px-3 text-center text-zinc-500">ИИ Спарринги</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5 text-xs">
+                    {loadingLeaderboard ? (
+                      <tr>
+                        <td colSpan="6" className="py-8 text-center text-zinc-500 text-xs">
+                          Свитки Зала Славы загружаются...
+                        </td>
+                      </tr>
+                    ) : leaderboard.length === 0 ? (
+                      <tr>
+                        <td colSpan="6" className="py-8 text-center text-zinc-500 text-xs">
+                          Нет записей в этой категории. Сыграйте первый PvP бой!
+                        </td>
+                      </tr>
+                    ) : (
+                      leaderboard.map((item, idx) => {
+                        const isMe = item.identifier === myIdentifier.toLowerCase();
+                        const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `#${idx + 1}`;
+                        return (
+                          <tr
+                            key={item.identifier || idx}
+                            className={`transition ${
+                              isMe ? 'bg-amber-500/15 border-l-4 border-l-amber-400 font-semibold' : 'hover:bg-white/[0.03]'
+                            }`}
+                          >
+                            <td className="py-3 px-3 text-center text-sm font-black font-mono">
+                              {medal}
+                            </td>
+
+                            <td className="py-3 px-3">
+                              <div className="flex items-center gap-2">
+                                <span className="text-base">{item.rank?.icon || '🥷'}</span>
+                                <div className="min-w-0">
+                                  <span className="font-bold text-zinc-100 flex items-center gap-1.5 truncate">
+                                    <span>{item.name}</span>
+                                    {isMe && (
+                                      <span className="text-[9px] bg-amber-500/30 text-amber-300 px-1 rounded font-mono font-bold">ВЫ</span>
+                                    )}
+                                  </span>
+                                  {item.activeTitle && (
+                                    <span className="text-[10px] text-amber-400 font-mono block truncate">
+                                      {item.activeTitle}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+
+                            <td className="py-3 px-3 text-center">
+                              <span className="inline-block px-2 py-0.5 rounded-lg bg-zinc-900 border border-white/10 font-mono font-bold text-[11px] text-zinc-200">
+                                Ур. {item.level} ({item.rank?.title || 'Генин'})
                               </span>
-                            )}
-                          </td>
+                              {item.totalXp > 0 && (
+                                <span className="block text-[9px] font-mono text-amber-400/80 mt-0.5">
+                                  {item.totalXp.toLocaleString()} XP
+                                </span>
+                              )}
+                            </td>
 
-                          <td className="py-3 px-3 text-center font-mono">
-                            <span className="text-zinc-200">{item.pvp?.battlesWon || 0}</span>
-                            <span className="text-zinc-500"> / </span>
-                            <span className="text-zinc-400">{item.pvp?.battlesPlayed || 0}</span>
-                          </td>
+                            <td className="py-3 px-3 text-center font-mono">
+                              <span className="text-zinc-200">{item.pvp?.battlesWon || 0}</span>
+                              <span className="text-zinc-500"> / </span>
+                              <span className="text-zinc-400">{item.pvp?.battlesPlayed || 0}</span>
+                            </td>
 
-                          <td className="py-3 px-3 text-center font-mono font-bold text-emerald-400">
-                            {item.pvp?.winrate || 0}%
-                          </td>
+                            <td className="py-3 px-3 text-center font-mono font-bold text-emerald-400">
+                              {item.pvp?.winrate || 0}%
+                            </td>
 
-                          <td className="py-3 px-3 text-center font-mono text-zinc-400 text-[11px]">
-                            {item.ai?.battlesWon || 0} из {item.ai?.battlesPlayed || 0}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
+                            <td className="py-3 px-3 text-center font-mono text-zinc-400 text-[11px]">
+                              {item.ai?.battlesWon || 0} из {item.ai?.battlesPlayed || 0}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              )}
             </div>
           </div>
         )}

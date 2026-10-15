@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { getJutsuDesc, getJutsuRange, getJutsuTacticalInfo } from '../utils/jutsuHelper';
 import { DOJUTSU_OPTIONS, getDojutsuById } from '../data/dojutsuData';
+import EyeActivationOverlay from './EyeActivationOverlay';
 
 /**
  * Извлечение списка всех индивидуальных глаз персонажа
@@ -228,7 +229,8 @@ export default function SecretProfileDrawer({
   gameVersion = '0.3.3',
   userProfile,
   currentAccount,
-  onOpenPersonalProfile
+  onOpenPersonalProfile,
+  onDemonstrateToOpponent
 }) {
   const [activeSection, setActiveSection] = useState('ALL'); // 'ALL' | 'STATS' | 'CLAN' | 'EYE_0' | 'EYE_1'... | 'JUTSU'
   const [isEyeActive, setIsEyeActive] = useState(() => {
@@ -237,6 +239,7 @@ export default function SecretProfileDrawer({
   const [viewMode, setViewMode] = useState(() => {
     return localStorage.getItem('naruto_profile_view_mode') || 'DRAWER'; // 'DRAWER' | 'FULLSCREEN'
   });
+  const [eyeOverlayState, setEyeOverlayState] = useState(null);
 
   const toggleViewMode = () => {
     const nextMode = viewMode === 'DRAWER' ? 'FULLSCREEN' : 'DRAWER';
@@ -773,24 +776,64 @@ export default function SecretProfileDrawer({
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                const next = !isEyeActive;
-                setIsEyeActive(next);
-                if (onSelectActionToInput) {
-                  onSelectActionToInput(next ? `[Глаза: АКТИВИРОВАНЫ] ${eyeName}` : `[Глаза: ДЕАКТИВИРОВАНЫ] ${eyeName}`);
-                }
-              }}
-              className={`px-4 py-2 rounded-xl font-black text-xs transition shadow-md cursor-pointer flex items-center gap-1.5 shrink-0 ${
-                isEyeActive
-                  ? 'bg-gradient-to-r from-emerald-600 to-teal-500 text-white border border-emerald-400 shadow-emerald-500/30'
-                  : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-white/10'
-              }`}
-            >
-              <Eye className="w-4 h-4" />
-              <span>{isEyeActive ? 'ВЫКЛЮЧИТЬ' : 'ВКЛЮЧИТЬ'}</span>
-            </button>
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <button
+                type="button"
+                onClick={() => setEyeOverlayState({ isOpen: true, dojutsuId: eyeObj?.id || 'mangekyo' })}
+                className="px-3 py-2 rounded-xl bg-cyan-950/70 hover:bg-cyan-900 text-cyan-300 hover:text-white border border-cyan-500/40 text-xs font-bold transition shadow-sm cursor-pointer flex items-center gap-1.5 shrink-0"
+                title="Посмотреть анимацию ока по центру экрана"
+              >
+                <Eye className="w-3.5 h-3.5" />
+                <span>Анимация</span>
+              </button>
+
+              {onDemonstrateToOpponent && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onDemonstrateToOpponent({
+                      dojutsuId: eyeObj?.id || 'mangekyo',
+                      dojutsuName: eyeName
+                    });
+                    setEyeOverlayState({ isOpen: true, dojutsuId: eyeObj?.id || 'mangekyo' });
+                  }}
+                  className="px-3 py-2 rounded-xl bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white border border-red-500/50 text-xs font-black transition shadow-md shadow-red-600/30 cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95"
+                  title="Отправить всплывающую демонстрацию ока на экран оппонента!"
+                >
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>Показать сопернику</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => {
+                  const next = !isEyeActive;
+                  setIsEyeActive(next);
+                  if (next) {
+                    setEyeOverlayState({ isOpen: true, dojutsuId: eyeObj?.id || 'mangekyo' });
+                    const alwaysShow = localStorage.getItem('naruto_always_show_eye_opponent') === 'true';
+                    if (alwaysShow && onDemonstrateToOpponent) {
+                      onDemonstrateToOpponent({
+                        dojutsuId: eyeObj?.id || 'mangekyo',
+                        dojutsuName: eyeName
+                      });
+                    }
+                  }
+                  if (onSelectActionToInput) {
+                    onSelectActionToInput(next ? `[Глаза: АКТИВИРОВАНЫ] ${eyeName}` : `[Глаза: ДЕАКТИВИРОВАНЫ] ${eyeName}`);
+                  }
+                }}
+                className={`px-4 py-2 rounded-xl font-black text-xs transition shadow-md cursor-pointer flex items-center gap-1.5 shrink-0 ${
+                  isEyeActive
+                    ? 'bg-gradient-to-r from-emerald-600 to-teal-500 text-white border border-emerald-400 shadow-emerald-500/30'
+                    : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-white/10'
+                }`}
+              >
+                <Eye className="w-4 h-4" />
+                <span>{isEyeActive ? 'ВЫКЛЮЧИТЬ' : 'ВКЛЮЧИТЬ'}</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1058,22 +1101,42 @@ export default function SecretProfileDrawer({
   // 1. РЕЖИМ НА ВЕСЬ ЭКРАН (FULLSCREEN / MODAL)
   if (viewMode === 'FULLSCREEN') {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-fade-in select-none">
-        <div className="w-full max-w-6xl h-[92vh] rounded-3xl bg-zinc-950/98 border border-amber-500/30 shadow-2xl flex flex-col overflow-hidden text-zinc-100">
-          {renderHeader(true)}
-          {renderBody(true)}
-          {renderFooter()}
+      <>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md animate-fade-in select-none">
+          <div className="w-full max-w-6xl h-[92vh] rounded-3xl bg-zinc-950/98 border border-amber-500/30 shadow-2xl flex flex-col overflow-hidden text-zinc-100">
+            {renderHeader(true)}
+            {renderBody(true)}
+            {renderFooter()}
+          </div>
         </div>
-      </div>
+        {eyeOverlayState && (
+          <EyeActivationOverlay
+            isOpen={!!eyeOverlayState}
+            onClose={() => setEyeOverlayState(null)}
+            dojutsuId={eyeOverlayState.dojutsuId}
+            onShowToOpponent={onDemonstrateToOpponent}
+          />
+        )}
+      </>
     );
   }
 
   // 2. РЕЖИМ БОКОВОЙ ПАНЕЛИ (DRAWER / СБОКУ)
   return (
-    <aside className="relative z-20 w-full md:w-[380px] xl:w-[420px] shrink-0 h-full max-md:fixed max-md:right-0 max-md:top-0 max-md:bottom-0 max-md:z-50 bg-zinc-950/98 border-l border-white/10 shadow-2xl flex flex-col justify-between animate-in slide-in-from-right duration-300 backdrop-blur-2xl text-zinc-100 select-none">
-      {renderHeader(false)}
-      {renderBody(false)}
-      {renderFooter()}
-    </aside>
+    <>
+      <aside className="relative z-20 w-full md:w-[380px] xl:w-[420px] shrink-0 h-full max-md:fixed max-md:right-0 max-md:top-0 max-md:bottom-0 max-md:z-50 bg-zinc-950/98 border-l border-white/10 shadow-2xl flex flex-col justify-between animate-in slide-in-from-right duration-300 backdrop-blur-2xl text-zinc-100 select-none">
+        {renderHeader(false)}
+        {renderBody(false)}
+        {renderFooter()}
+      </aside>
+      {eyeOverlayState && (
+        <EyeActivationOverlay
+          isOpen={!!eyeOverlayState}
+          onClose={() => setEyeOverlayState(null)}
+          dojutsuId={eyeOverlayState.dojutsuId}
+          onShowToOpponent={onDemonstrateToOpponent}
+        />
+      )}
+    </>
   );
 }

@@ -5,12 +5,21 @@ import {
   Shield, Swords, Bell, Mail, ArrowDownToLine
 } from 'lucide-react';
 import { notificationManager } from '../utils/notificationManager';
+import { getClanEmblemById } from '../data/clanEmblemsData';
 
-export default function ShinobiMailModal({ isOpen, onClose }) {
+export default function ShinobiMailModal({ 
+  isOpen, 
+  onClose, 
+  backendUrl, 
+  userProfile, 
+  playerName, 
+  onClanJoined 
+}) {
   const [notifications, setNotifications] = useState(() => notificationManager.getAll());
-  const [activeTab, setActiveTab] = useState('all'); // 'all' | 'hokage' | 'battle' | 'village'
+  const [activeTab, setActiveTab] = useState('all'); // 'all' | 'hokage' | 'battle' | 'village' | 'clan'
   const [selectedMailId, setSelectedMailId] = useState(null);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [clanResponseStatus, setClanResponseStatus] = useState({}); // mailId -> status text
 
   useEffect(() => {
     return notificationManager.subscribe((list) => {
@@ -72,8 +81,78 @@ export default function ShinobiMailModal({ isOpen, onClose }) {
     window.location.reload();
   };
 
+  const myIdentifier = userProfile?.email || userProfile?.name || playerName || 'shinobi';
+
+  const handleAcceptClanInvite = async (mail) => {
+    if (!mail?.clanInviteData?.clanId) return;
+    try {
+      const res = await fetch(`${backendUrl}/api/clans/respond-invite`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clanId: mail.clanInviteData.clanId,
+          userKey: myIdentifier,
+          accept: true
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setClanResponseStatus(prev => ({
+          ...prev,
+          [mail.id]: '✓ Вы успешно вступили в ряды клана!'
+        }));
+        onClanJoined?.();
+      } else {
+        setClanResponseStatus(prev => ({
+          ...prev,
+          [mail.id]: `Ошибка: ${data.error || 'не удалось вступить'}`
+        }));
+      }
+    } catch (e) {
+      setClanResponseStatus(prev => ({
+        ...prev,
+        [mail.id]: 'Ошибка соединения с сервером.'
+      }));
+    }
+  };
+
+  const handleDeclineClanInvite = async (mail) => {
+    if (!mail?.clanInviteData?.clanId) return;
+    try {
+      await fetch(`${backendUrl}/api/clans/respond-invite`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clanId: mail.clanInviteData.clanId,
+          userKey: myIdentifier,
+          accept: false
+        })
+      });
+      setClanResponseStatus(prev => ({
+        ...prev,
+        [mail.id]: 'Приглашение отклонено.'
+      }));
+    } catch (e) {
+      setClanResponseStatus(prev => ({
+        ...prev,
+        [mail.id]: 'Ошибка соединения с сервером.'
+      }));
+    }
+  };
+
   const getCategoryDetails = (cat) => {
     switch (cat) {
+      case 'clan':
+        return {
+          title: 'Свиток Клана',
+          badgeClass: 'bg-amber-950/80 text-amber-300 border-amber-500/50 shadow-amber-500/20',
+          borderClass: 'border-amber-500/40 hover:border-amber-500/80',
+          activeBg: 'bg-gradient-to-r from-amber-950/60 via-zinc-900/90 to-zinc-900/60',
+          cardGlow: 'shadow-[0_0_20px_rgba(245,158,11,0.2)]',
+          dotColor: 'bg-amber-400',
+          icon: '🏯',
+          iconName: 'Резиденция Клана'
+        };
       case 'hokage':
         return {
           title: 'Приказ Хокаге',
@@ -257,6 +336,23 @@ export default function ShinobiMailModal({ isOpen, onClose }) {
               ({notifications.filter(n => n.category === 'village').length})
             </span>
           </button>
+
+          {/* 🏯 Свитки Клана */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('clan')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer flex items-center gap-1.5 border ${
+              activeTab === 'clan'
+                ? 'bg-amber-950 text-amber-300 border-amber-500 shadow-lg shadow-amber-500/20'
+                : 'bg-amber-950/30 text-amber-400/80 border-amber-500/20 hover:border-amber-500/40'
+            }`}
+          >
+            <span className="text-xs">🏯</span>
+            <span>Свитки Клана</span>
+            <span className="text-[10px] opacity-75 font-mono">
+              ({notifications.filter(n => n.category === 'clan').length})
+            </span>
+          </button>
         </div>
 
         {/* ТЕЛО: ДВУХКОЛОНОЧНЫЙ ИНТЕРФЕЙС (СПИСОК СЛЕВА, СОДЕРЖИМОЕ СПРАВА) */}
@@ -406,6 +502,53 @@ export default function ShinobiMailModal({ isOpen, onClose }) {
                             <div className="p-2.5 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 text-xs flex items-center gap-2 font-semibold">
                               <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
                               <span>Файл обновления успешно загружен в браузер!</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* СПЕЦИАЛЬНЫЙ БЛОК ПРИГЛАШЕНИЯ В КЛАН */}
+                      {selectedMail.clanInviteData && (
+                        <div className="mt-4 p-4 rounded-2xl bg-gradient-to-br from-amber-950/50 via-zinc-900 to-zinc-950 border border-amber-500/40 shadow-xl space-y-3">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-xl bg-black/60 border border-white/10 shrink-0 shadow-md">
+                              {getClanEmblemById(selectedMail.clanInviteData.emblemId).renderSvg("w-10 h-10 sm:w-12 sm:h-12")}
+                            </div>
+                            <div>
+                              <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wider block">
+                                📜 Официальный Свиток Приглашения в Клан
+                              </span>
+                              <h4 className="text-sm sm:text-base font-black text-white">
+                                {selectedMail.clanInviteData.clanName}
+                              </h4>
+                              {selectedMail.clanInviteData.motto && (
+                                <p className="text-xs text-zinc-400 italic font-serif">
+                                  «{selectedMail.clanInviteData.motto}»
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          {clanResponseStatus[selectedMail.id] ? (
+                            <div className="p-3 rounded-xl bg-black/60 border border-amber-500/40 text-xs font-bold text-center text-amber-300">
+                              {clanResponseStatus[selectedMail.id]}
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 pt-2">
+                              <button
+                                type="button"
+                                onClick={() => handleAcceptClanInvite(selectedMail)}
+                                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-400 text-white font-black text-xs transition shadow-lg shadow-amber-600/30 cursor-pointer active:scale-95 flex items-center justify-center gap-1.5"
+                              >
+                                <span>🏯 Вступить в Клан</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeclineClanInvite(selectedMail)}
+                                className="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white font-bold text-xs transition cursor-pointer border border-white/10"
+                              >
+                                Отклонить
+                              </button>
                             </div>
                           )}
                         </div>

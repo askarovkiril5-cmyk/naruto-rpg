@@ -20,6 +20,8 @@ import ShinobiMailModal from './components/ShinobiMailModal';
 import TitlesModal from './components/TitlesModal';
 import FriendsModal from './components/FriendsModal';
 import ShinobiProfileModal from './components/ShinobiProfileModal';
+import ClanModal from './components/ClanModal';
+import EyeActivationOverlay from './components/EyeActivationOverlay';
 import { TITLES_DATA } from './data/titlesData';
 import NarrativeRenderer from './components/NarrativeRenderer';
 import defaultJutsuData from './data/jutsuData.json';
@@ -255,6 +257,8 @@ export default function App() {
   const [isMailOpen, setIsMailOpen] = useState(false);
   const [isTitlesOpen, setIsTitlesOpen] = useState(false);
   const [isFriendsOpen, setIsFriendsOpen] = useState(false);
+  const [isClanOpen, setIsClanOpen] = useState(false);
+  const [opponentEyeOverlay, setOpponentEyeOverlay] = useState(null);
   const [isPersonalProfileOpen, setIsPersonalProfileOpen] = useState(false);
   const [activeTitleId, setActiveTitleId] = useState(() => {
     return localStorage.getItem('naruto_active_title_id') || null;
@@ -324,6 +328,39 @@ export default function App() {
     try {
       localStorage.setItem('naruto_arsenal_mode', mode);
     } catch (e) {}
+  };
+
+  const handleClanJoined = (clanData) => {
+    if (!clanData) return;
+    const updated = {
+      ...userProfile,
+      clanId: clanData.id,
+      clanName: clanData.name,
+      clanEmblemId: clanData.emblemId,
+      clanRole: clanData.creatorKey === (currentAccount?.email || userProfile?.email || playerName) ? 'leader' : 'member'
+    };
+    setUserProfile(updated);
+    try {
+      localStorage.setItem('naruto_user_profile', JSON.stringify(updated));
+    } catch (e) {}
+    setIsClanOpen(true);
+  };
+
+  const handleDemonstrateEyeToOpponent = ({ dojutsuId, dojutsuName, pattern }) => {
+    if (!socket || !roomId) return;
+    socket.emit('show_dojutsu_to_opponent', {
+      roomId,
+      dojutsuId,
+      dojutsuName,
+      pattern,
+      senderName: playerName || 'Шиноби'
+    });
+    addMessage({
+      id: Math.random().toString(),
+      type: 'system',
+      text: `👁️ Вы продемонстрировали сопернику пробуждение своего Додзюцу: «${dojutsuName || 'Глаз'}»!`,
+      time: getCurrentTime()
+    });
   };
 
   const chatEndRef = useRef(null);
@@ -540,6 +577,9 @@ export default function App() {
         team: myTeam, 
         customNinja,
         accountEmail: currentAccount?.email || userProfile?.email || null
+      });
+      s.emit('register_shinobi', {
+        identifier: currentAccount?.email || userProfile?.email || playerName
       });
     });
 
@@ -776,6 +816,67 @@ export default function App() {
           localStorage.setItem('naruto_user_profile', JSON.stringify(battleRes.profile));
         } catch {}
       }
+    });
+
+    // Демонстрация додзюцу от оппонента в бою
+    s.on('opponent_dojutsu_shown', (data) => {
+      setOpponentEyeOverlay(data);
+      if (data?.family) {
+        audioManager.playEyeSound(data.family);
+      }
+      addMessage({
+        id: Math.random().toString(),
+        type: 'system',
+        text: `👁️ ${data?.senderName || 'Оппонент'} активировал и продемонстрировал вам свое Додзюцу: «${data?.dojutsuName || 'Глаз'}»!`,
+        time: getCurrentTime()
+      });
+    });
+
+    // Получение свитка приглашения в Клан в реальном времени
+    s.on('clan_invite_received', (invite) => {
+      notificationManager.addClanInvitationNotification(invite);
+      audioManager.playSfx('seal');
+      addMessage({
+        id: Math.random().toString(),
+        type: 'system',
+        text: `🏯 Получен свиток с приглашением в Клан «${invite?.clanName || 'Клан'}» от Главы ${invite?.fromName || 'шиноби'}! Проверьте «Почту Конохи».`,
+        time: getCurrentTime()
+      });
+    });
+
+    // Уведомление об обновлении данных клана
+    s.on('clan_updated', (updatedClan) => {
+      if (updatedClan) {
+        setUserProfile(prev => {
+          const next = {
+            ...prev,
+            clanId: updatedClan.id,
+            clanName: updatedClan.name,
+            clanEmblemId: updatedClan.emblemId
+          };
+          try { localStorage.setItem('naruto_user_profile', JSON.stringify(next)); } catch (e) {}
+          return next;
+        });
+      }
+    });
+
+    // Уведомление о роспуске клана
+    s.on('clan_disbanded', () => {
+      setUserProfile(prev => {
+        const copy = { ...prev };
+        delete copy.clanId;
+        delete copy.clanName;
+        delete copy.clanEmblemId;
+        delete copy.clanRole;
+        try { localStorage.setItem('naruto_user_profile', JSON.stringify(copy)); } catch (e) {}
+        return copy;
+      });
+      addMessage({
+        id: Math.random().toString(),
+        type: 'system',
+        text: `🏛️ Ваш клан был распущен Главой клана.`,
+        time: getCurrentTime()
+      });
     });
 
     setSocket(s);
@@ -1310,6 +1411,7 @@ export default function App() {
         onOpenMail={() => setIsMailOpen(true)}
         onOpenTitles={() => setIsTitlesOpen(true)}
         onOpenFriends={() => setIsFriendsOpen(true)}
+        onOpenClan={() => setIsClanOpen(true)}
         onOpenPersonalProfile={() => setIsPersonalProfileOpen(true)}
         activeTitle={TITLES_DATA.find(t => t.id === activeTitleId)?.name || userProfile?.activeTitle || null}
         unreadMailCount={unreadMailCount}
@@ -2333,6 +2435,7 @@ export default function App() {
         userProfile={userProfile}
         currentAccount={currentAccount}
         onOpenPersonalProfile={() => setIsPersonalProfileOpen(true)}
+        onDemonstrateToOpponent={handleDemonstrateEyeToOpponent}
       />
 
       {/* МОДАЛЬНЫЕ ОКНА */}
@@ -2434,6 +2537,10 @@ export default function App() {
       <ShinobiMailModal
         isOpen={isMailOpen}
         onClose={() => setIsMailOpen(false)}
+        backendUrl={BACKEND_URL}
+        userProfile={userProfile}
+        playerName={playerName}
+        onClanJoined={handleClanJoined}
       />
 
       {/* 14. МОДАЛЬНОЕ ОКНО: Боевые Титулы (Достижения) */}
@@ -2454,6 +2561,10 @@ export default function App() {
         playerName={playerName}
         backendUrl={BACKEND_URL}
         socket={socket}
+        onOpenClan={() => {
+          setIsFriendsOpen(false);
+          setIsClanOpen(true);
+        }}
         onJoinRoom={(code) => {
           setRoomId(code);
           if (socket) {
@@ -2492,6 +2603,27 @@ export default function App() {
         selectedJutsuCount={selectedJutsuIds.length}
         hasCustomNinja={Boolean(customNinja)}
       />
+
+      {/* 17. МОДАЛЬНОЕ ОКНО: Клановая Система Конохи (Кланы и Клановые Войны) */}
+      <ClanModal
+        isOpen={isClanOpen}
+        onClose={() => setIsClanOpen(false)}
+        userProfile={userProfile}
+        playerName={playerName}
+        backendUrl={BACKEND_URL}
+        socket={socket}
+      />
+
+      {/* 18. ПОЛНОЭКРАННЫЙ КИНЕМАТОГРАФИЧНЫЙ ОВЕРЛЕЙ: Демонстрация Додзюцу Соперника */}
+      {opponentEyeOverlay && (
+        <EyeActivationOverlay
+          isOpen={Boolean(opponentEyeOverlay)}
+          onClose={() => setOpponentEyeOverlay(null)}
+          dojutsuId={opponentEyeOverlay.dojutsuId}
+          opponentName={opponentEyeOverlay.senderName}
+          autoDismissMs={5500}
+        />
+      )}
     </div>
   );
 }

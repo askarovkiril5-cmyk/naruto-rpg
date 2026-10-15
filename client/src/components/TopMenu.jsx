@@ -19,6 +19,7 @@ export default function TopMenu({
   onOpenMail,
   onOpenTitles,
   onOpenFriends,
+  onOpenClan,
   onOpenPersonalProfile,
   activeTitle,
   unreadMailCount = 0,
@@ -250,6 +251,19 @@ export default function TopMenu({
           <Trophy className="w-5 h-5 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
           <span className="text-xs font-semibold hidden sm:inline text-zinc-200 group-hover:text-cyan-300">
             Друзья & Топ
+          </span>
+        </button>
+
+        {/* 6.96. Клановая Система Конохи (Мой Клан) */}
+        <button
+          type="button"
+          onClick={onOpenClan}
+          title={userProfile?.clanName ? `Клан шиноби: «${userProfile.clanName}»` : "Клановая Система Конохи (Основание клана, гербы, закрытый чат и топ)"}
+          className="w-full flex items-center justify-center sm:justify-start gap-2.5 px-2.5 py-2 rounded-xl hover:bg-white/10 text-zinc-300 hover:text-amber-400 transition cursor-pointer group"
+        >
+          <Shield className="w-5 h-5 text-amber-400 shrink-0 group-hover:scale-110 transition-transform" />
+          <span className="text-xs font-semibold hidden sm:inline text-zinc-200 group-hover:text-amber-300 truncate">
+            {userProfile?.clanName || 'Мой Клан'}
           </span>
         </button>
 

@@ -208,6 +208,86 @@ app.post('/api/messages', (req, res) => {
   res.json({ success: Boolean(saved), message: saved });
 });
 
+// ==========================================
+// КЛАНОВАЯ СИСТЕМА КОНОХИ (REST API)
+// ==========================================
+app.post('/api/clans/create', (req, res) => {
+  const result = storageManager.createClan(req.body);
+  res.json(result);
+});
+
+app.get('/api/clans/my/:userKey', (req, res) => {
+  const clan = storageManager.getUserClan(req.params.userKey);
+  res.json({ clan });
+});
+
+app.get('/api/clans/leaderboard', (req, res) => {
+  const leaderboard = storageManager.getClanLeaderboard();
+  res.json(leaderboard);
+});
+
+app.get('/api/clans/:clanId', (req, res) => {
+  const clan = storageManager.getClan(req.params.clanId);
+  res.json(clan);
+});
+
+app.post('/api/clans/update', (req, res) => {
+  const result = storageManager.updateClan(req.body);
+  res.json(result);
+});
+
+app.post('/api/clans/invite', (req, res) => {
+  const result = storageManager.inviteUserToClan(req.body);
+  if (result.success && result.invite) {
+    const targetSocketId = onlineUsers.get(String(result.invite.toUserKey).toLowerCase());
+    if (targetSocketId) {
+      io.to(targetSocketId).emit('clan_invite_received', result.invite);
+    }
+  }
+  res.json(result);
+});
+
+app.post('/api/clans/respond-invite', (req, res) => {
+  const result = storageManager.respondClanInvite(req.body);
+  if (result.success && result.accepted) {
+    io.to(`clan_${req.body.clanId}`).emit('clan_updated', result.clan);
+  }
+  res.json(result);
+});
+
+app.post('/api/clans/leave', (req, res) => {
+  const result = storageManager.leaveClan(req.body);
+  if (result.success) {
+    io.to(`clan_${req.body.clanId}`).emit('clan_member_left', { userKey: req.body.userKey });
+  }
+  res.json(result);
+});
+
+app.post('/api/clans/disband', (req, res) => {
+  const result = storageManager.disbandClan(req.body);
+  if (result.success) {
+    io.to(`clan_${req.body.clanId}`).emit('clan_disbanded', { clanId: req.body.clanId });
+  }
+  res.json(result);
+});
+
+app.get('/api/clans/:clanId/messages', (req, res) => {
+  res.json(storageManager.getClanMessages(req.params.clanId));
+});
+
+app.post('/api/clans/:clanId/messages', (req, res) => {
+  const saved = storageManager.saveClanMessage({
+    clanId: req.params.clanId,
+    fromKey: req.body.fromKey,
+    fromName: req.body.fromName,
+    text: req.body.text
+  });
+  if (saved) {
+    io.to(`clan_${req.params.clanId}`).emit('clan_message_received', saved);
+  }
+  res.json({ success: Boolean(saved), message: saved });
+});
+
 // REST эндпоинт для списка каноничных ботов (Саске, Итачи, Минато, Наруто, Какаши)
 const { BOTS, getBot, getRandomBot, getAllBotsList } = require('./botCharacters');
 app.get('/api/bots', (req, res) => {
@@ -315,6 +395,44 @@ io.on('connection', (socket) => {
   socket.on('get_direct_messages', ({ userA, userB }) => {
     const list = storageManager.getDirectMessages(userA, userB);
     socket.emit('direct_messages_history', { userB, messages: list });
+  });
+
+  // ==========================================
+  // КЛАНОВЫЕ СОКЕТЫ (ЗАКРЫТЫЙ ЧАТ И СОБЫТИЯ)
+  // ==========================================
+  socket.on('join_clan_room', ({ clanId }) => {
+    if (clanId) {
+      socket.join(`clan_${clanId}`);
+      console.log(`[ClanSocket] Клиент ${socket.id} вошел в закрытый канал clan_${clanId}`);
+    }
+  });
+
+  socket.on('leave_clan_room', ({ clanId }) => {
+    if (clanId) {
+      socket.leave(`clan_${clanId}`);
+    }
+  });
+
+  socket.on('send_clan_message', ({ clanId, fromKey, fromName, text }) => {
+    const saved = storageManager.saveClanMessage({ clanId, fromKey, fromName, text });
+    if (saved) {
+      io.to(`clan_${clanId}`).emit('clan_message_received', saved);
+    }
+  });
+
+  // ==========================================
+  // ДЕМОНСТРАЦИЯ ДОДЗЮЦУ СОПЕРНИКУ В БОЮ
+  // ==========================================
+  socket.on('show_dojutsu_to_opponent', ({ roomId, dojutsuId, dojutsuName, pattern, senderName }) => {
+    if (roomId) {
+      socket.to(roomId).emit('opponent_dojutsu_shown', {
+        senderName: senderName || 'Оппонент',
+        dojutsuId: dojutsuId || 'mangekyo',
+        dojutsuName: dojutsuName || 'Додзюцу',
+        pattern: pattern || 'itachi'
+      });
+      console.log(`[Dojutsu] Демонстрация ока ${dojutsuName} от ${senderName} отправлена в комнату ${roomId}`);
+    }
   });
 
   // Смена модели ИИ-ведущего (на лету в любой момент игры)

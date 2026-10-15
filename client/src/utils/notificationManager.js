@@ -142,7 +142,7 @@ class NotificationManager {
   }
 
   // Добавить новое уведомление
-  addNotification({ category, title, sender, content, updateData = null }) {
+  addNotification({ category, title, sender, content, updateData = null, clanInviteData = null }) {
     const newMail = {
       id: 'mail_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now(),
       category: category || 'village',
@@ -152,7 +152,8 @@ class NotificationManager {
       timestamp: Date.now(),
       read: false,
       content: content || '',
-      updateData: updateData || null
+      updateData: updateData || null,
+      clanInviteData: clanInviteData || null
     };
 
     this.notifications = [newMail, ...this.notifications];

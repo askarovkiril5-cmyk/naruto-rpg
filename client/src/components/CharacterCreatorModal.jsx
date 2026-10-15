@@ -4,6 +4,7 @@ import {
   Flame, Wind, Droplets, Mountain, Compass, Check, RotateCcw, Save, Layers, AlertTriangle
 } from 'lucide-react';
 import { DOJUTSU_OPTIONS, getDojutsuById } from '../data/dojutsuData';
+import EyeActivationOverlay from './EyeActivationOverlay';
 
 // 9 Каноничных кланов по Разделу 1 и Разделу 3 регламента игры
 export const CLAN_OPTIONS = [
@@ -214,6 +215,7 @@ export default function CharacterCreatorModal({
   const [eyeNotice, setEyeNotice] = useState(null);
   const [selectedTrait, setSelectedTrait] = useState('none');
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [previewEyeId, setPreviewEyeId] = useState(null);
 
   useEffect(() => {
     try {
@@ -880,9 +882,25 @@ export default function CharacterCreatorModal({
                 <span>• Поддержка: <b className="text-amber-300">{combinedUpkeep.toLocaleString()} ед./ход</b></span>
                 {combinedSpeedBonus > 0 && <span>• Скорость: <b className="text-emerald-300">+{combinedSpeedBonus}%</b></span>}
               </div>
-              <span className="text-[10px] text-zinc-400">
-                Выбирайте сколько угодно глаз из своих кланов ({selectedClans.join(', ')}). Бонусы характеристик (скорость, предвидение) берутся по сильнейшему глазу, расход суммируется!
-              </span>
+              <div className="flex items-center gap-2">
+                {selectedDojutsuList.some(id => id !== 'auto' && id !== 'none') && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const validId = selectedDojutsuList.find(id => id !== 'auto' && id !== 'none');
+                      if (validId) setPreviewEyeId(validId);
+                    }}
+                    className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs flex items-center gap-1.5 transition shadow-md shadow-cyan-500/20 cursor-pointer active:scale-95"
+                    title="Посмотреть анимацию пробуждения выбранного ока по центру экрана"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>👁️ Посмотреть анимацию</span>
+                  </button>
+                )}
+                <span className="text-[10px] text-zinc-400 max-w-xs text-right">
+                  Кликните на кнопку «Анимация» на карточке любого глаза для предпросмотра вращения и звука!
+                </span>
+              </div>
             </div>
 
             {/* Карточки додзюцу */}
@@ -950,6 +968,21 @@ export default function CharacterCreatorModal({
                       {dojutsu.stats.speed && dojutsu.stats.speed !== '0 м/с' && (
                         <div className="text-[9px] font-mono text-emerald-400 font-bold">
                           ⚡ Скорость: {dojutsu.stats.speed}
+                        </div>
+                      )}
+                      {dojutsu.id !== 'auto' && dojutsu.id !== 'none' && (
+                        <div className="pt-1 flex items-center justify-end">
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPreviewEyeId(dojutsu.id);
+                            }}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-cyan-950/70 hover:bg-cyan-500 text-cyan-300 hover:text-black border border-cyan-500/30 text-[9px] font-bold transition shadow-sm cursor-pointer"
+                            title="Посмотреть анимацию ока по центру экрана"
+                          >
+                            <Eye className="w-2.5 h-2.5" />
+                            <span>Анимация ока</span>
+                          </span>
                         </div>
                       )}
                     </div>
@@ -1033,6 +1066,15 @@ export default function CharacterCreatorModal({
         </div>
 
       </div>
+
+      {/* Оверлей анимации ока шиноби */}
+      {previewEyeId && (
+        <EyeActivationOverlay
+          isOpen={!!previewEyeId}
+          onClose={() => setPreviewEyeId(null)}
+          dojutsuId={previewEyeId}
+        />
+      )}
     </div>
   );
 }

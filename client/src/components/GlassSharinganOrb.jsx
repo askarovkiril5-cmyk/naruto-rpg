@@ -958,21 +958,33 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
         </g>
       );
 
-    // 4. ОБИТО УЧИХА / КАКАШИ (Камуи — 3 хищных клыка-крюка воронки сингулярности)
+    // 4. ОБИТО УЧИХА / КАКАШИ (Камуи — 100% точная копия канонического эталона Кирилла)
     case MANGEKYO_PATTERNS.KAMUI:
       return (
-        <g fill="#050505">
-          <circle r="14" />
-          <circle r="3.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ff2a4b)" />
-          {[0, 120, 240].map((deg) => (
-            <path
-              key={deg}
-              d="M -5,-14 C -12,-36 -28,-58 -38,-78 C -8,-80 48,-66 70,-46 C 46,-34 24,-22 14,-5 Z"
-              transform={`rotate(${deg})`}
-              stroke="#180003"
-              strokeWidth="0.8"
-            />
-          ))}
+        <g id="kamui_canon">
+          {/* 1. Алая основа радужки */}
+          <circle r="88" fill="url(#orbIrisBase)" />
+
+          {/* 2. Промежуточное концентрическое черное кольцо (канон эталона) */}
+          <circle r="60" fill="none" stroke="#000000" strokeWidth="2.8" />
+
+          {/* 3. Трилистная вихревая воронка Камуи (3 клыка сингулярности под 0°, 120°, 240°) */}
+          <g fill="#000000">
+            {[0, 120, 240].map((deg) => (
+              <path
+                key={deg}
+                d="M 0,-84 A 84 84 0 0 1 74,-38 C 50,-32 26,-20 13,-7.5 A 15 15 0 0 1 -13,-7.5 C -14,-24 -12,-56 0,-84 Z"
+                transform={`rotate(${deg})`}
+              />
+            ))}
+          </g>
+
+          {/* 4. Открытая алая апертура / зрачок сингулярности в центре (Канон эталона!) */}
+          <circle r="15" fill="url(#orbIrisBase)" />
+          <circle r="15" fill="none" stroke="#000000" strokeWidth="1.8" />
+
+          {/* 5. Внешний массивный черный лимбальный обод */}
+          <circle r="85" fill="none" stroke="#000000" strokeWidth="6" />
         </g>
       );
 

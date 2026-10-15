@@ -10,6 +10,7 @@ import React from 'react';
  * - Контурный рефлекс Френеля на 4-5 часов (Fresnel Rim Bounce)
  * - Фирменный глянцевый блик студийного софтбокса на 10-11 часов (Studio Softbox Reflection)
  * - Ослепительно-белый горячий фокус (Specular Hotspot)
+ * - Безупречное вращение точно на месте через Double-G Container + SVG <animateTransform>
  */
 
 export const MANGEKYO_PATTERNS = {
@@ -81,9 +82,397 @@ const ChakraFiberWisps = ({ color = '#ff4d58', count = 36 }) => {
  * Рендерер геометрических узоров по центру (0, 0)
  */
 export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = null }) => {
-  // 1. БЬЯКУГАН
-  if (family === 'Byakugan') {
-    if (stageId === 'byakugan_awakened') {
+  const stage = String(stageId || '').toLowerCase();
+  const fam = String(family || '').toLowerCase();
+
+  // ========================================================
+  // [1] КИНГАН (ЗОЛОТОЕ РАССЕКАЮЩЕЕ ОКО СУВЕРЕНА)
+  // ========================================================
+  if (fam.includes('kingan') || stage.includes('kingan')) {
+    // kingan_1: 1 кольцо калибровки
+    if (stage === 'kingan_1') {
+      return (
+        <g id="kingan_1">
+          <circle r="13" fill="#181002" stroke="#ffe100" strokeWidth="2.5" />
+          <circle r="4.5" fill="#ffffff" filter="drop-shadow(0 0 5px #ffffff)" />
+          {/* 1 золотое калибровочное кольцо с оптической шкалой */}
+          <circle r="54" fill="none" stroke="#ffe100" strokeWidth="2.5" strokeDasharray="4 3" />
+          <circle r="54" fill="none" stroke="#ffaa00" strokeWidth="1" opacity="0.6" />
+          {/* 4 осевые прицельные риски */}
+          {[0, 90, 180, 270].map((deg) => (
+            <line
+              key={deg}
+              x1="0"
+              y1="-44"
+              x2="0"
+              y2="-66"
+              stroke="#ffe100"
+              strokeWidth="2.8"
+              strokeLinecap="round"
+              transform={`rotate(${deg})`}
+            />
+          ))}
+          {/* 4 диагональные микро-засечки */}
+          {[45, 135, 225, 315].map((deg) => (
+            <line
+              key={deg}
+              x1="0"
+              y1="-50"
+              x2="0"
+              y2="-58"
+              stroke="#ffffff"
+              strokeWidth="1.5"
+              transform={`rotate(${deg})`}
+            />
+          ))}
+        </g>
+      );
+    }
+
+    // kingan_2: 2 кольца анализа швов чакры
+    if (stage === 'kingan_2') {
+      return (
+        <g id="kingan_2">
+          <circle r="14" fill="#181002" stroke="#ffe100" strokeWidth="2.8" />
+          <circle r="5" fill="#ffffff" filter="drop-shadow(0 0 5px #ffffff)" />
+          {/* 2 концентрических золотых кольца */}
+          <circle r="44" fill="none" stroke="#ffe100" strokeWidth="2.6" />
+          <circle r="72" fill="none" stroke="#ffaa00" strokeWidth="2.2" />
+          {/* 8 клинописных рун анализа швов чакры */}
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+            <g key={deg} transform={`rotate(${deg})`}>
+              <polygon points="-4,-54 0,-66 4,-54" fill="#ffe100" stroke="#ffffff" strokeWidth="0.8" />
+              <line x1="0" y1="-44" x2="0" y2="-50" stroke="#ffffff" strokeWidth="1.6" />
+            </g>
+          ))}
+          {/* Внутренняя шкала микрометра */}
+          <circle r="58" fill="none" stroke="#ffe100" strokeWidth="1" strokeDasharray="2 5" opacity="0.75" />
+        </g>
+      );
+    }
+
+    // kingan_3: 3 кольца + 4 рассекающих лезвия
+    if (stage === 'kingan_3') {
+      return (
+        <g id="kingan_3">
+          <circle r="15" fill="#181002" stroke="#ffe100" strokeWidth="3" />
+          <circle r="5.5" fill="#ffffff" filter="drop-shadow(0 0 6px #ffffff)" />
+          {/* 3 кольца со шкалами триграмм */}
+          <circle r="36" fill="none" stroke="#ffe100" strokeWidth="2.2" />
+          <circle r="56" fill="none" stroke="#ffc400" strokeWidth="2.8" strokeDasharray="16 4" />
+          <circle r="76" fill="none" stroke="#ff9400" strokeWidth="2" />
+          {/* 4 золотых рассекающих лезвия-ланцета (0°, 90°, 180°, 270°) */}
+          {[0, 90, 180, 270].map((deg) => (
+            <g key={deg} transform={`rotate(${deg})`}>
+              <path d="M -5,-22 L 0,-84 L 5,-22 L 2.5,-16 L -2.5,-16 Z" fill="#ffe100" stroke="#ffffff" strokeWidth="1" />
+              <line x1="0" y1="-20" x2="0" y2="-82" stroke="#ffffff" strokeWidth="1.6" />
+            </g>
+          ))}
+          {/* Триграммы рассечения на 45° */}
+          {[45, 135, 225, 315].map((deg) => (
+            <g key={deg} transform={`rotate(${deg})`}>
+              <line x1="-7" y1="-64" x2="7" y2="-64" stroke="#ffe100" strokeWidth="2.2" />
+              <line x1="-7" y1="-68" x2="7" y2="-68" stroke="#ffe100" strokeWidth="2.2" />
+            </g>
+          ))}
+        </g>
+      );
+    }
+
+    // kingan_awakened: Золотой Суверен (октагональная призма + 4 лазера)
+    return (
+      <g id="kingan_awakened">
+        <circle r="18" fill="#181002" stroke="#ffe100" strokeWidth="3.2" />
+        <circle r="6.5" fill="#ffffff" filter="drop-shadow(0 0 8px #ffffff)" />
+        {/* 8-угольная золотая октаграмма (2 перекрестных квадрата) */}
+        <polygon points="0,-80 80,0 0,80 -80,0" fill="none" stroke="#ffe100" strokeWidth="3.2" />
+        <polygon points="56,-56 56,56 -56,56 -56,-56" fill="none" stroke="#ffaa00" strokeWidth="2.6" />
+        {/* Внутренняя сакральная призма */}
+        <polygon
+          points="0,-54 38.2,-38.2 54,0 38.2,38.2 0,54 -38.2,38.2 -54,0 -38.2,-38.2"
+          fill="rgba(255, 225, 0, 0.2)"
+          stroke="#ffffff"
+          strokeWidth="1.6"
+        />
+        {/* 4 лазерных луча разрушения техник с фокусирующими кристаллами */}
+        {[0, 90, 180, 270].map((deg) => (
+          <g key={deg} transform={`rotate(${deg})`}>
+            <line x1="0" y1="-18" x2="0" y2="-86" stroke="#ffffff" strokeWidth="3" />
+            <line x1="0" y1="-18" x2="0" y2="-86" stroke="#ffe100" strokeWidth="6" opacity="0.4" />
+            {/* Фокусирующая ромбовидная призма */}
+            <polygon points="0,-88 -6,-80 0,-72 6,-80" fill="#ffffff" stroke="#ffe100" strokeWidth="1.6" />
+          </g>
+        ))}
+        {/* 8 лучевых сфер на вершинах октаграммы */}
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+          <circle key={deg} cx="0" cy="-80" r="3.2" fill="#ffffff" filter="drop-shadow(0 0 4px #ffe100)" transform={`rotate(${deg})`} />
+        ))}
+      </g>
+    );
+  }
+
+  // ========================================================
+  // [2] АОЙГАН (ЛАЗУРНОЕ ОКО БЕЗДНЫ КЛАНА СИНКАЙ)
+  // ========================================================
+  if (fam.includes('aoigan') || stage.includes('aoigan')) {
+    // aoigan_1: 1 гидродинамическая капля
+    if (stage === 'aoigan_1') {
+      return (
+        <g id="aoigan_1">
+          <circle r="13" fill="#010d21" stroke="#00e5ff" strokeWidth="2.6" />
+          <circle r="4.5" fill="#ffffff" filter="drop-shadow(0 0 5px #00e5ff)" />
+          {/* Водные кольца ряби */}
+          <circle r="46" fill="none" stroke="#00b4d8" strokeWidth="1.6" opacity="0.75" />
+          <circle r="70" fill="none" stroke="#0077b6" strokeWidth="1.4" strokeDasharray="6 4" opacity="0.6" />
+          {/* 1 гидродинамическая капля на 0° */}
+          <path d="M 0,-32 C -13,-46 -15,-62 0,-80 C 15,-62 13,-46 0,-32 Z" fill="#00e5ff" stroke="#ffffff" strokeWidth="1" />
+          <path d="M 0,-40 C -5,-48 -5,-60 0,-70" stroke="#ffffff" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+          <circle cx="0" cy="-52" r="3" fill="#ffffff" />
+        </g>
+      );
+    }
+
+    // aoigan_2: 2 капли под 180° + дуги течения
+    if (stage === 'aoigan_2') {
+      return (
+        <g id="aoigan_2">
+          <circle r="14" fill="#010d21" stroke="#00e5ff" strokeWidth="2.8" />
+          <circle r="5" fill="#ffffff" filter="drop-shadow(0 0 5px #00e5ff)" />
+          {/* Дуга океанического течения между каплями */}
+          <circle r="58" fill="none" stroke="#0096c7" strokeWidth="2" strokeDasharray="32 14" />
+          {/* 2 капли под 180° с линиями завихрений */}
+          {[0, 180].map((deg) => (
+            <g key={deg} transform={`rotate(${deg})`}>
+              <path d="M 0,-30 C -14,-44 -16,-62 0,-80 C 16,-62 14,-44 0,-30 Z" fill="#00e5ff" stroke="#ffffff" strokeWidth="1" />
+              <path d="M 0,-38 C -5,-46 -5,-58 0,-70" stroke="#ffffff" strokeWidth="2" fill="none" strokeLinecap="round" />
+              {/* Водяное завихрение */}
+              <path d="M 0,-30 C 18,-28 36,-14 36,0" fill="none" stroke="#00f0ff" strokeWidth="2.2" strokeLinecap="round" />
+            </g>
+          ))}
+        </g>
+      );
+    }
+
+    // aoigan_3: 3 капли под 120° — сжатый водоворот
+    if (stage === 'aoigan_3') {
+      return (
+        <g id="aoigan_3">
+          <circle r="15" fill="#010d21" stroke="#00e5ff" strokeWidth="3" />
+          <circle r="5.5" fill="#ffffff" filter="drop-shadow(0 0 6px #00e5ff)" />
+          {/* 3 капли под 120° (0°, 120°, 240°), образующие сжатый водоворот */}
+          {[0, 120, 240].map((deg) => (
+            <g key={deg} transform={`rotate(${deg})`}>
+              <path
+                d="M 0,-15 C 16,-22 42,-36 52,-70 C 35,-66 17,-47 9,-31 C 5,-23 2,-16 0,-15 Z"
+                fill="#00e5ff"
+                stroke="#0077b6"
+                strokeWidth="1.2"
+              />
+              <path
+                d="M 6,-24 C 20,-34 32,-46 38,-62"
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </g>
+          ))}
+          {/* Внешнее кольцо водоворота */}
+          <circle r="74" fill="none" stroke="#00b4d8" strokeWidth="2.2" strokeDasharray="18 8" />
+        </g>
+      );
+    }
+
+    // aoigan_awakened: Глубинная Бездна (Гёрин но Ёрой) — чешуя дракона и 6 вихрей
+    return (
+      <g id="aoigan_awakened">
+        <circle r="18" fill="#010d21" stroke="#00f5ff" strokeWidth="3.2" />
+        <circle r="6.5" fill="#ffffff" filter="drop-shadow(0 0 8px #00f5ff)" />
+        {/* 6 сапфировых чешуйчатых лепестков Гёрин но Ёрой */}
+        {[0, 60, 120, 180, 240, 300].map((deg) => (
+          <g key={deg} transform={`rotate(${deg})`}>
+            <path
+              d="M 0,-26 C -15,-40 -18,-64 0,-84 C 18,-64 15,-40 0,-26 Z"
+              fill="rgba(0, 200, 255, 0.5)"
+              stroke="#00f5ff"
+              strokeWidth="2.4"
+            />
+            {/* Продольное сапфировое ребро жесткости */}
+            <line x1="0" y1="-28" x2="0" y2="-82" stroke="#ffffff" strokeWidth="2" />
+          </g>
+        ))}
+        {/* 6 дуговых струй глубин между чешуйками */}
+        {[0, 60, 120, 180, 240, 300].map((deg) => (
+          <path
+            key={deg}
+            d="M 0,-40 C 26,-46 48,-25 48,0"
+            fill="none"
+            stroke="#00ffff"
+            strokeWidth="2.6"
+            strokeLinecap="round"
+            transform={`rotate(${deg})`}
+          />
+        ))}
+        {/* 12 светящихся глубоководных биолюминесцентных жемчужин */}
+        {Array.from({ length: 12 }).map((_, i) => (
+          <circle key={i} cx="0" cy="-78" r="2.4" fill="#ffffff" filter="drop-shadow(0 0 4px #00f5ff)" transform={`rotate(${i * 30})`} />
+        ))}
+      </g>
+    );
+  }
+
+  // ========================================================
+  // [3] ИКАДЗУТИГАН (ГРОМОВОЕ ОКО РАЙДЗИНА КЛАНА ТЭНРАЙ)
+  // ========================================================
+  if (fam.includes('ikadzutigan') || stage.includes('ikadzutigan')) {
+    // ikadzutigan_1: 1 громовой разряд на 0°
+    if (stage === 'ikadzutigan_1') {
+      return (
+        <g id="ikadzutigan_1">
+          <circle r="13" fill="#090117" stroke="#00ffff" strokeWidth="2.6" />
+          <circle r="4.5" fill="#ffffff" filter="drop-shadow(0 0 5px #00ffff)" />
+          {/* Ионизационное кольцо тока */}
+          <circle r="58" fill="none" stroke="#7928ca" strokeWidth="1.6" strokeDasharray="4 6" />
+          {/* 1 острый электрический зигзаг/молния Райдзина */}
+          <path
+            d="M -3,-14 L -8,-36 L 4,-38 L -4,-58 L 7,-59 L 0,-82 L -2,-66 L -9,-65 L -1,-46 L -12,-44 Z"
+            fill="#00ffff"
+            stroke="#ffffff"
+            strokeWidth="0.8"
+          />
+          <path
+            d="M -2,-16 L -6,-36 L 2,-38 L -3,-56 L 4,-58 L 0,-78"
+            fill="none"
+            stroke="#ffffff"
+            strokeWidth="1.6"
+          />
+        </g>
+      );
+    }
+
+    // ikadzutigan_2: 2 громовых разряда под 180° + дуги Тесла
+    if (stage === 'ikadzutigan_2') {
+      return (
+        <g id="ikadzutigan_2">
+          <circle r="14" fill="#090117" stroke="#00ffff" strokeWidth="2.8" />
+          <circle r="5" fill="#ffffff" filter="drop-shadow(0 0 5px #00ffff)" />
+          {/* 2 громовых разряда под 180° */}
+          {[0, 180].map((deg) => (
+            <g key={deg} transform={`rotate(${deg})`}>
+              <path
+                d="M -3,-14 L -8,-36 L 4,-38 L -4,-58 L 7,-59 L 0,-82 L -2,-66 L -9,-65 L -1,-46 L -12,-44 Z"
+                fill="#00ffff"
+                stroke="#ffffff"
+                strokeWidth="0.8"
+              />
+              <path
+                d="M -2,-16 L -6,-36 L 2,-38 L -3,-56 L 4,-58 L 0,-78"
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="1.6"
+              />
+            </g>
+          ))}
+          {/* Световые дуги ионного тока (Тесла-мосты) */}
+          <path
+            d="M -6,-30 C -46,-30 -64,-10 -64,0 C -64,10 -46,30 -6,30"
+            fill="none"
+            stroke="#c77dff"
+            strokeWidth="2.4"
+          />
+          <path
+            d="M 6,-30 C 46,-30 64,-10 64,0 C 64,10 46,30 6,30"
+            fill="none"
+            stroke="#c77dff"
+            strokeWidth="2.4"
+          />
+        </g>
+      );
+    }
+
+    // ikadzutigan_3: 3 громовых разряда под 120° + треугольный каскад Тесла
+    if (stage === 'ikadzutigan_3') {
+      return (
+        <g id="ikadzutigan_3">
+          <circle r="15" fill="#090117" stroke="#00ffff" strokeWidth="3" />
+          <circle r="5.5" fill="#ffffff" filter="drop-shadow(0 0 6px #00ffff)" />
+          {/* 3 громовых разряда под 120° (0°, 120°, 240°) */}
+          {[0, 120, 240].map((deg) => (
+            <g key={deg} transform={`rotate(${deg})`}>
+              <path
+                d="M -3,-14 L -8,-36 L 4,-38 L -4,-58 L 7,-59 L 0,-82 L -2,-66 L -9,-65 L -1,-46 L -12,-44 Z"
+                fill="#00ffff"
+                stroke="#ffffff"
+                strokeWidth="0.8"
+              />
+              <path
+                d="M -2,-16 L -6,-36 L 2,-38 L -3,-56 L 4,-58 L 0,-78"
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth="1.6"
+              />
+            </g>
+          ))}
+          {/* Треугольный каскад Тесла между разрядами */}
+          <polygon
+            points="0,-50 43.3,25 -43.3,25"
+            fill="none"
+            stroke="#e0aaff"
+            strokeWidth="2.4"
+            strokeDasharray="5 3"
+          />
+        </g>
+      );
+    }
+
+    // ikadzutigan_awakened: Божественная Молния (Курорайтон Райдзина)
+    return (
+      <g id="ikadzutigan_awakened">
+        <circle r="18" fill="#060012" stroke="#00ffff" strokeWidth="3.2" />
+        <circle r="6.5" fill="#ffffff" filter="drop-shadow(0 0 8px #00ffff)" />
+        {/* Октагональная плазменная сфера Райдзина */}
+        <polygon
+          points="0,-80 31,-74 74,-31 80,0 74,31 31,74 0,80 -31,74 -74,31 -80,0 -74,-31 -31,-74"
+          fill="none"
+          stroke="#00ffff"
+          strokeWidth="2.6"
+        />
+        {/* 4 основные длинные черные молнии Курорайтон (0°, 90°, 180°, 270°) */}
+        {[0, 90, 180, 270].map((deg) => (
+          <g key={deg} transform={`rotate(${deg})`}>
+            <path
+              d="M -4,-15 L -9,-38 L 6,-40 L -4,-60 L 7,-61 L 0,-86 L -2,-70 L -10,-68 L 0,-48 L -14,-46 Z"
+              fill="#080017"
+              stroke="#00ffff"
+              strokeWidth="2"
+            />
+            <line x1="0" y1="-20" x2="0" y2="-82" stroke="#ffffff" strokeWidth="1.2" />
+          </g>
+        ))}
+        {/* 4 диагональные вторичные молнии (45°, 135°, 225°, 315°) */}
+        {[45, 135, 225, 315].map((deg) => (
+          <g key={deg} transform={`rotate(${deg})`}>
+            <path
+              d="M -3,-15 L -7,-32 L 4,-34 L -3,-50 L 5,-51 L 0,-70 L -2,-58 L -8,-57 L 0,-40 L -10,-38 Z"
+              fill="#080017"
+              stroke="#c77dff"
+              strokeWidth="1.6"
+            />
+          </g>
+        ))}
+        {/* 8 шаровых плазменных конденсаторов на вершинах печати */}
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+          <circle key={deg} cx="0" cy="-80" r="3.2" fill="#ffffff" filter="drop-shadow(0 0 5px #00ffff)" transform={`rotate(${deg})`} />
+        ))}
+      </g>
+    );
+  }
+
+  // ========================================================
+  // [4] БЬЯКУГАН
+  // ========================================================
+  if (fam.includes('byakugan') || stage.includes('byakugan')) {
+    if (stage === 'byakugan_awakened') {
       return (
         <g>
           <polygon points="0,-82 14,-16 82,0 14,16 0,82 -14,16 -82,0 -14,-16" fill="#ffffff" opacity="0.85" filter="drop-shadow(0 0 10px #38bdf8)" />
@@ -111,9 +500,11 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
     );
   }
 
-  // 2. РИННЕГАН
-  if (family === 'Rinnegan' && pattern !== 'rinne_sharingan' && pattern !== 'gold_rinne_sharingan') {
-    const isSasukeAwakened = stageId === 'rinnegan_awakened';
+  // ========================================================
+  // [5] РИННЕГАН
+  // ========================================================
+  if (fam.includes('rinne') && pattern !== 'rinne_sharingan' && pattern !== 'gold_rinne_sharingan') {
+    const isSasukeAwakened = stage === 'rinnegan_awakened';
     return (
       <g>
         <circle r="78" fill="none" stroke="#2e1065" strokeWidth="2.8" />
@@ -150,9 +541,11 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
     );
   }
 
-  // 3. БАЗОВЫЙ ШАРИНГАН (1, 2, 3 ТОМОЭ)
-  if (stageId === 'sharingan_1' || stageId === 'sharingan_2' || stageId === 'sharingan_3') {
-    const tomoeCount = stageId === 'sharingan_1' ? 1 : (stageId === 'sharingan_2' ? 2 : 3);
+  // ========================================================
+  // [6] БАЗОВЫЙ ШАРИНГАН (1, 2, 3 ТОМОЭ)
+  // ========================================================
+  if (stage === 'sharingan_1' || stage === 'sharingan_2' || stage === 'sharingan_3') {
+    const tomoeCount = stage === 'sharingan_1' ? 1 : (stage === 'sharingan_2' ? 2 : 3);
     const angles = tomoeCount === 1 ? [0] : (tomoeCount === 2 ? [0, 180] : [0, 120, 240]);
     return (
       <g>
@@ -172,7 +565,9 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
     );
   }
 
-  // 4. МАНГЁКЁ ШАРИНГАН (ВСЕ 14 КАНОНИЧНЫХ ФОРМ)
+  // ========================================================
+  // [7] МАНГЁКЁ ШАРИНГАН (ВСЕ 14 КАНОНИЧНЫХ ФОРМ)
+  // ========================================================
   switch (pattern) {
     case MANGEKYO_PATTERNS.ITACHI:
       return (
@@ -416,19 +811,22 @@ export default function GlassSharinganOrb({
   isSpinning = false,
   className = ''
 }) {
+  const stage = String(stageId || '').toLowerCase();
+  const fam = String(family || '').toLowerCase();
+
   // Цветовая гамма стромы в зависимости от семейства
-  const isGold = pattern === MANGEKYO_PATTERNS.GOLD_RINNE_SHARINGAN || family === 'Kingan';
-  const isByakugan = family === 'Byakugan';
-  const isRinnegan = family === 'Rinnegan' && pattern !== 'rinne_sharingan' && pattern !== 'gold_rinne_sharingan';
-  const isAoigan = family === 'Aoigan';
-  const isIkadzutigan = family === 'Ikadzutigan';
+  const isGold = pattern === MANGEKYO_PATTERNS.GOLD_RINNE_SHARINGAN || fam.includes('kingan') || stage.includes('kingan');
+  const isByakugan = fam.includes('byakugan') || stage.includes('byakugan');
+  const isRinnegan = fam.includes('rinne') && pattern !== 'rinne_sharingan' && pattern !== 'gold_rinne_sharingan';
+  const isAoigan = fam.includes('aoigan') || stage.includes('aoigan');
+  const isIkadzutigan = fam.includes('ikadzutigan') || stage.includes('ikadzutigan');
 
   const irisColorStops = isGold ? (
     <>
       <stop offset="0%" stopColor="#fffbeb" />
-      <stop offset="25%" stopColor="#fef08a" />
-      <stop offset="55%" stopColor="#eab308" />
-      <stop offset="78%" stopColor="#a16207" />
+      <stop offset="25%" stopColor="#fde047" />
+      <stop offset="55%" stopColor="#ca8a04" />
+      <stop offset="78%" stopColor="#854d0e" />
       <stop offset="94%" stopColor="#451a03" />
       <stop offset="100%" stopColor="#1c0a00" />
     </>
@@ -453,18 +851,20 @@ export default function GlassSharinganOrb({
   ) : isAoigan ? (
     <>
       <stop offset="0%" stopColor="#ecfeff" />
-      <stop offset="30%" stopColor="#67e8f9" />
-      <stop offset="65%" stopColor="#06b6d4" />
-      <stop offset="85%" stopColor="#0e7490" />
-      <stop offset="100%" stopColor="#083344" />
+      <stop offset="25%" stopColor="#22d3ee" />
+      <stop offset="55%" stopColor="#0891b2" />
+      <stop offset="80%" stopColor="#0e7490" />
+      <stop offset="94%" stopColor="#155e75" />
+      <stop offset="100%" stopColor="#042f2e" />
     </>
   ) : isIkadzutigan ? (
     <>
-      <stop offset="0%" stopColor="#f0f9ff" />
-      <stop offset="30%" stopColor="#7dd3fc" />
-      <stop offset="65%" stopColor="#0284c7" />
-      <stop offset="85%" stopColor="#075985" />
-      <stop offset="100%" stopColor="#082f49" />
+      <stop offset="0%" stopColor="#f5f3ff" />
+      <stop offset="25%" stopColor="#a855f7" />
+      <stop offset="55%" stopColor="#6b21a8" />
+      <stop offset="80%" stopColor="#3b0764" />
+      <stop offset="94%" stopColor="#1e0538" />
+      <stop offset="100%" stopColor="#090014" />
     </>
   ) : (
     // Рубиновый Шаринган по эталону
@@ -478,8 +878,8 @@ export default function GlassSharinganOrb({
     </>
   );
 
-  const fiberColor = isGold ? '#fef08a' : (isByakugan ? '#ffffff' : (isRinnegan ? '#e9d5ff' : (isAoigan ? '#67e8f9' : '#ff4d58')));
-  const fresnelColor = isGold ? '#fef08a' : (isByakugan ? '#e0f2fe' : (isRinnegan ? '#d8b4fe' : '#ff858e'));
+  const fiberColor = isGold ? '#fef08a' : (isByakugan ? '#ffffff' : (isRinnegan ? '#e9d5ff' : (isAoigan ? '#67e8f9' : (isIkadzutigan ? '#00ffff' : '#ff4d58'))));
+  const fresnelColor = isGold ? '#fef08a' : (isByakugan ? '#e0f2fe' : (isRinnegan ? '#d8b4fe' : (isAoigan ? '#a5f3fc' : (isIkadzutigan ? '#00ffff' : '#ff858e'))));
 
   return (
     <div className={`relative flex items-center justify-center ${className}`}>
@@ -529,10 +929,10 @@ export default function GlassSharinganOrb({
           {/* 5. 3D Convex Lens Shading (Сферическая выпуклая линза cx=35%, cy=30%) */}
           <radialGradient id="sphereLensVolume" cx="35%" cy="30%" r="68%" fx="35%" fy="30%">
             <stop offset="0%" stopColor="#ffffff" stopOpacity={isByakugan ? 0.35 : 0.4} />
-            <stop offset="30%" stopColor="#ff404a" stopOpacity="0.08" />
-            <stop offset="62%" stopColor="#450005" stopOpacity="0.28" />
-            <stop offset="82%" stopColor="#1a0002" stopOpacity="0.75" />
-            <stop offset="94%" stopColor="#0a0001" stopOpacity="0.95" />
+            <stop offset="30%" stopColor={isGold ? '#fef08a' : (isAoigan ? '#22d3ee' : (isIkadzutigan ? '#a855f7' : '#ff404a'))} stopOpacity="0.08" />
+            <stop offset="62%" stopColor={isGold ? '#713f12' : (isAoigan ? '#083344' : (isIkadzutigan ? '#3b0764' : '#450005'))} stopOpacity="0.28" />
+            <stop offset="82%" stopColor="#000000" stopOpacity="0.75" />
+            <stop offset="94%" stopColor="#000000" stopOpacity="0.95" />
             <stop offset="100%" stopColor="#000000" stopOpacity="1" />
           </radialGradient>
 
@@ -548,7 +948,7 @@ export default function GlassSharinganOrb({
           <linearGradient id="fresnelBounce" x1="100%" y1="100%" x2="55%" y2="55%">
             <stop offset="0%" stopColor={fresnelColor} stopOpacity="0.65" />
             <stop offset="16%" stopColor={fresnelColor} stopOpacity="0.35" />
-            <stop offset="38%" stopColor="#ff0014" stopOpacity="0.0" />
+            <stop offset="38%" stopColor={fresnelColor} stopOpacity="0.0" />
             <stop offset="100%" stopColor="#000000" stopOpacity="0.0" />
           </linearGradient>
 
@@ -591,14 +991,21 @@ export default function GlassSharinganOrb({
             <ChakraFiberWisps color={fiberColor} />
           </g>
 
-          {/* Layer 3: Геометрический узор (с вращением и тенью парения) */}
-          <g
-            transform={`translate(100, 100) rotate(${rotation})`}
-            filter="url(#glassOrbBladeShadow)"
-            className={isSpinning ? 'animate-spin' : ''}
-            style={{ transformOrigin: '0px 0px', animationDuration: isSpinning ? '2s' : '9s' }}
-          >
-            <OrbPatternRenderer pattern={pattern} family={family} stageId={stageId} />
+          {/* Layer 3: Геометрический узор (DOUBLE-G CONTAINER: СТРОГОЕ ВРАЩЕНИЕ В ЦЕНТРЕ БЕЗ СМЕЩЕНИЙ!) */}
+          <g transform="translate(100, 100)">
+            <g filter="url(#glassOrbBladeShadow)">
+              {isSpinning && (
+                <animateTransform
+                  attributeName="transform"
+                  type="rotate"
+                  from="0 0 0"
+                  to="360 0 0"
+                  dur="2.2s"
+                  repeatCount="indefinite"
+                />
+              )}
+              <OrbPatternRenderer pattern={pattern} family={family} stageId={stageId} />
+            </g>
           </g>
 
           {/* Layer 4: 3D Convex Lens Shading (Преломление выпуклой линзы) */}

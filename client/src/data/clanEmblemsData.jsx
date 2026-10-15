@@ -1706,8 +1706,221 @@ export const CLAN_EMBLEMS = [
         <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
       </svg>
     )
+  },
+
+  // =========================================================================
+  // 19. ЭКСКЛЮЗИВ СОЗДАТЕЛЯ: ОКО СОТВОРЕНИЯ И ЕДИНСТВА ВСЕХ КЛАНОВ (創世の神紋)
+  // ТОЛЬКО ДЛЯ КИРИЛЛА (askarovkiril5@gmail.com)
+  // =========================================================================
+  {
+    id: 'emblem_creator_genesis',
+    name: '👑 Герб Создателя: Око Сотворения и Единства Всех Кланов',
+    kanji: '創世',
+    element: 'ALL',
+    elementBadge: '👑 СОЗДАТЕЛЬ ИГРЫ • КИРИЛЛ • ВСЕ СТИХИИ',
+    themeColor: '#facc15',
+    bgGradient: 'from-amber-950 via-zinc-950 to-purple-950',
+    borderColor: 'border-yellow-400/90',
+    glowColor: 'shadow-yellow-400/60',
+    isCreatorExclusive: true,
+    developerEmail: 'askarovkiril5@gmail.com',
+    defaultMotto: 'Тот, кто сотворил этот мир, объединил пламя, молнию и волю всех кланов воедино!',
+    desc: 'Священный первородный герб Создателя и Архитектора мира шиноби (Кирилла). Синтезирует величайшие реликвии: рубиновый Гунбай Учиха, Спираль Удзумаки, Ветви Мокутона Сэндзю, 8 Триграмм Хьюга, барабаны Райдзина, 9 парящих сфер Гудодама и Око Ринне-Шарингана под золотой Короной Творца 『創世』.',
+    renderSvg: (className = "w-12 h-12") => (
+      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="m_gen_gold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#fffbeb" />
+            <stop offset="25%" stopColor="#fef08a" />
+            <stop offset="50%" stopColor="#eab308" />
+            <stop offset="75%" stopColor="#a16207" />
+            <stop offset="90%" stopColor="#713f12" />
+            <stop offset="100%" stopColor="#fde047" />
+          </linearGradient>
+          <radialGradient id="m_gen_cosmos" cx="45%" cy="40%" r="65%">
+            <stop offset="0%" stopColor="#3b0764" />
+            <stop offset="40%" stopColor="#1e0a38" />
+            <stop offset="75%" stopColor="#090412" />
+            <stop offset="100%" stopColor="#020105" />
+          </radialGradient>
+          <radialGradient id="m_gen_ruby" cx="45%" cy="40%" r="65%">
+            <stop offset="0%" stopColor="#ef4444" />
+            <stop offset="45%" stopColor="#b91c1c" />
+            <stop offset="80%" stopColor="#58050e" />
+            <stop offset="100%" stopColor="#250205" />
+          </radialGradient>
+          <radialGradient id="m_gen_gudodama" cx="35%" cy="30%" r="65%">
+            <stop offset="0%" stopColor="#64748b" />
+            <stop offset="30%" stopColor="#0f172a" />
+            <stop offset="85%" stopColor="#020617" />
+            <stop offset="100%" stopColor="#000000" />
+          </radialGradient>
+          <radialGradient id="m_gen_plasma" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="35%" stopColor="#ff4d4d" />
+            <stop offset="75%" stopColor="#990000" />
+            <stop offset="100%" stopColor="#2b0000" />
+          </radialGradient>
+          <filter id="m_gen_shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2.5" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.95" />
+          </filter>
+          <radialGradient id="m_gen_glint" cx="35%" cy="30%" r="50%">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.22" />
+            <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
+        {/* 0. Божественный наружный ореол чакры творения */}
+        <circle cx="50" cy="50" r="49" stroke="#facc15" strokeWidth="1.2" opacity="0.6" strokeDasharray="3 2" />
+        <circle cx="50" cy="50" r="47.5" stroke="#38bdf8" strokeWidth="0.8" opacity="0.45" />
+
+        {/* 1. Чеканный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="46.5" stroke="url(#m_gen_gold)" strokeWidth="2.8" />
+        <circle cx="50" cy="50" r="43.5" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="42" stroke="url(#m_gen_gold)" strokeWidth="0.8" strokeDasharray="2 1.5" />
+
+        {/* 12 заклепок по ободу */}
+        <g fill="url(#m_gen_gold)">
+          {Array.from({ length: 12 }).map((_, i) => {
+            const rad = (i * 30 * Math.PI) / 180;
+            return <circle key={i} cx={50 + 45 * Math.cos(rad)} cy={50 + 45 * Math.sin(rad)} r="1.3" />;
+          })}
+        </g>
+
+        {/* 2. Космическое эмалевое дно (Клуазоне) */}
+        <circle cx="50" cy="50" r="41" fill="url(#m_gen_cosmos)" />
+
+        {/* 3. Щит Гунбай Учиха (Рельефная база в форме веера) */}
+        <g filter="url(#m_gen_shadow)">
+          {/* Рукоять веера с золотой намоткой */}
+          <path d="M48 68 L48 88 C48 90 49 91 50 91 C51 91 52 90 52 88 L52 68 Z" fill="#18181b" stroke="url(#m_gen_gold)" strokeWidth="0.8" />
+          <circle cx="50" cy="89" r="1.6" fill="url(#m_gen_gold)" />
+          {/* Алая шелковая кисть */}
+          <path d="M49 90 L47 95 M51 90 L53 95 M50 90 L50 96" stroke="#ef4444" strokeWidth="1" strokeLinecap="round" />
+
+          {/* Корпус Гунбая (двойной лепесток веера) */}
+          <path
+            d="M 50 16 C 70 16 78 35 68 48 C 76 60 70 74 50 74 C 30 74 24 60 32 48 C 22 35 30 16 50 16 Z"
+            fill="url(#m_gen_ruby)"
+            stroke="url(#m_gen_gold)"
+            strokeWidth="2.2"
+          />
+        </g>
+
+        {/* 4. Спираль Удзумаки & волны Сейгайха */}
+        <g stroke="#fca5a5" fill="none" strokeWidth="0.9" opacity="0.4">
+          <circle cx="50" cy="46" r="19" stroke="#fbbf24" strokeWidth="0.6" strokeDasharray="2 2" />
+          <path d="M 50 46 A 4 4 0 0 1 50 54 A 8 8 0 0 0 50 38 A 12 12 0 0 1 50 62 A 16 16 0 0 0 50 30" />
+        </g>
+
+        {/* 5. Золотые ветви Мокутона Сэндзю */}
+        <g stroke="url(#m_gen_gold)" fill="none" strokeWidth="1.2" strokeLinecap="round">
+          <path d="M 32 64 C 28 52 24 40 32 30 C 35 24 30 18 38 12" />
+          <path d="M 68 64 C 72 52 76 40 68 30 C 65 24 70 18 62 12" />
+          {/* Листья Мокутона */}
+          <path d="M 28 46 Q 23 44 26 40 Q 30 42 28 46 Z" fill="url(#m_gen_gold)" />
+          <path d="M 72 46 Q 77 44 74 40 Q 70 42 72 46 Z" fill="url(#m_gen_gold)" />
+          <path d="M 34 26 Q 29 23 32 19 Q 36 22 34 26 Z" fill="url(#m_gen_gold)" />
+          <path d="M 66 26 Q 71 23 68 19 Q 64 22 66 26 Z" fill="url(#m_gen_gold)" />
+        </g>
+
+        {/* 6. Ореол 8 Триграмм Хьюга & вены Бьякугана */}
+        <g stroke="#38bdf8" opacity="0.8" strokeWidth="0.8">
+          <circle cx="50" cy="46" r="16" fill="none" strokeDasharray="3 1.5" />
+          <path d="M 33 46 C 29 42 26 46 22 44" fill="none" opacity="0.6" strokeWidth="0.7" />
+          <path d="M 67 46 C 71 42 74 46 78 44" fill="none" opacity="0.6" strokeWidth="0.7" />
+        </g>
+
+        {/* 7. Барабаны Томоэ Райдзина (4 по диагоналям) */}
+        {[-45, 45, 135, -135].map((deg) => (
+          <g key={deg} transform={`translate(50, 46) rotate(${deg}) translate(0, -25)`}>
+            <circle cx="0" cy="0" r="3.2" fill="#09090b" stroke="url(#m_gen_gold)" strokeWidth="0.8" />
+            <path d="M -0.8 -1.2 C 1.2 -1.8 1.8 0.6 0.6 1.8 C -0.6 1.8 -1.2 0 -0.8 -1.2 Z" fill="#fbbf24" />
+          </g>
+        ))}
+
+        {/* 8. Священное Око Ринне-Шарингана (9 томоэ) в ядре */}
+        <g transform="translate(50, 46)" filter="url(#m_gen_shadow)">
+          <circle cx="0" cy="0" r="12" fill="url(#m_gen_ruby)" stroke="url(#m_gen_gold)" strokeWidth="1.2" />
+          <circle cx="0" cy="0" r="9" fill="none" stroke="#18181b" strokeWidth="0.7" />
+          <circle cx="0" cy="0" r="6" fill="none" stroke="#18181b" strokeWidth="0.7" />
+          <circle cx="0" cy="0" r="3" fill="none" stroke="#18181b" strokeWidth="0.7" />
+          
+          {/* Сверхновая сингулярность */}
+          <circle cx="0" cy="0" r="1.8" fill="url(#m_gen_plasma)" />
+          <circle cx="0" cy="0" r="0.7" fill="#ffffff" />
+
+          {/* 9 Томоэ на 3-х орбитах */}
+          {[0, 120, 240].map((deg) => (
+            <circle key={`t1-${deg}`} cx={Math.cos(deg * Math.PI / 180) * 3} cy={Math.sin(deg * Math.PI / 180) * 3} r="0.7" fill="#000000" />
+          ))}
+          {[60, 180, 300].map((deg) => (
+            <circle key={`t2-${deg}`} cx={Math.cos(deg * Math.PI / 180) * 6} cy={Math.sin(deg * Math.PI / 180) * 6} r="0.8" fill="#000000" />
+          ))}
+          {[0, 120, 240].map((deg) => (
+            <circle key={`t3-${deg}`} cx={Math.cos(deg * Math.PI / 180) * 9} cy={Math.sin(deg * Math.PI / 180) * 9} r="0.9" fill="#000000" />
+          ))}
+        </g>
+
+        {/* 9. Корона Творца 👑 с кандзи 『創世』 */}
+        <g transform="translate(50, 13)" filter="url(#m_gen_shadow)">
+          <path
+            d="M -12 4 L -15 -7 L -7 -2 L 0 -11 L 7 -2 L 15 -7 L 12 4 Z"
+            fill="url(#m_gen_gold)"
+            stroke="#78350f"
+            strokeWidth="0.9"
+          />
+          {/* 3 рубина на зубцах короны */}
+          <circle cx="-15" cy="-7" r="1.3" fill="#ef4444" stroke="#ffffff" strokeWidth="0.4" />
+          <circle cx="0" cy="-11" r="1.7" fill="#ef4444" stroke="#ffffff" strokeWidth="0.5" />
+          <circle cx="15" cy="-7" r="1.3" fill="#ef4444" stroke="#ffffff" strokeWidth="0.4" />
+          
+          {/* Золотой кандзи 『創世』 */}
+          <text
+            x="0"
+            y="2.8"
+            textAnchor="middle"
+            fill="#ffffff"
+            fontSize="4.2"
+            fontWeight="900"
+            fontFamily="'Hiragino Mincho Pro', 'Yu Mincho', serif"
+            style={{ textShadow: '0 0 2px #000000' }}
+          >
+            創世
+          </text>
+        </g>
+
+        {/* 10. 9 Сфер Гудодама по внешнему кругу */}
+        <g>
+          {Array.from({ length: 9 }).map((_, i) => {
+            const rad = (i * 40 * Math.PI) / 180;
+            const cx = 50 + 36 * Math.cos(rad);
+            const cy = 48 + 36 * Math.sin(rad);
+            return (
+              <g key={i}>
+                <circle cx={cx} cy={cy} r="3.2" fill="url(#m_gen_gudodama)" stroke="#38bdf8" strokeWidth="0.5" opacity="0.95" />
+                <circle cx={cx - 0.9} cy={cy - 0.9} r="0.9" fill="#ffffff" opacity="0.65" />
+              </g>
+            );
+          })}
+        </g>
+
+        {/* 11. Двойной купольный софтбокс-блик линзы */}
+        <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_gen_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
+      </svg>
+    )
   }
 ];
+
+export const DEVELOPER_EMAIL = 'askarovkiril5@gmail.com';
+
+export function isDeveloperAccount(email) {
+  if (!email) return false;
+  return String(email).trim().toLowerCase() === DEVELOPER_EMAIL;
+}
 
 /**
  * Быстрый и безопасный поиск герба клана по его уникальному ID

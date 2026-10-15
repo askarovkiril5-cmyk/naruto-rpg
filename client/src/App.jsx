@@ -22,6 +22,9 @@ import FriendsModal from './components/FriendsModal';
 import ShinobiProfileModal from './components/ShinobiProfileModal';
 import ClanModal from './components/ClanModal';
 import EyeActivationOverlay from './components/EyeActivationOverlay';
+import AvatarFrameSelectorModal from './components/AvatarFrameSelectorModal';
+import DeveloperAnnouncementModal from './components/DeveloperAnnouncementModal';
+import { getPlayerFrameById, isDeveloperAccount } from './data/playerFramesData';
 import { TITLES_DATA } from './data/titlesData';
 import NarrativeRenderer from './components/NarrativeRenderer';
 import defaultJutsuData from './data/jutsuData.json';
@@ -259,6 +262,8 @@ export default function App() {
   const [isTitlesOpen, setIsTitlesOpen] = useState(false);
   const [isFriendsOpen, setIsFriendsOpen] = useState(false);
   const [isClanOpen, setIsClanOpen] = useState(false);
+  const [isCustomizationOpen, setIsCustomizationOpen] = useState(false);
+  const [isDevBroadcastOpen, setIsDevBroadcastOpen] = useState(false);
   const [opponentEyeOverlay, setOpponentEyeOverlay] = useState(null);
   const [incomingVoiceShout, setIncomingVoiceShout] = useState(null);
 
@@ -379,6 +384,30 @@ export default function App() {
   // Инициализация кастомного фона и темы
   useEffect(() => {
     initTheme();
+  }, []);
+
+  // Первичная загрузка системных оповещений Создателя в Почту Конохи
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/api/system/announcements`)
+      .then(res => res.json())
+      .then(announcements => {
+        if (Array.isArray(announcements)) {
+          const currentList = notificationManager.getAll();
+          announcements.forEach(ann => {
+            const exists = currentList.some(n => n.id === ann.id);
+            if (!exists) {
+              notificationManager.addNotification({
+                id: ann.id,
+                category: 'system',
+                title: `👑 [ОПОВЕЩЕНИЕ СИСТЕМОЙ]: ${ann.title || 'Внимание шиноби!'}`,
+                sender: `${ann.authorName || 'Кирилл'} (Создатель Конохи)`,
+                content: `${ann.content}\n\n— Категория: ${ann.category || 'Объявление'}\n— Автор: ${ann.authorName || 'Кирилл'} (Создатель игры)`
+              });
+            }
+          });
+        }
+      })
+      .catch(() => {});
   }, []);
 
   // Статус и переключение полноэкранного режима
@@ -587,7 +616,9 @@ export default function App() {
         playerId, 
         team: myTeam, 
         customNinja,
-        accountEmail: currentAccount?.email || userProfile?.email || null
+        accountEmail: currentAccount?.email || userProfile?.email || null,
+        avatar: userProfile?.avatar || '🍥',
+        frameId: userProfile?.frameId || 'frame_academy'
       });
       s.emit('register_shinobi', {
         identifier: currentAccount?.email || userProfile?.email || playerName
@@ -630,6 +661,23 @@ export default function App() {
 
     s.on('version_changed', ({ version }) => {
       setGameVersion(version);
+    });
+
+    // 📢 Оповещение Системой от Создателя игры (Кирилла askarovkiril5@gmail.com)
+    s.on('system_announcement', (ann) => {
+      audioManager.playSfx('gong');
+      notificationManager.addNotification({
+        category: 'system',
+        title: `👑 [ОПОВЕЩЕНИЕ СИСТЕМОЙ]: ${ann.title || 'Внимание шиноби!'}`,
+        sender: `${ann.authorName || 'Кирилл'} (Создатель Конохи)`,
+        content: `${ann.content}\n\n— Категория: ${ann.category || 'Объявление'}\n— Автор: ${ann.authorName || 'Кирилл'} (Создатель игры)`
+      });
+      addMessage({
+        id: Math.random().toString(),
+        type: 'system',
+        text: `📢 [ОПОВЕЩЕНИЕ СИСТЕМОЙ]: «${ann.title}» — ${ann.content} (От: ${ann.authorName || 'Создатель'})`,
+        time: getCurrentTime()
+      });
     });
 
     // Системные сообщения в чат
@@ -1444,6 +1492,122 @@ export default function App() {
     } catch {}
   };
 
+  // Регистрация защищенного аккаунта шиноби с паролем
+  const handleRegisterAccount = async ({ email, password, confirmPassword, name }) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/user/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          password,
+          confirmPassword,
+          name: name || playerName || 'Кирилл',
+          profileData: {
+            ...userProfile,
+            name: name || playerName || 'Кирилл',
+            selectedJutsuIds,
+            customNinja,
+            activeTitleId,
+            unlockedTitles: unlockedTitleIds
+          }
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        const acc = {
+          id: `acc_${data.user.email}`,
+          email: data.user.email,
+          name: data.user.name || playerName,
+          avatar: data.user.avatar || '🍥',
+          frameId: data.user.frameId || 'frame_academy',
+          isDeveloper: !!data.user.isDeveloper
+        };
+        setCurrentAccount(acc);
+        try { localStorage.setItem('naruto_google_accounts', JSON.stringify([acc])); } catch {}
+        if (data.profile) {
+          setUserProfile(data.profile);
+          try { localStorage.setItem('naruto_user_profile', JSON.stringify(data.profile)); } catch {}
+        }
+        handleSelectModel('gemini-3.8-flash');
+        audioManager.playSfx('seal');
+        notificationManager.addNotification({
+          category: 'village',
+          title: 'Защищённый аккаунт зарегистрирован',
+          sender: 'Канцелярия Конохи',
+          content: `Поздравляем, ${data.user.name}! Ваш аккаунт защищён личным паролем. Все победы, ранг и открытые рамки сохраняются на сервере.`
+        });
+        return { success: true };
+      }
+      return { success: false, error: data.error || 'Ошибка при регистрации' };
+    } catch (err) {
+      console.error('Registration error:', err);
+      return { success: false, error: err.message };
+    }
+  };
+
+  // Вход в защищенный аккаунт по почте и паролю
+  const handleLoginAccount = async ({ email, password }) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/user/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        const acc = {
+          id: `acc_${data.user.email}`,
+          email: data.user.email,
+          name: data.user.name || playerName,
+          avatar: data.user.avatar || '🍥',
+          frameId: data.user.frameId || 'frame_academy',
+          isDeveloper: !!data.user.isDeveloper
+        };
+        setCurrentAccount(acc);
+        try { localStorage.setItem('naruto_google_accounts', JSON.stringify([acc])); } catch {}
+
+        if (data.profile) {
+          setUserProfile(data.profile);
+          try { localStorage.setItem('naruto_user_profile', JSON.stringify(data.profile)); } catch {}
+          if (data.profile.name) {
+            setPlayerName(data.profile.name);
+            try { localStorage.setItem('naruto_player_name', data.profile.name); } catch {}
+          }
+          if (Array.isArray(data.profile.selectedJutsuIds) && data.profile.selectedJutsuIds.length > 0) {
+            setSelectedJutsuIds(data.profile.selectedJutsuIds);
+            try { localStorage.setItem('naruto_selected_jutsu', JSON.stringify(data.profile.selectedJutsuIds)); } catch {}
+          }
+          if (data.profile.customNinja) {
+            setCustomNinja(data.profile.customNinja);
+            try { localStorage.setItem('naruto_custom_ninja', JSON.stringify(data.profile.customNinja)); } catch {}
+          }
+          if (Array.isArray(data.profile.unlockedTitles) && data.profile.unlockedTitles.length > 0) {
+            setUnlockedTitleIds(data.profile.unlockedTitles);
+            try { localStorage.setItem('naruto_unlocked_titles', JSON.stringify(data.profile.unlockedTitles)); } catch {}
+          }
+          if (data.profile.activeTitleId) {
+            setActiveTitleId(data.profile.activeTitleId);
+            try { localStorage.setItem('naruto_active_title_id', data.profile.activeTitleId); } catch {}
+          }
+        }
+        handleSelectModel('gemini-3.8-flash');
+        audioManager.playSfx('seal');
+        notificationManager.addNotification({
+          category: 'village',
+          title: 'Вход в аккаунт Конохи',
+          sender: 'Канцелярия Конохи',
+          content: `С возвращением, ${data.user.name}! Все техники арсенала (${data.profile?.selectedJutsuIds?.length || 0}/30), победы и титулы успешно загружены.`
+        });
+        return { success: true };
+      }
+      return { success: false, error: data.error || 'Неверный адрес почты или пароль' };
+    } catch (err) {
+      console.error('Login error:', err);
+      return { success: false, error: err.message };
+    }
+  };
+
   const handleSelectAccount = (account) => {
     setCurrentAccount(account);
     if (account?.name) {
@@ -1484,6 +1648,8 @@ export default function App() {
         onOpenFriends={() => setIsFriendsOpen(true)}
         onOpenClan={() => setIsClanOpen(true)}
         onOpenPersonalProfile={() => setIsPersonalProfileOpen(true)}
+        onOpenCustomization={() => setIsCustomizationOpen(true)}
+        onOpenDeveloperBroadcast={() => setIsDevBroadcastOpen(true)}
         activeTitle={TITLES_DATA.find(t => t.id === activeTitleId)?.name || userProfile?.activeTitle || null}
         unreadMailCount={unreadMailCount}
         activeModel={activeModel}
@@ -1653,24 +1819,63 @@ export default function App() {
                   </p>
                 </div>
 
-                {/* Быстрая плашка вашего бойца */}
-                <div className="bg-black/60 border border-white/10 rounded-xl p-3 flex items-center gap-3 shrink-0">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-lg">
-                    {customNinja?.clan ? '🥷' : '👤'}
+                {/* Быстрая плашка вашего бойца с аватаркой в наградной рамке */}
+                <div className="bg-black/60 border border-white/10 rounded-2xl p-3 flex items-center gap-3 shrink-0 shadow-lg">
+                  {/* Аватарка в наградной боевой рамке */}
+                  <div 
+                    onClick={() => setIsCustomizationOpen(true)}
+                    className="relative cursor-pointer group shrink-0"
+                    title="Нажмите, чтобы настроить аватарку (загрузить фото с ПК) и наградную рамку"
+                  >
+                    {(() => {
+                      const userFrame = getPlayerFrameById(userProfile?.frameId, userProfile);
+                      const av = userProfile?.avatar || '🍥';
+                      const isImg = (av.startsWith('data:') || av.startsWith('http://') || av.startsWith('https://'));
+                      return (
+                        <div 
+                          className={`w-12 h-12 rounded-2xl flex items-center justify-center relative overflow-hidden transition-all duration-300 group-hover:scale-105 border ${userFrame.borderClass} ${userFrame.glowClass}`}
+                          style={userFrame.style || {}}
+                        >
+                          {isImg ? (
+                            <img src={av} alt="Avatar" className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-2xl drop-shadow-md">{av}</span>
+                          )}
+                          {userFrame.badge && (
+                            <span className="absolute bottom-0 right-0 text-[10px] leading-none bg-black/85 px-1 py-0.5 rounded-tl border-t border-l border-white/20">
+                              {userFrame.badge}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })()}
+                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-500 text-black text-[9px] font-black flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition">
+                      ✏️
+                    </span>
                   </div>
+
                   <div>
-                    <div className="text-xs font-bold text-zinc-200 flex items-center gap-1.5">
+                    <div className="text-xs font-bold text-zinc-100 flex items-center gap-1.5 flex-wrap">
                       <span>{playerName || 'Шиноби'}</span>
+                      {isDeveloperAccount(currentAccount?.email || userProfile?.email) && (
+                        <span className="text-[10px] font-black bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white px-2 py-0.2 rounded-full border border-amber-300 shadow-sm flex items-center gap-0.5">
+                          👑 Создатель
+                        </span>
+                      )}
                       {customNinja?.clan && (
                         <span className="text-[10px] font-mono text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-700/40 font-bold">
                           {customNinja.clan}
                         </span>
                       )}
                     </div>
-                    <div className="text-[10px] text-amber-400 font-mono mt-0.5">
-                      {customNinja 
-                        ? `${customNinja.elements?.join('+')} • ${customNinja.archetype || 'Универсал'}`
-                        : (profile ? `${profile.clan} • ${profile.speed || 28} м/с` : 'Досье можно настроить перед боем 🥷')}
+                    <div className="text-[10px] text-amber-400 font-mono mt-0.5 flex items-center gap-1.5">
+                      <span>{getPlayerFrameById(userProfile?.frameId, userProfile).name}</span>
+                      <span className="text-zinc-500">•</span>
+                      <span>
+                        {customNinja 
+                          ? `${customNinja.elements?.join('+')} • ${customNinja.archetype || 'Универсал'}`
+                          : (profile ? `${profile.clan} • ${profile.speed || 28} м/с` : 'Досье можно настроить 🥷')}
+                      </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 ml-2">
@@ -2674,6 +2879,10 @@ export default function App() {
         onLinkEmail={handleLinkEmail}
         onUnlinkEmail={handleUnlinkEmail}
         onSyncAccount={handleSyncAccount}
+        onRegisterAccount={handleRegisterAccount}
+        onLoginAccount={handleLoginAccount}
+        onOpenCustomization={() => setIsCustomizationOpen(true)}
+        onOpenDeveloperBroadcast={() => setIsDevBroadcastOpen(true)}
         selectedJutsuCount={selectedJutsuIds.length}
         hasCustomNinja={Boolean(customNinja)}
       />
@@ -2686,6 +2895,42 @@ export default function App() {
         playerName={playerName}
         backendUrl={BACKEND_URL}
         socket={socket}
+      />
+
+      {/* 17.5. МОДАЛЬНОЕ ОКНО: Кастомизация аватарки (загрузка фото с ПК / пресеты) и наградные боевые рамки */}
+      <AvatarFrameSelectorModal
+        isOpen={isCustomizationOpen}
+        onClose={() => setIsCustomizationOpen(false)}
+        userProfile={userProfile}
+        currentAccount={currentAccount}
+        onSaveProfile={(updated) => {
+          setUserProfile(updated);
+          try {
+            localStorage.setItem('naruto_user_profile', JSON.stringify(updated));
+          } catch (e) {}
+          handleSyncAccount({
+            avatar: updated.avatar,
+            frameId: updated.frameId
+          });
+          if (socket && roomId) {
+            socket.emit('update_player_avatar', {
+              roomId,
+              playerId,
+              avatar: updated.avatar,
+              frameId: updated.frameId
+            });
+          }
+        }}
+      />
+
+      {/* 17.6. МОДАЛЬНОЕ ОКНО: Оповещение Системой (ТОЛЬКО ДЛЯ Кирилла askarovkiril5@gmail.com) */}
+      <DeveloperAnnouncementModal
+        isOpen={isDevBroadcastOpen}
+        onClose={() => setIsDevBroadcastOpen(false)}
+        socket={socket}
+        backendUrl={BACKEND_URL}
+        developerEmail={currentAccount?.email || userProfile?.email || 'askarovkiril5@gmail.com'}
+        developerName={playerName || 'Кирилл'}
       />
 
       {/* 18. ПОЛНОЭКРАННЫЙ КИНЕМАТОГРАФИЧНЫЙ ОВЕРЛЕЙ: Демонстрация Додзюцу Соперника */}

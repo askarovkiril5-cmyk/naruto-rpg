@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
 import { 
   BookOpen, Scroll, UserCheck, Settings, Swords, ShieldAlert, Shield,
   Maximize2, Minimize2, UserPlus, FileText, Bot, Award, Mail, Users, Trophy, Crown,
-  Volume2, VolumeX, SkipForward
+  Volume2, VolumeX, SkipForward, Megaphone, Palette
 } from 'lucide-react';
 import { audioManager, AUDIO_TRACKS } from '../utils/audioManager';
+import { isDeveloperAccount } from '../data/playerFramesData';
 
 export default function TopMenu({ 
   onOpenRules, 
@@ -21,6 +21,8 @@ export default function TopMenu({
   onOpenFriends,
   onOpenClan,
   onOpenPersonalProfile,
+  onOpenCustomization,
+  onOpenDeveloperBroadcast,
   activeTitle,
   unreadMailCount = 0,
   activeModel,
@@ -266,6 +268,36 @@ export default function TopMenu({
             {userProfile?.clanName || 'Мой Клан'}
           </span>
         </button>
+
+        {/* 6.97. Кастомизация: Аватарка & Рамка профиля */}
+        {onOpenCustomization && (
+          <button
+            type="button"
+            onClick={onOpenCustomization}
+            title="Настроить аватарку (загрузить фото с ПК) и наградную боевую рамку"
+            className="w-full flex items-center justify-center sm:justify-start gap-2.5 px-2.5 py-2 rounded-xl hover:bg-purple-950/40 border border-purple-500/20 hover:border-purple-500/50 text-purple-300 transition cursor-pointer group"
+          >
+            <Palette className="w-5 h-5 text-purple-400 shrink-0 group-hover:scale-110 transition-transform" />
+            <span className="text-xs font-semibold hidden sm:inline text-purple-200 group-hover:text-purple-100">
+              Аватарка & Рамка
+            </span>
+          </button>
+        )}
+
+        {/* 6.98. ЭКСКЛЮЗИВ СОЗДАТЕЛЯ: Оповещение Системой (ТОЛЬКО ДЛЯ Кирилла askarovkiril5@gmail.com) */}
+        {isDeveloperAccount(userProfile?.email) && onOpenDeveloperBroadcast && (
+          <button
+            type="button"
+            onClick={onOpenDeveloperBroadcast}
+            title="📢 Центр Оповещений Создателя: отправка системного сообщения всем игрокам в Почту Конохи"
+            className="w-full flex items-center justify-center sm:justify-start gap-2.5 px-2.5 py-2 rounded-xl bg-gradient-to-r from-amber-500/25 via-rose-500/20 to-purple-600/25 border border-amber-400/60 hover:border-amber-300 text-amber-300 shadow-lg shadow-amber-500/20 transition cursor-pointer group animate-pulse"
+          >
+            <Megaphone className="w-5 h-5 text-amber-300 shrink-0 group-hover:scale-125 transition-transform" />
+            <span className="text-xs font-black hidden sm:inline text-amber-200 group-hover:text-amber-100 uppercase tracking-tight">
+              👑 Оповещение
+            </span>
+          </button>
+        )}
 
         {/* 7. ИИ-Ведущий & Выбор модели Gemini */}
         <button

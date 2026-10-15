@@ -151,12 +151,37 @@ app.post('/api/user/sync', (req, res) => {
   res.json({ success: true, profile });
 });
 
-// Вход по почте: возвращает все сохраненные данные аккаунта из облака
+// Регистрация нового аккаунта с подтверждением пароля
+app.post('/api/user/register', (req, res) => {
+  const result = storageManager.registerUser(req.body || {});
+  if (result.error) {
+    return res.status(400).json(result);
+  }
+  res.json(result);
+});
+
+// Вход по почте и паролю с проверкой хеша
 app.post('/api/user/login', (req, res) => {
-  const { email } = req.body || {};
-  if (!email) return res.status(400).json({ error: 'Email обязателен' });
-  const profile = storageManager.getUserProfile(email);
-  res.json({ success: true, profile });
+  const result = storageManager.loginUser(req.body || {});
+  if (result.error) {
+    return res.status(400).json(result);
+  }
+  res.json(result);
+});
+
+// Системные оповещения Создателя игры (Кирилла)
+app.get('/api/system/announcements', (req, res) => {
+  res.json(storageManager.getSystemAnnouncements());
+});
+
+app.post('/api/system/announcement', (req, res) => {
+  const result = storageManager.saveSystemAnnouncement(req.body || {});
+  if (result.error) {
+    return res.status(403).json(result);
+  }
+  // Мгновенный сокет-броадкаст всем онлайн-игрокам
+  io.emit('system_announcement', result.announcement);
+  res.json(result);
 });
 
 // REST эндпоинты для истории боев и летописей (постоянное хранилище)
@@ -323,7 +348,9 @@ function buildRoomState(room) {
     team: p.team || 'blue',
     isHost: p.isHost,
     isBot: p.isBot,
-    isConnected: p.isConnected
+    isConnected: p.isConnected,
+    avatar: p.avatar || '🍥',
+    frameId: p.frameId || 'frame_academy'
   }));
 
   return {
@@ -377,6 +404,19 @@ io.on('connection', (socket) => {
       io.emit('online_users_updated', Array.from(onlineUsers.keys()));
       console.log(`[Online] Шиноби ${key} в сети (socket: ${socket.id})`);
     }
+  });
+
+  // Системное оповещение от Создателя игры (Кирилла)
+  socket.on('broadcast_system_announcement', (payload, callback) => {
+    const result = storageManager.saveSystemAnnouncement(payload || {});
+    if (result.error) {
+      if (typeof callback === 'function') callback({ error: result.error });
+      return;
+    }
+    // Транслируем всем онлайн-игрокам
+    io.emit('system_announcement', result.announcement);
+    console.log(`[Announcement] Создатель (${payload?.senderEmail}) разослал оповещение: ${result.announcement.title}`);
+    if (typeof callback === 'function') callback({ success: true, announcement: result.announcement });
   });
 
   // Отправка личного сообщения другу
@@ -465,7 +505,7 @@ io.on('connection', (socket) => {
   });
 
   // Подключение к комнате
-  socket.on('join_battle', ({ roomId, playerName, playerId, team, customNinja, accountEmail }) => {
+  socket.on('join_battle', ({ roomId, playerName, playerId, team, customNinja, accountEmail, avatar, frameId }) => {
     const room = getOrCreateRoom(roomId);
     socket.join(roomId);
 
@@ -505,6 +545,12 @@ io.on('connection', (socket) => {
       }
       if (accountEmail) {
         player.accountEmail = accountEmail;
+      }
+      if (avatar) {
+        player.avatar = avatar;
+      }
+      if (frameId) {
+        player.frameId = frameId;
       }
       console.log(`[Reconnected] Шиноби ${player.name} (${effectivePlayerId}) вернулся! Сокет: ${socket.id}`);
 
@@ -557,6 +603,8 @@ io.on('connection', (socket) => {
         isConnected: true,
         accountEmail: accountEmail || null,
         customNinja: customNinja || null,
+        avatar: avatar || '🍥',
+        frameId: frameId || 'frame_academy',
         character: null
       };
       room.players.set(effectivePlayerId, player);
@@ -695,6 +743,27 @@ io.on('connection', (socket) => {
       }
     } catch (err) {
       console.error('[Error update_player_name]:', err);
+    }
+  });
+
+  // ОБНОВЛЕНИЕ АВАТАРКИ И РАМКИ ПРОФИЛЯ ШИНОБИ
+  socket.on('update_player_avatar', ({ roomId, playerId, avatar, frameId }) => {
+    try {
+      const room = rooms.get(roomId);
+      if (!room) return;
+      let player = playerId ? room.players.get(playerId) : null;
+      if (!player) {
+        for (const p of room.players.values()) {
+          if (p.socketId === socket.id) { player = p; break; }
+        }
+      }
+      if (player) {
+        if (avatar) player.avatar = avatar;
+        if (frameId) player.frameId = frameId;
+        io.to(roomId).emit('room_state_update', buildRoomState(room));
+      }
+    } catch (err) {
+      console.error('[Error update_player_avatar]:', err);
     }
   });
 

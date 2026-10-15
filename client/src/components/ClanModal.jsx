@@ -4,7 +4,7 @@ import {
   Sparkles, Check, Trash2, LogOut, Crown, UserPlus, Flame,
   Award, ChevronRight, AlertCircle, Edit3
 } from 'lucide-react';
-import { CLAN_EMBLEMS, getClanEmblemById } from '../data/clanEmblemsData';
+import { CLAN_EMBLEMS, getClanEmblemById, isDeveloperAccount } from '../data/clanEmblemsData';
 import { audioManager } from '../utils/audioManager';
 import { notificationManager } from '../utils/notificationManager';
 
@@ -136,6 +136,11 @@ export default function ClanModal({
     setCreateError('');
     if (!newClanName.trim()) {
       setCreateError('Введите название вашего клана!');
+      return;
+    }
+
+    if (selectedEmblemId === 'emblem_creator_genesis' && !isDeveloperAccount(myIdentifier || userProfile?.email)) {
+      setCreateError('👑 Священный Герб Создателя доступен исключительно Создателю игры (Кириллу)! Выберите другой из 18 великих кланов.');
       return;
     }
 
@@ -938,6 +943,10 @@ export default function ClanModal({
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
                   {CLAN_EMBLEMS.map((emblem) => {
                     const isSelected = selectedEmblemId === emblem.id;
+                    const isDev = isDeveloperAccount(myIdentifier || userProfile?.email);
+                    const isCreatorOnly = Boolean(emblem.isCreatorExclusive);
+                    const isLockedForMe = isCreatorOnly && !isDev;
+
                     return (
                       <div
                         key={emblem.id}
@@ -948,6 +957,8 @@ export default function ClanModal({
                         className={`p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-1.5 relative group ${
                           isSelected
                             ? 'bg-amber-950/50 border-amber-500 ring-2 ring-amber-400/60 shadow-xl scale-[1.02]'
+                            : isCreatorOnly
+                            ? 'bg-gradient-to-br from-amber-950/40 via-zinc-900 to-purple-950/40 border-yellow-500/40 hover:border-yellow-400'
                             : 'bg-zinc-900/60 border-white/5 hover:border-white/20 hover:bg-zinc-900/90 hover:scale-[1.02]'
                         }`}
                         style={isSelected ? {
@@ -956,10 +967,15 @@ export default function ClanModal({
                         } : undefined}
                       >
                         <div 
-                          className="p-1.5 rounded-2xl bg-black/70 border transition-transform duration-300 group-hover:scale-110 shadow-inner"
+                          className="p-1.5 rounded-2xl bg-black/70 border transition-transform duration-300 group-hover:scale-110 shadow-inner relative"
                           style={{ borderColor: `${emblem.themeColor}40` }}
                         >
                           {emblem.renderSvg("w-12 h-12")}
+                          {isCreatorOnly && (
+                            <span className="absolute -top-1.5 -right-1.5 text-xs filter drop-shadow-[0_0_6px_#fde047]">
+                              {isDev ? '👑' : '🔒'}
+                            </span>
+                          )}
                         </div>
                         <div className="w-full">
                           <span className="text-[11px] font-black text-white block truncate group-hover:text-amber-300 transition-colors">
@@ -974,6 +990,11 @@ export default function ClanModal({
                             className="w-2.5 h-2.5 rounded-full absolute top-2 right-2 shadow-md animate-pulse"
                             style={{ backgroundColor: emblem.themeColor, boxShadow: `0 0 10px ${emblem.themeColor}` }}
                           />
+                        )}
+                        {isCreatorOnly && (
+                          <span className="text-[8px] font-mono font-black uppercase px-1 rounded bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+                            {isDev ? 'Создатель' : 'Эксклюзив'}
+                          </span>
                         )}
                       </div>
                     );

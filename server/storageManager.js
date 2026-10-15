@@ -9,6 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 
@@ -20,6 +21,38 @@ const BATTLES_FILE = path.join(DATA_DIR, 'battles_history.json');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const DIRECT_MESSAGES_FILE = path.join(DATA_DIR, 'direct_messages.json');
 const CLANS_FILE = path.join(DATA_DIR, 'clans.json');
+const ANNOUNCEMENTS_FILE = path.join(DATA_DIR, 'system_announcements.json');
+
+// Официальная почта Создателя игры (Кирилла)
+const DEVELOPER_EMAIL = 'askarovkiril5@gmail.com';
+
+function hashPassword(password, salt) {
+  if (!salt) {
+    salt = crypto.randomBytes(16).toString('hex');
+  }
+  const hash = crypto.pbkdf2Sync(String(password), salt, 1000, 64, 'sha512').toString('hex');
+  return { hash, salt };
+}
+
+function verifyPassword(password, storedHash, salt) {
+  if (!password || !storedHash || !salt) return false;
+  const { hash } = hashPassword(password, salt);
+  return hash === storedHash;
+}
+
+function isDeveloper(email) {
+  if (!email) return false;
+  return String(email).trim().toLowerCase() === DEVELOPER_EMAIL;
+}
+
+function sanitizeUser(user) {
+  if (!user) return null;
+  const copy = { ...user };
+  delete copy.passwordHash;
+  delete copy.passwordSalt;
+  copy.isDeveloper = isDeveloper(copy.email);
+  return copy;
+}
 
 function readJsonFile(filePath, defaultValue = []) {
   try {
@@ -218,11 +251,15 @@ function getUserProfile(identifier) {
 
   const progression = calculateShinobiLevelFromXp(userTotalXp);
 
-  return {
+  const isDev = isDeveloper(raw.email);
+  const result = {
     ...raw,
     identifier: raw.identifier || key,
     email: raw.email || (key.includes('@') ? key : null),
     name: raw.name || identifier,
+    avatar: raw.avatar || '🍥',
+    frameId: raw.frameId || (isDev ? 'frame_creator_genesis' : 'frame_academy'),
+    isDeveloper: isDev,
     totalXp: userTotalXp,
     stats: {
       pvp: pvpStats,
@@ -237,6 +274,9 @@ function getUserProfile(identifier) {
     ...progression,
     unlockedTopModels: Boolean(raw.googleConnected || raw.email)
   };
+  delete result.passwordHash;
+  delete result.passwordSalt;
+  return result;
 }
 
 /**
@@ -308,13 +348,20 @@ function saveUser(userData) {
   // Созданный персонаж (конструктор шиноби)
   const mergedCustomNinja = userData.customNinja || current.customNinja || null;
 
+  const resolvedEmail = emailKey || current.email || null;
+  const isDevUser = isDeveloper(resolvedEmail);
+
   const updated = {
     ...current,
     ...userData,
     identifier: key,
-    email: emailKey || current.email || null,
+    email: resolvedEmail,
     name: userData.name || current.name || 'Кирилл',
-    googleConnected: Boolean(emailKey || current.googleConnected),
+    passwordHash: current.passwordHash,
+    passwordSalt: current.passwordSalt,
+    avatar: userData.avatar !== undefined ? userData.avatar : (current.avatar || '🍥'),
+    frameId: userData.frameId !== undefined ? userData.frameId : (current.frameId || (isDevUser ? 'frame_creator_genesis' : 'frame_academy')),
+    googleConnected: Boolean(resolvedEmail || current.googleConnected),
     totalXp: mergedTotalXp,
     stats: {
       pvp: mergedPvp,
@@ -343,6 +390,158 @@ function saveUser(userData) {
   writeJsonFile(USERS_FILE, users);
 
   return getUserProfile(key);
+}
+
+/**
+ * Регистрация нового аккаунта с подтверждением пароля
+ */
+function registerUser({ email, password, confirmPassword, name, avatar, frameId }) {
+  if (!email || !String(email).includes('@')) {
+    return { error: 'Пожалуйста, укажите корректный адрес электронной почты!' };
+  }
+  const cleanEmail = String(email).trim().toLowerCase();
+  
+  if (!password || password.length < 4) {
+    return { error: 'Пароль должен содержать не менее 4 символов!' };
+  }
+  if (confirmPassword !== undefined && password !== confirmPassword) {
+    return { error: 'Введённый пароль и подтверждение пароля не совпадают!' };
+  }
+
+  const users = readJsonFile(USERS_FILE, {});
+  const existing = users[cleanEmail];
+
+  // Если аккаунт уже существует и у него есть пароль
+  if (existing && existing.passwordHash) {
+    return { error: 'Аккаунт с этой почтой уже зарегистрирован и защищён паролем! Пожалуйста, войдите в аккаунт.' };
+  }
+
+  const { hash, salt } = hashPassword(password);
+  const isDev = isDeveloper(cleanEmail);
+
+  const baseData = existing || {
+    identifier: cleanEmail,
+    name: name || cleanEmail.split('@')[0],
+    email: cleanEmail,
+    googleConnected: true,
+    totalXp: 0,
+    friends: [],
+    stats: {
+      pvp: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 },
+      ai: { battlesPlayed: 0, battlesWon: 0, battlesLost: 0, winrate: 0 }
+    },
+    unlockedTitles: ['first_step'],
+    activeTitleId: null,
+    selectedJutsuIds: [],
+    customNinja: null,
+    createdAt: new Date().toISOString()
+  };
+
+  const updated = {
+    ...baseData,
+    email: cleanEmail,
+    name: name || baseData.name || 'Шиноби',
+    passwordHash: hash,
+    passwordSalt: salt,
+    avatar: avatar || baseData.avatar || '🍥',
+    frameId: frameId || baseData.frameId || (isDev ? 'frame_creator_genesis' : 'frame_academy'),
+    googleConnected: true,
+    updatedAt: new Date().toISOString()
+  };
+
+  users[cleanEmail] = updated;
+  writeJsonFile(USERS_FILE, users);
+
+  const profile = getUserProfile(cleanEmail);
+  return { success: true, profile: sanitizeUser(profile) };
+}
+
+/**
+ * Вход в существующий аккаунт по почте и паролю
+ */
+function loginUser({ email, password }) {
+  if (!email || !String(email).includes('@')) {
+    return { error: 'Пожалуйста, укажите корректный адрес электронной почты!' };
+  }
+  if (!password) {
+    return { error: 'Введите пароль от вашего аккаунта!' };
+  }
+
+  const cleanEmail = String(email).trim().toLowerCase();
+  const users = readJsonFile(USERS_FILE, {});
+  let user = users[cleanEmail];
+
+  // Если не найден по почте напрямую, ищем по linkedToEmail
+  if (!user) {
+    const foundKey = Object.keys(users).find(k => {
+      const u = users[k];
+      return (u.email && u.email.toLowerCase() === cleanEmail) ||
+             (u.linkedToEmail && u.linkedToEmail.toLowerCase() === cleanEmail);
+    });
+    if (foundKey) user = users[foundKey];
+  }
+
+  if (!user) {
+    return { error: 'Аккаунт с такой почтой не найден в летописях Конохи! Пожалуйста, зарегистрируйтесь.' };
+  }
+
+  // Если у ранее созданного аккаунта еще не было пароля, задаем этот пароль в качестве основного
+  if (!user.passwordHash || !user.passwordSalt) {
+    const { hash, salt } = hashPassword(password);
+    user.passwordHash = hash;
+    user.passwordSalt = salt;
+    user.updatedAt = new Date().toISOString();
+    users[cleanEmail] = user;
+    writeJsonFile(USERS_FILE, users);
+  } else {
+    const isValid = verifyPassword(password, user.passwordHash, user.passwordSalt);
+    if (!isValid) {
+      return { error: 'Неверный пароль от аккаунта! Проверьте введённые данные.' };
+    }
+  }
+
+  const profile = getUserProfile(cleanEmail);
+  return { success: true, profile: sanitizeUser(profile) };
+}
+
+/**
+ * Системные оповещения Создателя игры (Кирилла)
+ */
+function saveSystemAnnouncement({ title, category, content, senderName, senderEmail }) {
+  if (!isDeveloper(senderEmail)) {
+    return { error: 'Доступ запрещён: только Создатель игры (Кирилл) имеет право отправлять системные оповещения!' };
+  }
+  if (!title || !title.trim()) {
+    return { error: 'Укажите тему оповещения!' };
+  }
+  if (!content || !content.trim()) {
+    return { error: 'Текст оповещения не может быть пустым!' };
+  }
+
+  const announcements = readJsonFile(ANNOUNCEMENTS_FILE, []);
+  const entry = {
+    id: `notice_sys_${Date.now()}`,
+    timestamp: Date.now(),
+    date: 'Сегодня',
+    title: `👑 Оповещение Создателя: ${title.trim()}`,
+    category: category || 'village', // 'village' | 'hokage' | 'battle'
+    sender: senderName || '👑 Создатель игры (Кирилл)',
+    senderEmail: DEVELOPER_EMAIL,
+    content: content.trim(),
+    isCreatorAnnouncement: true,
+    read: false
+  };
+
+  announcements.unshift(entry);
+  if (announcements.length > 100) announcements.length = 100;
+  writeJsonFile(ANNOUNCEMENTS_FILE, announcements);
+
+  return { success: true, announcement: entry };
+}
+
+function getSystemAnnouncements(limit = 30) {
+  const announcements = readJsonFile(ANNOUNCEMENTS_FILE, []);
+  return announcements.slice(0, limit);
 }
 
 /**
@@ -1053,6 +1252,13 @@ module.exports = {
   disbandClan,
   getClanLeaderboard,
   saveClanMessage,
-  getClanMessages
+  getClanMessages,
+  // Авторизация, Пароли и Оповещения Создателя
+  registerUser,
+  loginUser,
+  isDeveloper,
+  saveSystemAnnouncement,
+  getSystemAnnouncements,
+  DEVELOPER_EMAIL
 };
 

@@ -175,6 +175,17 @@ export default function ShinobiMailModal({
           icon: '🟡',
           iconName: 'Штаб тактики'
         };
+      case 'system':
+        return {
+          title: 'Оповещение Системой',
+          badgeClass: 'bg-gradient-to-r from-amber-500/20 via-purple-500/20 to-red-500/20 text-amber-300 border-amber-400/50 shadow-amber-500/30',
+          borderClass: 'border-amber-400/50 hover:border-amber-300',
+          activeBg: 'bg-gradient-to-r from-amber-950/60 via-purple-950/60 to-zinc-900/60',
+          cardGlow: 'shadow-[0_0_25px_rgba(245,158,11,0.3)]',
+          dotColor: 'bg-amber-400 animate-pulse',
+          icon: '👑',
+          iconName: 'Создатель Конохи'
+        };
       case 'village':
       default:
         return {

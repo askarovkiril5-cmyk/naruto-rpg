@@ -132,7 +132,7 @@ export default function EyeActivationOverlay({
   const [currentEyeId, setCurrentEyeId] = useState(dojutsuId);
   // Для ВМШ: 8 каноничных узоров персонажей
   const [selectedPattern, setSelectedPattern] = useState(
-    initialPattern && MANGEKYO_LIST.some(m => m.id === initialPattern) ? initialPattern : 'sasuke_ems'
+    initialPattern && MANGEKYO_LIST.some(m => m.id === initialPattern) ? initialPattern : 'sasuke_ms'
   );
   // Для Пробуждённого Риннегана: 'sasuke' (6 томоэ Саске) | 'kaguya' (9 томоэ Кагуи / Мадары)
   const [selectedRinnePattern, setSelectedRinnePattern] = useState(

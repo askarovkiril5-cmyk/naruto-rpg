@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, Eye, Zap, Flame, Sparkles, Send, Volume2, Check, 
-  RefreshCw, Layers, Compass, Shield, Maximize2, Award, ChevronRight
+  RefreshCw, Layers, Compass, Shield, Maximize2, Award, ChevronRight, Moon
 } from 'lucide-react';
 import { audioManager } from '../utils/audioManager';
 import { DOJUTSU_OPTIONS, getDojutsuById } from '../data/dojutsuData';
@@ -48,7 +48,7 @@ export const DOJUTSU_FAMILIES_META = {
     desc: 'Око Мудреца Шести Путей. Полный контроль гравитации, притяжения, отталкивания и поглощения чакры.',
     stages: [
       { id: 'rinnegan', label: 'Шесть Путей', stageNum: 3, badge: 'Гравитация', desc: '6 концентрических фиолетовых колец Шести Путей. Синра Тэнсэй и Тибаку Тэнсэй.' },
-      { id: 'rinnegan_awakened', label: 'Ринне-Шаринган', stageNum: 'awakened', badge: '9 Томоэ Бога', desc: 'Пробуждённая форма прародителей чакры. Алое око с 6 кругами и ровно 9 томоэ (3+6).' }
+      { id: 'rinnegan_awakened', label: 'Пробуждённый', stageNum: 'awakened', badge: 'Саске & Кагуя', desc: 'Высшая форма: Риннеган Саске (6 томоэ) / Ринне-Шаринган Кагуи (9 томоэ).' }
     ]
   },
   Kingan: {
@@ -117,10 +117,13 @@ export default function EyeActivationOverlay({
   autoDismissMs = 0
 }) {
   const [currentEyeId, setCurrentEyeId] = useState(dojutsuId);
-  const [selectedPattern, setSelectedPattern] = useState('itachi'); // Для ВМШ: 'itachi' | 'sasuke' | 'madara' | 'kamui'
+  // Для ВМШ: 'sasuke' | 'itachi' | 'madara' | 'kamui' | 'shisui'
+  const [selectedPattern, setSelectedPattern] = useState('sasuke');
+  // Для Пробуждённого Риннегана: 'sasuke' (6 томоэ Саске) | 'kaguya' (9 томоэ Кагуи / Мадары)
+  const [selectedRinnePattern, setSelectedRinnePattern] = useState('sasuke');
+  
   const [isSpinning, setIsSpinning] = useState(true);
   const [isSurging, setIsSurging] = useState(false);
-  const [mouseTilt, setMouseTilt] = useState({ x: 0, y: 0 });
   const [showDemonstrateNotice, setShowDemonstrateNotice] = useState(false);
   const [alwaysShowToOpponent, setAlwaysShowToOpponent] = useState(() => {
     return localStorage.getItem('naruto_always_show_eye_opponent') === 'true';
@@ -139,14 +142,16 @@ export default function EyeActivationOverlay({
   const familyMeta = DOJUTSU_FAMILIES_META[familyKey] || DOJUTSU_FAMILIES_META.Sharingan;
   const dojutsuData = getDojutsuById(currentEyeId) || DOJUTSU_OPTIONS.find(d => d.id === currentEyeId) || DOJUTSU_OPTIONS[3];
 
-  // Звук и 3D импульс при смене формы или открытии
-  const triggerActivation = (eyeIdToPlay) => {
+  // Звук и 3D импульс при смене формы или узора
+  const triggerActivation = (eyeIdToPlay, subPat = null) => {
     setIsSpinning(true);
     setIsSurging(true);
-    audioManager.playEyeSound(eyeIdToPlay, familyKey);
+    
+    const activePat = subPat !== null ? subPat : (familyKey === 'Rinnegan' ? selectedRinnePattern : selectedPattern);
+    audioManager.playEyeSound(eyeIdToPlay, familyKey, activePat);
 
     const spinTimer = setTimeout(() => setIsSpinning(false), 2400);
-    const surgeTimer = setTimeout(() => setIsSurging(false), 500);
+    const surgeTimer = setTimeout(() => setIsSurging(false), 520);
 
     return () => {
       clearTimeout(spinTimer);
@@ -172,22 +177,6 @@ export default function EyeActivationOverlay({
     };
   }, [isOpen, currentEyeId, autoDismissMs]);
 
-  // Интерактивное 3D слежение за курсором
-  const handleMouseMove = (e) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    setMouseTilt({
-      x: Math.max(-1, Math.min(1, x)),
-      y: Math.max(-1, Math.min(1, y))
-    });
-  };
-
-  const handleMouseLeave = () => {
-    setMouseTilt({ x: 0, y: 0 });
-  };
-
   if (!isOpen) return null;
 
   // Смена ступени
@@ -208,10 +197,11 @@ export default function EyeActivationOverlay({
   // Демонстрация сопернику
   const handleDemonstrate = () => {
     if (onShowToOpponent) {
+      const activePat = familyKey === 'Rinnegan' ? selectedRinnePattern : selectedPattern;
       onShowToOpponent({
         dojutsuId: currentEyeId,
         dojutsuName: dojutsuData?.name || familyMeta.name,
-        pattern: selectedPattern,
+        pattern: activePat,
         family: familyKey
       });
       setShowDemonstrateNotice(true);
@@ -227,10 +217,32 @@ export default function EyeActivationOverlay({
       style={{ 
         background: `radial-gradient(circle at center, ${familyMeta.bgAura} 0%, rgba(10,12,18,0.96) 55%, #050608 100%)` 
       }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
     >
-      {/* 3D Атмосферные частицы и световые столбы */}
+      {/* CSS-стили кинематографичного 3D-парения без слежения за курсором */}
+      <style>{`
+        @keyframes eyeFloat3D {
+          0%, 100% {
+            transform: translateZ(0px) rotateX(2deg) rotateY(-1.5deg);
+          }
+          50% {
+            transform: translateZ(24px) rotateX(-1.5deg) rotateY(2deg);
+          }
+        }
+        @keyframes chakraOrbital1 {
+          0% { transform: translateZ(35px) rotateX(65deg) rotateY(15deg) rotateZ(0deg); }
+          100% { transform: translateZ(35px) rotateX(65deg) rotateY(15deg) rotateZ(360deg); }
+        }
+        @keyframes chakraOrbital2 {
+          0% { transform: translateZ(-25px) rotateX(-55deg) rotateY(-20deg) rotateZ(0deg); }
+          100% { transform: translateZ(-25px) rotateX(-55deg) rotateY(-20deg) rotateZ(-360deg); }
+        }
+        @keyframes veinHeartbeatPulse {
+          0%, 100% { opacity: 0.75; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.025); filter: drop-shadow(0 0 10px #60a5fa); }
+        }
+      `}</style>
+
+      {/* 3D Атмосферные световые столбы и ореолы */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div 
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[140px] opacity-35 transition-all duration-700"
@@ -248,8 +260,8 @@ export default function EyeActivationOverlay({
             <span className="w-2.5 h-2.5 rounded-full animate-ping" style={{ backgroundColor: familyMeta.color }} />
             <span>{opponentName ? `👁️ ДЕМОНСТРАЦИЯ СОПЕРНИКА: ${opponentName}` : `👁️ ВЕЛИКОЕ ДОДЗЮЦУ: ${familyMeta.name.toUpperCase()}`}</span>
             {isAwakened && (
-              <span className="px-2 py-0.5 rounded-full bg-amber-500/25 border border-amber-400/50 text-[10px] text-amber-300 animate-pulse">
-                ВЫСШАЯ ФОРМА
+              <span className="px-2 py-0.5 rounded-full bg-amber-500/25 border border-amber-400/50 text-[10px] text-amber-300 animate-pulse font-black">
+                {currentEyeId === 'rinnegan_awakened' ? (selectedRinnePattern === 'sasuke' ? 'САСКЕ (6 ТОМОЭ)' : 'КАГУЯ (9 ТОМОЭ)') : 'ВЫСШАЯ ФОРМА'}
               </span>
             )}
           </span>
@@ -265,7 +277,7 @@ export default function EyeActivationOverlay({
         </button>
       </div>
 
-      {/* ГЛАВНЫЙ 3D КОНТЕЙНЕР */}
+      {/* ГЛАВНЫЙ 3D КОНТЕЙНЕР (Чистый прямой мистический взор без слежения за мышью) */}
       <div 
         ref={containerRef}
         className="relative flex flex-col items-center max-w-2xl w-full z-20 text-center px-2 py-3"
@@ -277,7 +289,7 @@ export default function EyeActivationOverlay({
           className="text-8xl sm:text-9xl font-black font-serif opacity-15 tracking-widest absolute -top-12 sm:-top-16 pointer-events-none select-none transition-all duration-700"
           style={{ 
             color: familyMeta.color,
-            transform: `translateZ(-80px) rotateY(${mouseTilt.x * 10}deg)`
+            transform: 'translateZ(-90px)'
           }}
         >
           {familyMeta.kanji}
@@ -309,13 +321,14 @@ export default function EyeActivationOverlay({
           })}
         </div>
 
-        {/* 3D СФЕРА ГЛАЗНОГО ЯБЛОКА */}
+        {/* 3D СФЕРА ГЛАЗНОГО ЯБЛОКА С АВТОНОМНЫМ КИНЕМАТОГРАФИЧНЫМ ПАРЕНИЕМ */}
         <div 
           className="relative my-2 sm:my-3 flex items-center justify-center"
           style={{
             transformStyle: 'preserve-3d',
-            transform: `rotateY(${mouseTilt.x * 18}deg) rotateX(${-mouseTilt.y * 18}deg) scale(${isSurging ? 1.12 : 1})`,
-            transition: isSurging ? 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'transform 0.12s ease-out'
+            transform: isSurging ? 'translateZ(50px) scale(1.12)' : 'translateZ(0px) scale(1)',
+            animation: isSurging ? 'none' : 'eyeFloat3D 6.5s ease-in-out infinite',
+            transition: isSurging ? 'transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'transform 0.6s ease-out'
           }}
         >
           {/* Внешний объемный ореол ауры (Back 3D layer) */}
@@ -323,34 +336,41 @@ export default function EyeActivationOverlay({
             className="absolute -inset-6 sm:-inset-10 rounded-full opacity-60 blur-2xl transition-all duration-700 pointer-events-none"
             style={{ 
               backgroundColor: familyMeta.color,
-              transform: 'translateZ(-40px)'
+              transform: 'translateZ(-45px)'
             }}
           />
 
-          {/* 3D Гироскопическое орбитальное кольцо чакры */}
+          {/* 3D Двойное гироскопическое орбитальное кольцо чакры */}
           <div 
-            className="absolute -inset-8 sm:-inset-12 rounded-full pointer-events-none border border-white/25 opacity-70 transition-transform"
+            className="absolute -inset-8 sm:-inset-12 rounded-full pointer-events-none border border-white/25 opacity-70"
             style={{
-              transform: 'translateZ(30px) rotateX(65deg) rotateY(15deg)',
+              animation: 'chakraOrbital1 16s linear infinite',
               boxShadow: `0 0 25px ${familyMeta.color}88`,
               borderColor: familyMeta.color
             }}
           />
+          <div 
+            className="absolute -inset-10 sm:-inset-14 rounded-full pointer-events-none border border-white/15 opacity-40"
+            style={{
+              animation: 'chakraOrbital2 22s linear infinite',
+              borderColor: familyMeta.color
+            }}
+          />
 
-          {/* SVG КИНЕМАТОГРАФИЧНЫЙ ГЛАЗ (viewBox: 320 x 320 с анатомическими венами) */}
-          <div className="w-56 h-56 sm:w-72 sm:h-72 relative flex items-center justify-center rounded-full shadow-[0_0_90px_rgba(0,0,0,0.9)]">
+          {/* SVG КИНЕМАТОГРАФИЧНЫЙ ГЛАЗ (viewBox: 320 x 320) */}
+          <div className="w-56 h-56 sm:w-72 sm:h-72 relative flex items-center justify-center rounded-full shadow-[0_0_95px_rgba(0,0,0,0.95)]">
             <svg 
               viewBox="0 0 320 320" 
-              className="w-full h-full overflow-visible drop-shadow-[0_15px_35px_rgba(0,0,0,0.95)]"
+              className="w-full h-full overflow-visible drop-shadow-[0_18px_40px_rgba(0,0,0,0.98)]"
               xmlns="http://www.w3.org/2000/svg"
             >
               <defs>
                 {/* 3D Сферический радиальный градиент глазного яблока (свет падает сверху-слева) */}
-                <radialGradient id="eyeball-3d-sphere" cx="40%" cy="38%" r="62%">
-                  <stop offset="0%" stopColor="#27272a" />
-                  <stop offset="50%" stopColor="#18181b" />
-                  <stop offset="85%" stopColor="#09090b" />
-                  <stop offset="100%" stopColor="#000000" />
+                <radialGradient id="eyeball-3d-sphere" cx="38%" cy="36%" r="64%">
+                  <stop offset="0%" stopColor="#2c2c30" />
+                  <stop offset="45%" stopColor="#1c1c20" />
+                  <stop offset="78%" stopColor="#0d0d10" />
+                  <stop offset="100%" stopColor="#020204" />
                 </radialGradient>
 
                 {/* Радиальный градиент радужки */}
@@ -377,31 +397,34 @@ export default function EyeActivationOverlay({
                       ) : (
                         <>
                           <stop offset="0%" stopColor="#ffffff" />
-                          <stop offset="45%" stopColor="#f1f5f9" />
-                          <stop offset="75%" stopColor="#cbd5e1" />
-                          <stop offset="90%" stopColor="#94a3b8" />
-                          <stop offset="100%" stopColor="#475569" />
+                          <stop offset="40%" stopColor="#f8fafc" />
+                          <stop offset="70%" stopColor="#cbd5e1" />
+                          <stop offset="88%" stopColor="#94a3b8" />
+                          <stop offset="100%" stopColor="#334155" />
                         </>
                       )}
                     </>
                   )}
                   {familyKey === 'Rinnegan' && (
                     <>
-                      {currentEyeId === 'rinnegan_awakened' ? (
+                      {currentEyeId === 'rinnegan_awakened' && selectedRinnePattern === 'kaguya' ? (
+                        /* Ринне-Шаринган Кагуи / Мадары (Кроваво-красный) */
                         <>
                           <stop offset="0%" stopColor="#ef4444" />
-                          <stop offset="40%" stopColor="#dc2626" />
-                          <stop offset="75%" stopColor="#991b1b" />
-                          <stop offset="95%" stopColor="#450a0a" />
-                          <stop offset="100%" stopColor="#1c0303" />
+                          <stop offset="35%" stopColor="#dc2626" />
+                          <stop offset="70%" stopColor="#991b1b" />
+                          <stop offset="92%" stopColor="#450a0a" />
+                          <stop offset="100%" stopColor="#1a0303" />
                         </>
                       ) : (
+                        /* Риннеган Саске (Глубокий благородный фиолетовый Шести Путей) */
                         <>
-                          <stop offset="0%" stopColor="#e9d5ff" />
-                          <stop offset="35%" stopColor="#c084fc" />
-                          <stop offset="70%" stopColor="#7e22ce" />
+                          <stop offset="0%" stopColor="#f3e8ff" />
+                          <stop offset="20%" stopColor="#d8b4fe" />
+                          <stop offset="45%" stopColor="#a855f7" />
+                          <stop offset="72%" stopColor="#6b21a8" />
                           <stop offset="90%" stopColor="#3b0764" />
-                          <stop offset="100%" stopColor="#1e0538" />
+                          <stop offset="100%" stopColor="#1a0430" />
                         </>
                       )}
                     </>
@@ -443,11 +466,18 @@ export default function EyeActivationOverlay({
                   <stop offset="100%" stopColor="#09090b" />
                 </linearGradient>
 
-                {/* Одиночное томоэ Шарингана */}
+                {/* Одиночное каноничное томоэ Шарингана / Риннегана (закругленная голова + изящный хвост) */}
                 <g id="tomoe-symbol">
-                  <circle cx="0" cy="0" r="9" fill="#09090b" stroke="#18181b" strokeWidth="0.8" />
-                  <path d="M -7 0 C -7 -12, 5 -14, 9 -25 C 7 -16, 3 -9, 0 -6 Z" fill="#09090b" />
-                  <circle cx="0" cy="0" r="3" fill="#27272a" />
+                  <circle cx="0" cy="0" r="8.5" fill="#09090b" stroke="#18181b" strokeWidth="0.8" />
+                  <path d="M -7 0 C -7 -11, 4 -15, 8.5 -24 C 6.5 -15, 2.5 -8.5, 0 -5.5 Z" fill="#09090b" />
+                  <circle cx="0" cy="0" r="2.8" fill="#27272a" />
+                </g>
+
+                {/* Томоэ Риннегана Саске (с тонкой фиолетовой аурой) */}
+                <g id="rinnegan-tomoe-sasuke">
+                  <circle cx="0" cy="0" r="7.2" fill="#0b0314" stroke="#7e22ce" strokeWidth="1" />
+                  <path d="M -6 0 C -6 -9, 3.5 -12, 7.5 -20 C 5.5 -12, 2 -7, 0 -4.5 Z" fill="#0b0314" />
+                  <circle cx="0" cy="0" r="2.4" fill="#a855f7" />
                 </g>
 
                 {/* Водная капля Аойгана */}
@@ -467,23 +497,23 @@ export default function EyeActivationOverlay({
               {/* АНАТОМИЧЕСКИЕ ПУЛЬСИРУЮЩИЕ ВЕНЫ ВИСКОВ (ХЬЮГА / БЬЯКУГАН) */}
               {/* ======================================================== */}
               {familyKey === 'Byakugan' && (
-                <g className="animate-pulse" style={{ animationDuration: '2s' }}>
+                <g style={{ animation: 'veinHeartbeatPulse 1.9s ease-in-out infinite' }}>
                   {/* Левая ветвь виска */}
-                  <g stroke="#93c5fd" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.9" filter="drop-shadow(0 0 6px #60a5fa)">
+                  <g stroke="#93c5fd" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.92" filter="drop-shadow(0 0 6px #60a5fa)">
                     <path d="M 74 160 C 45 145, 25 130, 2 115" />
                     <path d="M 52 148 C 32 165, 18 190, 4 215" strokeWidth="2.2" />
                     <path d="M 78 145 C 50 115, 32 80, 16 45" strokeWidth="2.5" />
                     <path d="M 78 175 C 50 205, 32 240, 14 275" strokeWidth="2.5" />
                   </g>
                   {/* Правая ветвь виска */}
-                  <g stroke="#93c5fd" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.9" filter="drop-shadow(0 0 6px #60a5fa)">
+                  <g stroke="#93c5fd" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.92" filter="drop-shadow(0 0 6px #60a5fa)">
                     <path d="M 246 160 C 275 145, 295 130, 318 115" />
                     <path d="M 268 148 C 288 165, 302 190, 316 215" strokeWidth="2.2" />
                     <path d="M 242 145 C 270 115, 288 80, 304 45" strokeWidth="2.5" />
                     <path d="M 242 175 C 270 205, 288 240, 306 275" strokeWidth="2.5" />
                   </g>
                   {/* Верхняя и нижняя глазницы */}
-                  <g stroke="#bfdbfe" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.75">
+                  <g stroke="#bfdbfe" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.8">
                     <path d="M 160 74 C 140 45, 115 25, 95 6" />
                     <path d="M 175 74 C 195 45, 225 25, 245 8" />
                     <path d="M 160 246 C 140 275, 115 295, 95 314" />
@@ -492,9 +522,17 @@ export default function EyeActivationOverlay({
                 </g>
               )}
 
-              {/* БЕЛОК ГЛАЗА (3D ОБЪЕМНАЯ СФЕРА) */}
+              {/* БЕЛОК ГЛАЗА (3D ОБЪЕМНАЯ СФЕРА С КАПИЛЛЯРАМИ) */}
               <circle cx="160" cy="160" r="86" fill="url(#eyeball-3d-sphere)" stroke="#27272a" strokeWidth="3" />
               
+              {/* Реалистичные тонкие капилляры склеры */}
+              <g stroke="#ef4444" strokeWidth="0.7" fill="none" opacity="0.25" strokeLinecap="round">
+                <path d="M 82 140 Q 95 148 108 145" />
+                <path d="M 85 180 Q 98 174 112 177" />
+                <path d="M 238 140 Q 225 148 212 145" />
+                <path d="M 235 180 Q 222 174 208 177" />
+              </g>
+
               {/* РАДУЖКА ГЛАЗА */}
               <circle 
                 cx="160" 
@@ -638,39 +676,70 @@ export default function EyeActivationOverlay({
               )}
 
               {/* ======================================================== */}
-              {/* 2. РИННЕГАН (ШЕСТЬ ПУТЕЙ & РИННЕ-ШАРИНГАН С 9 ТОМОЭ)     */}
+              {/* 2. РИННЕГАН (ШЕСТЬ ПУТЕЙ & КАНОНИЧНЫЙ САСКЕ 6 ТОМОЭ)     */}
               {/* ======================================================== */}
               {familyKey === 'Rinnegan' && (
                 <g>
                   {/* 6 идеальных концентрических колец Шести Путей */}
-                  <circle cx="160" cy="160" r="72" fill="none" stroke="#2e1065" strokeWidth="2.8" />
-                  <circle cx="160" cy="160" r="59" fill="none" stroke="#3b0764" strokeWidth="2.8" />
-                  <circle cx="160" cy="160" r="46" fill="none" stroke="#2e1065" strokeWidth="2.8" />
-                  <circle cx="160" cy="160" r="33" fill="none" stroke="#3b0764" strokeWidth="2.8" />
-                  <circle cx="160" cy="160" r="20" fill="none" stroke="#2e1065" strokeWidth="2.8" />
+                  <circle cx="160" cy="160" r="74" fill="none" stroke={selectedRinnePattern === 'kaguya' && currentEyeId === 'rinnegan_awakened' ? '#450a0a' : '#2e1065'} strokeWidth="2.8" />
+                  <circle cx="160" cy="160" r="60" fill="none" stroke={selectedRinnePattern === 'kaguya' && currentEyeId === 'rinnegan_awakened' ? '#7f1d1d' : '#3b0764'} strokeWidth="2.8" />
+                  <circle cx="160" cy="160" r="47" fill="none" stroke={selectedRinnePattern === 'kaguya' && currentEyeId === 'rinnegan_awakened' ? '#450a0a' : '#2e1065'} strokeWidth="2.8" />
+                  <circle cx="160" cy="160" r="34" fill="none" stroke={selectedRinnePattern === 'kaguya' && currentEyeId === 'rinnegan_awakened' ? '#7f1d1d' : '#3b0764'} strokeWidth="2.8" />
+                  <circle cx="160" cy="160" r="21" fill="none" stroke={selectedRinnePattern === 'kaguya' && currentEyeId === 'rinnegan_awakened' ? '#450a0a' : '#2e1065'} strokeWidth="2.8" />
 
-                  {/* ПРОБУЖДЁННЫЙ РИННЕ-ШАРИНГАН: РОВНО 9 ТОМОЭ (3 внутренних + 6 внешних) */}
+                  {/* ПРОБУЖДЁННАЯ ФОРМА: ВЫБОР МЕЖДУ САСКЕ (6 ТОМОЭ) И КАГУЕЙ (9 ТОМОЭ) */}
                   {currentEyeId === 'rinnegan_awakened' && (
                     <g 
                       className={isSpinning ? 'animate-spin' : ''} 
-                      style={{ transformOrigin: '160px 160px', animationDuration: '6s' }}
+                      style={{ transformOrigin: '160px 160px', animationDuration: isSpinning ? '3s' : '9s' }}
                     >
-                      {/* Внутренние 3 томоэ (0°, 120°, 240°) на радиусе 33 */}
-                      <g transform="translate(160, 160) rotate(0)"><g transform="translate(0, -33) scale(0.65)"><use href="#tomoe-symbol" /></g></g>
-                      <g transform="translate(160, 160) rotate(120)"><g transform="translate(0, -33) scale(0.65)"><use href="#tomoe-symbol" /></g></g>
-                      <g transform="translate(160, 160) rotate(240)"><g transform="translate(0, -33) scale(0.65)"><use href="#tomoe-symbol" /></g></g>
-                      {/* Внешние 6 томоэ (30°, 90°, 150°, 210°, 270°, 330°) на радиусе 59 */}
-                      <g transform="translate(160, 160) rotate(30)"><g transform="translate(0, -59) scale(0.65)"><use href="#tomoe-symbol" /></g></g>
-                      <g transform="translate(160, 160) rotate(90)"><g transform="translate(0, -59) scale(0.65)"><use href="#tomoe-symbol" /></g></g>
-                      <g transform="translate(160, 160) rotate(150)"><g transform="translate(0, -59) scale(0.65)"><use href="#tomoe-symbol" /></g></g>
-                      <g transform="translate(160, 160) rotate(210)"><g transform="translate(0, -59) scale(0.65)"><use href="#tomoe-symbol" /></g></g>
-                      <g transform="translate(160, 160) rotate(270)"><g transform="translate(0, -59) scale(0.65)"><use href="#tomoe-symbol" /></g></g>
-                      <g transform="translate(160, 160) rotate(330)"><g transform="translate(0, -59) scale(0.65)"><use href="#tomoe-symbol" /></g></g>
+                      {/* ВАРИАНТ 1: КАНОНИЧНЫЙ РИННЕГАН САСКЕ — РОВНО 6 ТОМОЭ НА 2 КОЛЬЦАХ */}
+                      {selectedRinnePattern === 'sasuke' && (
+                        <g>
+                          {/* 3 томоэ на внутреннем кольце 1 (радиус 34) под 0°, 120°, 240° */}
+                          <g transform="translate(160, 160) rotate(0)"><g transform="translate(0, -34) scale(0.72)"><use href="#rinnegan-tomoe-sasuke" /></g></g>
+                          <g transform="translate(160, 160) rotate(120)"><g transform="translate(0, -34) scale(0.72)"><use href="#rinnegan-tomoe-sasuke" /></g></g>
+                          <g transform="translate(160, 160) rotate(240)"><g transform="translate(0, -34) scale(0.72)"><use href="#rinnegan-tomoe-sasuke" /></g></g>
+
+                          {/* 3 томоэ на внешнем кольце 2 (радиус 60) под 60°, 180°, 300° (смещены на 60°) */}
+                          <g transform="translate(160, 160) rotate(60)"><g transform="translate(0, -60) scale(0.72)"><use href="#rinnegan-tomoe-sasuke" /></g></g>
+                          <g transform="translate(160, 160) rotate(180)"><g transform="translate(0, -60) scale(0.72)"><use href="#rinnegan-tomoe-sasuke" /></g></g>
+                          <g transform="translate(160, 160) rotate(300)"><g transform="translate(0, -60) scale(0.72)"><use href="#rinnegan-tomoe-sasuke" /></g></g>
+                        </g>
+                      )}
+
+                      {/* ВАРИАНТ 2: КАНОНИЧНЫЙ РИННЕ-ШАРИНГАН КАГУИ / МАДАРЫ — РОВНО 9 ТОМОЭ НА 3 КОЛЬЦАХ */}
+                      {selectedRinnePattern === 'kaguya' && (
+                        <g>
+                          {/* Кольцо 1 (радиус 34): 3 томоэ (0°, 120°, 240°) */}
+                          <g transform="translate(160, 160) rotate(0)"><g transform="translate(0, -34) scale(0.68)"><use href="#tomoe-symbol" /></g></g>
+                          <g transform="translate(160, 160) rotate(120)"><g transform="translate(0, -34) scale(0.68)"><use href="#tomoe-symbol" /></g></g>
+                          <g transform="translate(160, 160) rotate(240)"><g transform="translate(0, -34) scale(0.68)"><use href="#tomoe-symbol" /></g></g>
+
+                          {/* Кольцо 2 (радиус 47): 3 томоэ (60°, 180°, 300°) */}
+                          <g transform="translate(160, 160) rotate(60)"><g transform="translate(0, -47) scale(0.68)"><use href="#tomoe-symbol" /></g></g>
+                          <g transform="translate(160, 160) rotate(180)"><g transform="translate(0, -47) scale(0.68)"><use href="#tomoe-symbol" /></g></g>
+                          <g transform="translate(160, 160) rotate(300)"><g transform="translate(0, -47) scale(0.68)"><use href="#tomoe-symbol" /></g></g>
+
+                          {/* Кольцо 3 (радиус 60): 3 томоэ (0°, 120°, 240°) */}
+                          <g transform="translate(160, 160) rotate(0)"><g transform="translate(0, -60) scale(0.68)"><use href="#tomoe-symbol" /></g></g>
+                          <g transform="translate(160, 160) rotate(120)"><g transform="translate(0, -60) scale(0.68)"><use href="#tomoe-symbol" /></g></g>
+                          <g transform="translate(160, 160) rotate(240)"><g transform="translate(0, -60) scale(0.68)"><use href="#tomoe-symbol" /></g></g>
+                        </g>
+                      )}
                     </g>
                   )}
 
                   {/* Центральный темный зрачок */}
-                  <circle cx="160" cy="160" r="10" fill="#09090b" stroke="#7e22ce" strokeWidth="2" />
+                  <circle 
+                    cx="160" 
+                    cy="160" 
+                    r="10" 
+                    fill="#09090b" 
+                    stroke={selectedRinnePattern === 'kaguya' && currentEyeId === 'rinnegan_awakened' ? '#ef4444' : '#a855f7'} 
+                    strokeWidth="2.2" 
+                  />
+                  <circle cx="160" cy="160" r="3.5" fill={selectedRinnePattern === 'kaguya' && currentEyeId === 'rinnegan_awakened' ? '#fca5a5' : '#e9d5ff'} />
                 </g>
               )}
 
@@ -873,7 +942,7 @@ export default function EyeActivationOverlay({
               )}
 
               {/* ======================================================== */}
-              {/* 6. ШАРИНГАН (1, 2, 3 ТОМОЭ И ВМШ С 4 УЗОРАМИ)            */}
+              {/* 6. ШАРИНГАН (1, 2, 3 ТОМОЭ И ВМШ С 5 КАНОНИЧНЫМИ УЗОРАМИ) */}
               {/* ======================================================== */}
               {familyKey === 'Sharingan' && (
                 <g>
@@ -919,68 +988,118 @@ export default function EyeActivationOverlay({
                       </>
                     )}
 
-                    {/* ВЕЧНЫЙ МАНГЁКЁ ШАРИНГАН (ВМШ): 4 ЛЕГЕНДАРНЫХ УЗОРА */}
+                    {/* ВЕЧНЫЙ МАНГЁКЁ ШАРИНГАН (ВМШ): 5 КАНОНИЧНЫХ ДЕТАЛИЗИРОВАННЫХ УЗОРОВ */}
                     {currentEyeId === 'mangekyo' && (
                       <g>
-                        {/* Форма 1: ИТАЧИ (Изогнутый трехлопастной сюрикен) */}
+                        {/* Форма 1: САСКЕ (Каноничное слияние ВМШ — сюрикен Итачи + 6-конечная прямая звезда Саске) */}
+                        {selectedPattern === 'sasuke' && (
+                          <g>
+                            {/* Фоновый слой: 3 изогнутые лопасти Итачи */}
+                            {[0, 120, 240].map(deg => (
+                              <g key={`itachi-${deg}`} transform={`translate(160, 160) rotate(${deg})`}>
+                                <path 
+                                  d="M 0 0 C 18 -18, 44 -26, 32 -55 C 16 -40, 5 -18, 0 0 Z" 
+                                  fill="#09090b" 
+                                  stroke="#7f1d1d" 
+                                  strokeWidth="1.6"
+                                  filter="drop-shadow(0 0 6px rgba(0,0,0,0.85))"
+                                />
+                                <circle cx="25" cy="-38" r="4.5" fill="#ef4444" opacity="0.85" />
+                              </g>
+                            ))}
+
+                            {/* Наложенный слой: 6 прямых лучей черного пламени Саске */}
+                            {[0, 60, 120, 180, 240, 300].map(deg => (
+                              <g key={`star-${deg}`} transform={`translate(160, 160) rotate(${deg})`}>
+                                <polygon points="0,0 7,-24 0,-56 -7,-24" fill="#09090b" stroke="#ef4444" strokeWidth="1.2" />
+                                <line x1="0" y1="0" x2="0" y2="-52" stroke="#fca5a5" strokeWidth="1" opacity="0.85" />
+                              </g>
+                            ))}
+
+                            {/* Внутренний соединительный шестиугольник с сиянием */}
+                            <polygon points="160,116 198,160 160,204 122,160" fill="none" stroke="#fca5a5" strokeWidth="2.2" filter="drop-shadow(0 0 4px #ef4444)" />
+                            <circle cx="160" cy="160" r="18" fill="#09090b" stroke="#ef4444" strokeWidth="1.8" />
+                          </g>
+                        )}
+
+                        {/* Форма 2: ИТАЧИ (Каноничный трехлопастной изогнутый сюрикен) */}
                         {selectedPattern === 'itachi' && (
                           <g>
                             <circle cx="160" cy="160" r="16" fill="#09090b" />
                             {[0, 120, 240].map(deg => (
                               <g key={deg} transform={`translate(160, 160) rotate(${deg})`}>
                                 <path 
-                                  d="M 0 0 C 20 -20, 48 -25, 36 -54 C 20 -40, 5 -20, 0 0 Z" 
+                                  d="M 0 0 C 22 -20, 50 -26, 38 -56 C 20 -42, 5 -20, 0 0 Z" 
                                   fill="url(#blade-steel)" 
                                   stroke="#09090b" 
-                                  strokeWidth="1.5"
-                                  filter="drop-shadow(0 0 5px rgba(0,0,0,0.9))"
+                                  strokeWidth="1.6"
+                                  filter="drop-shadow(0 0 6px rgba(0,0,0,0.9))"
                                 />
-                                <circle cx="28" cy="-38" r="4" fill="#09090b" />
+                                <circle cx="30" cy="-40" r="4.5" fill="#09090b" />
+                                <path d="M 0 0 C 14 -14, 30 -18, 22 -38" stroke="#ffffff" strokeWidth="0.9" fill="none" opacity="0.6" />
                               </g>
                             ))}
                           </g>
                         )}
 
-                        {/* Форма 2: САСКЕ (Шестиконечная звезда черного пламени) */}
-                        {selectedPattern === 'sasuke' && (
-                          <g>
-                            <circle cx="160" cy="160" r="18" fill="#09090b" />
-                            {[0, 60, 120, 180, 240, 300].map(deg => (
-                              <g key={deg} transform={`translate(160, 160) rotate(${deg})`}>
-                                <polygon points="0,0 8,-22 0,-54 -8,-22" fill="#09090b" stroke="#ef4444" strokeWidth="1.2" />
-                              </g>
-                            ))}
-                            <polygon points="160,116 198,160 160,204 122,160" fill="none" stroke="#fca5a5" strokeWidth="2.5" />
-                          </g>
-                        )}
-
-                        {/* Форма 3: МАДАРА (Переплетенные клинки бесконечности) */}
+                        {/* Форма 3: МАДАРА (Каноничный ВМШ: 3 внешние непрерывные петли + лезвия Изуны) */}
                         {selectedPattern === 'madara' && (
                           <g>
                             <circle cx="160" cy="160" r="18" fill="#09090b" />
-                            <circle cx="160" cy="160" r="50" fill="none" stroke="#09090b" strokeWidth="7" />
+                            {/* Толстое наружное связующее кольцо */}
+                            <circle cx="160" cy="160" r="54" fill="none" stroke="#09090b" strokeWidth="7" />
+                            
+                            {/* 3 гладкие петли вокруг зрачка под 0°, 120°, 240° */}
                             {[0, 120, 240].map(deg => (
-                              <g key={deg} transform={`translate(160, 160) rotate(${deg})`}>
-                                <path d="M 0 0 C 15 -15, 32 -35, 0 -58 C -32 -35, -15 -15, 0 0 Z" fill="#09090b" />
-                                <circle cx="0" cy="-50" r="6" fill="#ef4444" stroke="#09090b" strokeWidth="2" />
+                              <g key={`loop-${deg}`} transform={`translate(160, 160) rotate(${deg})`}>
+                                <circle cx="0" cy="-35" r="14" fill="#ef4444" stroke="#09090b" strokeWidth="6" />
+                                <path d="M 0 0 L 0 -22" stroke="#09090b" strokeWidth="8" strokeLinecap="round" />
+                              </g>
+                            ))}
+
+                            {/* 3 клиновидных острых лезвия Изуны, прорезающих промежутки под 60°, 180°, 300° */}
+                            {[60, 180, 300].map(deg => (
+                              <g key={`izuna-${deg}`} transform={`translate(160, 160) rotate(${deg})`}>
+                                <polygon points="0,0 8,-28 0,-62 -8,-28" fill="#09090b" stroke="#7f1d1d" strokeWidth="1.2" />
                               </g>
                             ))}
                           </g>
                         )}
 
-                        {/* Форма 4: КАМУИ (Пространственный треугольный вихрь Обито-Какаши) */}
+                        {/* Форма 4: КАМУИ (Пространственный треугольный вихрь Обито / Какаши) */}
                         {selectedPattern === 'kamui' && (
                           <g>
                             <circle cx="160" cy="160" r="16" fill="#09090b" />
                             {[0, 120, 240].map(deg => (
                               <g key={deg} transform={`translate(160, 160) rotate(${deg})`}>
                                 <path 
-                                  d="M 0 0 C 28 -8, 52 -28, 48 -58 C 30 -42, 12 -25, 0 0 Z" 
+                                  d="M 0 0 C 30 -6, 56 -28, 52 -60 C 32 -44, 12 -26, 0 0 Z" 
                                   fill="#09090b" 
                                   stroke="#7f1d1d" 
-                                  strokeWidth="1.8" 
+                                  strokeWidth="2" 
                                 />
-                                <circle cx="34" cy="-38" r="5" fill="#f87171" />
+                                <path d="M 0 0 C 22 -4, 40 -18, 38 -44" stroke="#ef4444" strokeWidth="1.2" fill="none" opacity="0.8" />
+                                <circle cx="38" cy="-40" r="4.5" fill="#f87171" />
+                              </g>
+                            ))}
+                            {/* Центральный вход в карманное измерение */}
+                            <circle cx="160" cy="160" r="8" fill="#000000" stroke="#ef4444" strokeWidth="1.5" />
+                          </g>
+                        )}
+
+                        {/* Форма 5: ШИСУИ (Каноничный 4-лопастной сюрикен Котоамацуками) */}
+                        {selectedPattern === 'shisui' && (
+                          <g>
+                            <circle cx="160" cy="160" r="16" fill="#09090b" stroke="#7f1d1d" strokeWidth="1.5" />
+                            {[0, 90, 180, 270].map(deg => (
+                              <g key={deg} transform={`translate(160, 160) rotate(${deg})`}>
+                                <path 
+                                  d="M 0 0 C 16 -16, 42 -22, 34 -54 C 18 -38, 4 -16, 0 0 Z" 
+                                  fill="#09090b" 
+                                  stroke="#ef4444" 
+                                  strokeWidth="1.4"
+                                />
+                                <circle cx="26" cy="-36" r="3.8" fill="#ef4444" />
                               </g>
                             ))}
                           </g>
@@ -995,43 +1114,74 @@ export default function EyeActivationOverlay({
               )}
 
               {/* ======================================================== */}
-              {/* СФЕРИЧЕСКИЙ 3D БЛИК РОГОВИЦЫ (SPECULAR GLASS HIGHLIGHT)   */}
+              {/* СФЕРИЧЕСКИЙ 3D БЛИК РОГОВИЦЫ (ЧИСТЫЙ СВЕТОВОЙ КЛЮЧ)       */}
               {/* ======================================================== */}
-              <g pointerEvents="none" style={{ transform: `translate(${mouseTilt.x * -8}px, ${mouseTilt.y * -8}px)` }}>
+              <g pointerEvents="none">
                 {/* Главный блик света (сверху-слева) */}
                 <ellipse cx="125" cy="120" rx="28" ry="16" fill="#ffffff" opacity="0.45" transform="rotate(-32 125 120)" />
-                <circle cx="118" cy="115" r="7" fill="#ffffff" opacity="0.75" />
-                {/* Вторичный рассеянный влажный рефлекс (снизу-справа) */}
+                <circle cx="118" cy="115" r="7" fill="#ffffff" opacity="0.78" />
+                {/* Вторичный влажный рефлекс (снизу-справа) */}
                 <ellipse cx="195" cy="195" rx="18" ry="8" fill="#ffffff" opacity="0.22" transform="rotate(-32 195 195)" />
               </g>
             </svg>
           </div>
         </div>
 
-        {/* ПЕРЕКЛЮЧАТЕЛЬ 4 УЗОРОВ ВМШ (ТОЛЬКО ДЛЯ ВЕЧНОГО МАНГЁКЁ) */}
+        {/* ПЕРЕКЛЮЧАТЕЛЬ 5 УЗОРОВ ВМШ (ТОЛЬКО ДЛЯ ВЕЧНОГО МАНГЁКЁ) */}
         {currentEyeId === 'mangekyo' && (
-          <div className="relative z-30 mb-2 flex items-center justify-center gap-1.5 bg-black/80 px-3 py-1.5 rounded-xl border border-red-500/40 backdrop-blur-md">
-            <span className="text-[10px] font-bold text-red-400 mr-1 uppercase tracking-wider flex items-center gap-1">
+          <div className="relative z-30 mb-2 flex flex-wrap items-center justify-center gap-1.5 bg-black/85 px-3 py-1.5 rounded-2xl border border-red-500/40 backdrop-blur-md shadow-xl">
+            <span className="text-[10px] font-black text-red-400 mr-1 uppercase tracking-wider flex items-center gap-1">
               <Flame className="w-3.5 h-3.5 text-red-500" />
-              Узор ВМШ:
+              Каноничный узор ВМШ:
             </span>
             {[
+              { id: 'sasuke', label: 'Саске (ВМШ)' },
               { id: 'itachi', label: 'Итачи' },
-              { id: 'sasuke', label: 'Саске' },
-              { id: 'madara', label: 'Мадара' },
-              { id: 'kamui', label: 'Камуи' }
+              { id: 'madara', label: 'Мадара (ВМШ)' },
+              { id: 'kamui', label: 'Камуи' },
+              { id: 'shisui', label: 'Шисуи' }
             ].map(p => (
               <button
                 key={p.id}
                 type="button"
                 onClick={() => {
                   setSelectedPattern(p.id);
-                  triggerActivation('mangekyo');
+                  triggerActivation('mangekyo', p.id);
                 }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-black transition-all cursor-pointer ${
+                className={`px-2.5 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${
                   selectedPattern === p.id 
                     ? 'bg-red-600 text-white shadow-md shadow-red-600/50 scale-105' 
-                    : 'bg-zinc-900 text-zinc-400 hover:text-white'
+                    : 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800'
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ПЕРЕКЛЮЧАТЕЛЬ ДЛЯ ПРОБУЖДЁННОГО РИННЕГАНА: САСКЕ (6 ТОМОЭ) ИЛИ КАГУЯ (9 ТОМОЭ) */}
+        {currentEyeId === 'rinnegan_awakened' && (
+          <div className="relative z-30 mb-2 flex items-center justify-center gap-1.5 bg-black/85 px-3.5 py-1.5 rounded-2xl border border-purple-500/40 backdrop-blur-md shadow-xl">
+            <span className="text-[10px] font-black text-purple-400 mr-1 uppercase tracking-wider flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              Форма Пробуждения:
+            </span>
+            {[
+              { id: 'sasuke', label: 'Риннеган Саске (6 томоэ)' },
+              { id: 'kaguya', label: 'Ринне-Шаринган (9 томоэ)' }
+            ].map(p => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => {
+                  setSelectedRinnePattern(p.id);
+                  triggerActivation('rinnegan_awakened', p.id);
+                }}
+                className={`px-3 py-1 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                  selectedRinnePattern === p.id 
+                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-purple-600/50 scale-105' 
+                    : 'bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800'
                 }`}
               >
                 {p.label}
@@ -1046,16 +1196,24 @@ export default function EyeActivationOverlay({
             <div>
               <h3 className="text-base sm:text-lg font-black text-zinc-100 flex items-center gap-2">
                 <span style={{ color: familyMeta.color }}>{dojutsuData?.icon || '👁️'}</span>
-                <span>{dojutsuData?.name || familyMeta.name}</span>
+                <span>
+                  {currentEyeId === 'rinnegan_awakened' 
+                    ? (selectedRinnePattern === 'sasuke' ? 'Пробуждённый Риннеган Саске (6 томоэ)' : 'Ринне-Шаринган Кагуи (9 томоэ)')
+                    : (dojutsuData?.name || familyMeta.name)}
+                </span>
               </h3>
               <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
-                {familyMeta.desc}
+                {currentEyeId === 'rinnegan_awakened' && selectedRinnePattern === 'sasuke'
+                  ? 'Каноничный левый глаз Саске Учиха от Мудреца Шести Путей. Ровно 6 томоэ на 2 кольцах. Техника мгновенной телепортации Аменотедзикара.'
+                  : (currentEyeId === 'rinnegan_awakened' && selectedRinnePattern === 'kaguya'
+                    ? 'Каноничное первородное алое око Кагуи Ооцуцуки и Мадары. Ровно 9 томоэ на 3 кольцах. Отражение на Луне для Бесконечного Цукуёми.'
+                    : familyMeta.desc)}
               </p>
             </div>
             <button
               type="button"
               onClick={() => triggerActivation(currentEyeId)}
-              className="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-zinc-200 transition flex items-center gap-1.5 cursor-pointer"
+              className="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-bold text-zinc-200 transition flex items-center gap-1.5 cursor-pointer shrink-0"
               title="Повторить звук и 3D анимацию"
             >
               <Volume2 className="w-3.5 h-3.5 text-amber-400" />

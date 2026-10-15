@@ -761,141 +761,295 @@ class AudioManager {
   }
 
   // ==========================================
-  // 4. ЗВУКИ АКТИВАЦИИ ДОДЗЮЦУ (ГЛАЗ ШИНОБИ)
   // ==========================================
-  playEyeSound(family = 'sharingan') {
+  // 4. ЗВУКИ АКТИВАЦИИ ДОДЗЮЦУ (УНИКАЛЬНЫЙ ЗВУК ДЛЯ КАЖДОЙ ФОРМЫ)
+  // ==========================================
+  playEyeSound(eyeId = 'sharingan_3', family = null) {
     if (!this.sfxEnabled) return;
     const ctx = this.initAudioContext();
     if (!ctx) return;
 
     const now = ctx.currentTime;
+    const id = String(eyeId || '').toLowerCase();
     const fam = String(family || '').toLowerCase();
 
-    if (fam.includes('rinne')) {
-      // РИННЕГАН: Глубокий божественный гравитационный гул Шести Путей + космический колокол
-      const subOsc = ctx.createOscillator();
-      const subGain = ctx.createGain();
-      subOsc.type = 'sine';
-      subOsc.frequency.setValueAtTime(82, now);
-      subOsc.frequency.exponentialRampToValueAtTime(140, now + 0.4);
-      subOsc.frequency.exponentialRampToValueAtTime(55, now + 1.2);
-      subGain.gain.setValueAtTime(0.28, now);
-      subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
-      subOsc.connect(subGain);
-      subGain.connect(this.sfxGain);
-      subOsc.start(now);
-      subOsc.stop(now + 1.5);
+    // 1. БЬЯКУГАН (Вены висков, тенкецу, Багуа и Тэнсэйган)
+    if (id.includes('byakugan') || fam.includes('byakugan')) {
+      if (id.includes('awakened')) {
+        // Пробуждённый («Всеведущий взор» / Тэнсэйган): сияющий космический аккорд высшей чакры
+        const bell1 = ctx.createOscillator();
+        const bell2 = ctx.createOscillator();
+        const bell3 = ctx.createOscillator();
+        const bellGain = ctx.createGain();
+        bell1.type = 'sine';
+        bell2.type = 'triangle';
+        bell3.type = 'sine';
+        bell1.frequency.setValueAtTime(880, now);
+        bell2.frequency.setValueAtTime(1760, now);
+        bell3.frequency.setValueAtTime(2640, now);
+        bell1.frequency.exponentialRampToValueAtTime(1320, now + 0.6);
+        bell2.frequency.exponentialRampToValueAtTime(2640, now + 0.6);
+        bell3.frequency.exponentialRampToValueAtTime(3520, now + 0.6);
+        bellGain.gain.setValueAtTime(0.3, now);
+        bellGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.6);
+        bell1.connect(bellGain); bell2.connect(bellGain); bell3.connect(bellGain);
+        bellGain.connect(this.sfxGain);
+        bell1.start(now); bell2.start(now); bell3.start(now);
+        bell1.stop(now + 1.7); bell2.stop(now + 1.7); bell3.stop(now + 1.7);
+      } else if (id.includes('3')) {
+        // Бьякуган 3 этап (Багуа 360°): глубокий храмовый колокол поля Багуа 64 ладоней
+        const gongOsc = ctx.createOscillator();
+        const gongGain = ctx.createGain();
+        gongOsc.type = 'triangle';
+        gongOsc.frequency.setValueAtTime(330, now);
+        gongOsc.frequency.exponentialRampToValueAtTime(220, now + 0.9);
+        gongGain.gain.setValueAtTime(0.28, now);
+        gongGain.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
+        gongOsc.connect(gongGain); gongGain.connect(this.sfxGain);
+        gongOsc.start(now); gongOsc.stop(now + 1.15);
 
-      const chimeOsc = ctx.createOscillator();
-      const chimeGain = ctx.createGain();
-      chimeOsc.type = 'triangle';
-      chimeOsc.frequency.setValueAtTime(528, now);
-      chimeOsc.frequency.exponentialRampToValueAtTime(1056, now + 0.5);
-      chimeGain.gain.setValueAtTime(0.18, now);
-      chimeGain.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
-      chimeOsc.connect(chimeGain);
-      chimeGain.connect(this.sfxGain);
-      chimeOsc.start(now);
-      chimeOsc.stop(now + 1.2);
+        const snapOsc = ctx.createOscillator();
+        const snapGain = ctx.createGain();
+        snapOsc.type = 'sine';
+        snapOsc.frequency.setValueAtTime(1200, now);
+        snapOsc.frequency.exponentialRampToValueAtTime(2400, now + 0.2);
+        snapGain.gain.setValueAtTime(0.2, now);
+        snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        snapOsc.connect(snapGain); snapGain.connect(this.sfxGain);
+        snapOsc.start(now); snapOsc.stop(now + 0.45);
+      } else if (id.includes('2')) {
+        // Бьякуган 2 этап (Тэнкецу): двойной звонкий импульс проявления узлов чакры
+        [0, 0.12].forEach((offset, idx) => {
+          const t = now + offset;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(900 + idx * 300, t);
+          osc.frequency.exponentialRampToValueAtTime(1600 + idx * 400, t + 0.25);
+          gain.gain.setValueAtTime(0.22, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+          osc.connect(gain); gain.connect(this.sfxGain);
+          osc.start(t); osc.stop(t + 0.38);
+        });
+      } else {
+        // Бьякуган 1 этап (Базовый): характерный каноничный звук вздутия вен (глухой стук пульса + щелчок)
+        const veinOsc = ctx.createOscillator();
+        const veinGain = ctx.createGain();
+        veinOsc.type = 'sine';
+        veinOsc.frequency.setValueAtTime(65, now);
+        veinOsc.frequency.exponentialRampToValueAtTime(45, now + 0.25);
+        veinGain.gain.setValueAtTime(0.35, now);
+        veinGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        veinOsc.connect(veinGain); veinGain.connect(this.sfxGain);
+        veinOsc.start(now); veinOsc.stop(now + 0.45);
 
-    } else if (fam.includes('byakugan')) {
-      // БЬЯКУГАН: Кристальный фокус чакры тенкецу и свистящий импульс взгляда 360°
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc1.type = 'sine';
-      osc2.type = 'triangle';
-      osc1.frequency.setValueAtTime(700, now);
-      osc2.frequency.setValueAtTime(1400, now);
-      osc1.frequency.exponentialRampToValueAtTime(1800, now + 0.35);
-      osc2.frequency.exponentialRampToValueAtTime(2800, now + 0.35);
-      gain.gain.setValueAtTime(0.2, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-      osc1.connect(gain);
-      osc2.connect(gain);
-      gain.connect(this.sfxGain);
-      osc1.start(now);
-      osc2.start(now);
-      osc1.stop(now + 0.65);
-      osc2.stop(now + 0.65);
+        const clickOsc = ctx.createOscillator();
+        const clickGain = ctx.createGain();
+        clickOsc.type = 'triangle';
+        clickOsc.frequency.setValueAtTime(1100, now);
+        clickOsc.frequency.exponentialRampToValueAtTime(1900, now + 0.2);
+        clickGain.gain.setValueAtTime(0.18, now);
+        clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        clickOsc.connect(clickGain); clickGain.connect(this.sfxGain);
+        clickOsc.start(now); clickOsc.stop(now + 0.38);
+      }
+      return;
+    }
 
-    } else if (fam.includes('kingan')) {
-      // КИНГАН: Золотой металлический звон клинка и струны разлома
-      const pingOsc = ctx.createOscillator();
-      const pingGain = ctx.createGain();
-      pingOsc.type = 'sine';
-      pingOsc.frequency.setValueAtTime(1320, now);
-      pingOsc.frequency.exponentialRampToValueAtTime(987, now + 0.2);
-      pingGain.gain.setValueAtTime(0.25, now);
-      pingGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
-      pingOsc.connect(pingGain);
-      pingGain.connect(this.sfxGain);
-      pingOsc.start(now);
-      pingOsc.stop(now + 0.85);
+    // 2. РИННЕГАН
+    if (id.includes('rinne') || fam.includes('rinne')) {
+      if (id.includes('awakened')) {
+        // Пробуждённый Ринне-Шаринган: космический разлом пространства (саб-бас + 9 вспышек)
+        const tearOsc = ctx.createOscillator();
+        const tearGain = ctx.createGain();
+        tearOsc.type = 'sawtooth';
+        tearOsc.frequency.setValueAtTime(42, now);
+        tearOsc.frequency.exponentialRampToValueAtTime(110, now + 0.5);
+        tearOsc.frequency.exponentialRampToValueAtTime(35, now + 1.4);
+        tearGain.gain.setValueAtTime(0.3, now);
+        tearGain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+        tearOsc.connect(tearGain); tearGain.connect(this.sfxGain);
+        tearOsc.start(now); tearOsc.stop(now + 1.55);
 
-    } else if (fam.includes('aoigan')) {
-      // АОЙГАН: Океанический водный вихрь и гидро-разгон
-      const waterOsc = ctx.createOscillator();
-      const waterGain = ctx.createGain();
-      waterOsc.type = 'triangle';
-      waterOsc.frequency.setValueAtTime(320, now);
-      waterOsc.frequency.exponentialRampToValueAtTime(960, now + 0.25);
-      waterOsc.frequency.exponentialRampToValueAtTime(440, now + 0.6);
-      waterGain.gain.setValueAtTime(0.22, now);
-      waterGain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
-      waterOsc.connect(waterGain);
-      waterGain.connect(this.sfxGain);
-      waterOsc.start(now);
-      waterOsc.stop(now + 0.75);
+        const flareOsc = ctx.createOscillator();
+        const flareGain = ctx.createGain();
+        flareOsc.type = 'sine';
+        flareOsc.frequency.setValueAtTime(660, now);
+        flareOsc.frequency.exponentialRampToValueAtTime(1980, now + 0.4);
+        flareGain.gain.setValueAtTime(0.25, now);
+        flareGain.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+        flareOsc.connect(flareGain); flareGain.connect(this.sfxGain);
+        flareOsc.start(now); flareOsc.stop(now + 1.05);
+      } else {
+        // Риннеган (Шесть Путей): низкий гравитационный гул Пейна
+        const subOsc = ctx.createOscillator();
+        const subGain = ctx.createGain();
+        subOsc.type = 'sine';
+        subOsc.frequency.setValueAtTime(80, now);
+        subOsc.frequency.exponentialRampToValueAtTime(130, now + 0.4);
+        subOsc.frequency.exponentialRampToValueAtTime(55, now + 1.2);
+        subGain.gain.setValueAtTime(0.28, now);
+        subGain.gain.exponentialRampToValueAtTime(0.001, now + 1.3);
+        subOsc.connect(subGain); subGain.connect(this.sfxGain);
+        subOsc.start(now); subOsc.stop(now + 1.35);
 
-    } else if (fam.includes('ikadzutigan')) {
-      // ИКАДЗУТИГАН: Электрический щелчок, разряд молнии и статический шок
-      const zapOsc = ctx.createOscillator();
-      const zapGain = ctx.createGain();
-      zapOsc.type = 'sawtooth';
-      zapOsc.frequency.setValueAtTime(150, now);
-      zapOsc.frequency.exponentialRampToValueAtTime(2400, now + 0.12);
-      zapOsc.frequency.exponentialRampToValueAtTime(300, now + 0.4);
-      zapGain.gain.setValueAtTime(0.24, now);
-      zapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-      zapOsc.connect(zapGain);
-      zapGain.connect(this.sfxGain);
-      zapOsc.start(now);
-      zapOsc.stop(now + 0.55);
+        const chimeOsc = ctx.createOscillator();
+        const chimeGain = ctx.createGain();
+        chimeOsc.type = 'triangle';
+        chimeOsc.frequency.setValueAtTime(528, now);
+        chimeOsc.frequency.exponentialRampToValueAtTime(1056, now + 0.5);
+        chimeGain.gain.setValueAtTime(0.18, now);
+        chimeGain.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
+        chimeOsc.connect(chimeGain); chimeGain.connect(this.sfxGain);
+        chimeOsc.start(now); chimeOsc.stop(now + 1.05);
+      }
+      return;
+    }
 
-    } else {
-      // ШАРИНГАН (ПО УМОЛЧАНИЮ): Классический звонкий свист вращения томоэ (Mangekyo/Sharingan)
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const gain = ctx.createGain();
-      
-      // Имитация вращающегося томоэ с модуляцией частоты (тремоло)
+    // 3. КИНГАН
+    if (id.includes('kingan') || fam.includes('kingan')) {
+      if (id.includes('awakened')) {
+        // Пробуждённая «Печать разрушения»: лазерный рассекающий свист + золотой звон
+        const beamOsc = ctx.createOscillator();
+        const beamGain = ctx.createGain();
+        beamOsc.type = 'sawtooth';
+        beamOsc.frequency.setValueAtTime(2800, now);
+        beamOsc.frequency.exponentialRampToValueAtTime(620, now + 0.45);
+        beamGain.gain.setValueAtTime(0.25, now);
+        beamGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+        beamOsc.connect(beamGain); beamGain.connect(this.sfxGain);
+        beamOsc.start(now); beamOsc.stop(now + 0.85);
+      } else {
+        const rings = id.includes('3') ? 3 : (id.includes('2') ? 2 : 1);
+        for (let i = 0; i < rings; i++) {
+          const t = now + i * 0.1;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1320 + i * 330, t);
+          osc.frequency.exponentialRampToValueAtTime(987 + i * 220, t + 0.3);
+          gain.gain.setValueAtTime(0.24, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+          osc.connect(gain); gain.connect(this.sfxGain);
+          osc.start(t); osc.stop(t + 0.65);
+        }
+      }
+      return;
+    }
+
+    // 4. АОЙГАН
+    if (id.includes('aoigan') || fam.includes('aoigan')) {
+      if (id.includes('awakened')) {
+        // Пробуждённая «Глубинная Бездна»: океанический водоворот цунами
+        const deepOsc = ctx.createOscillator();
+        const deepGain = ctx.createGain();
+        deepOsc.type = 'triangle';
+        deepOsc.frequency.setValueAtTime(110, now);
+        deepOsc.frequency.exponentialRampToValueAtTime(380, now + 0.35);
+        deepOsc.frequency.exponentialRampToValueAtTime(140, now + 0.9);
+        deepGain.gain.setValueAtTime(0.3, now);
+        deepGain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+        deepOsc.connect(deepGain); deepGain.connect(this.sfxGain);
+        deepOsc.start(now); deepOsc.stop(now + 1.25);
+      } else {
+        const drops = id.includes('3') ? 3 : (id.includes('2') ? 2 : 1);
+        for (let i = 0; i < drops; i++) {
+          const t = now + i * 0.12;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(400 + i * 150, t);
+          osc.frequency.exponentialRampToValueAtTime(1100 + i * 200, t + 0.2);
+          gain.gain.setValueAtTime(0.2, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+          osc.connect(gain); gain.connect(this.sfxGain);
+          osc.start(t); osc.stop(t + 0.5);
+        }
+      }
+      return;
+    }
+
+    // 5. ИКАДЗУТИГАН
+    if (id.includes('ikadzutigan') || fam.includes('ikadzutigan')) {
+      if (id.includes('awakened')) {
+        // Пробуждённая «Божественная Молния»: раскат черной молнии Курорайтон
+        const thundOsc = ctx.createOscillator();
+        const thundGain = ctx.createGain();
+        thundOsc.type = 'sawtooth';
+        thundOsc.frequency.setValueAtTime(120, now);
+        thundOsc.frequency.exponentialRampToValueAtTime(3200, now + 0.08);
+        thundOsc.frequency.exponentialRampToValueAtTime(60, now + 0.6);
+        thundGain.gain.setValueAtTime(0.32, now);
+        thundGain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+        thundOsc.connect(thundGain); thundGain.connect(this.sfxGain);
+        thundOsc.start(now); thundOsc.stop(now + 0.95);
+      } else {
+        const bolts = id.includes('3') ? 3 : (id.includes('2') ? 2 : 1);
+        for (let i = 0; i < bolts; i++) {
+          const t = now + i * 0.09;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(200 + i * 300, t);
+          osc.frequency.exponentialRampToValueAtTime(2200 + i * 400, t + 0.1);
+          gain.gain.setValueAtTime(0.22, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+          osc.connect(gain); gain.connect(this.sfxGain);
+          osc.start(t); osc.stop(t + 0.35);
+        }
+      }
+      return;
+    }
+
+    // 6. ШАРИНГАН & ВМШ
+    if (id.includes('mangekyo')) {
+      // Вечный Мангёкё Шаринган: эпичный многослойный вихрь Мангёкё с пламенем Аматерасу
+      const sub = ctx.createOscillator();
+      const subG = ctx.createGain();
+      sub.type = 'sine';
+      sub.frequency.setValueAtTime(85, now);
+      sub.frequency.exponentialRampToValueAtTime(140, now + 0.35);
+      sub.frequency.exponentialRampToValueAtTime(50, now + 1.1);
+      subG.gain.setValueAtTime(0.3, now);
+      subG.gain.exponentialRampToValueAtTime(0.001, now + 1.3);
+      sub.connect(subG); subG.connect(this.sfxGain);
+      sub.start(now); sub.stop(now + 1.35);
+
+      const whistle = ctx.createOscillator();
+      const whistG = ctx.createGain();
       const lfo = ctx.createOscillator();
-      const lfoGain = ctx.createGain();
-      lfo.frequency.setValueAtTime(14, now); // 14 Hz вращение
-      lfoGain.gain.setValueAtTime(45, now);
-      lfo.connect(osc1.frequency);
+      const lfoG = ctx.createGain();
+      lfo.frequency.setValueAtTime(18, now); // Быстрое вращение
+      lfoG.gain.setValueAtTime(60, now);
+      lfo.connect(whistle.frequency);
+      lfo.start(now);
+      whistle.type = 'sine';
+      whistle.frequency.setValueAtTime(650, now);
+      whistle.frequency.exponentialRampToValueAtTime(1480, now + 0.4);
+      whistG.gain.setValueAtTime(0.26, now);
+      whistG.gain.exponentialRampToValueAtTime(0.001, now + 0.95);
+      whistle.connect(whistG); whistG.connect(this.sfxGain);
+      whistle.start(now); whistle.stop(now + 1.0); lfo.stop(now + 1.0);
+    } else {
+      // Шаринган 1, 2, 3 томоэ
+      const tomoeCount = id.includes('1') ? 1 : (id.includes('2') ? 2 : 3);
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const lfo = ctx.createOscillator();
+      const lfoG = ctx.createGain();
+      
+      lfo.frequency.setValueAtTime(8 + tomoeCount * 4, now);
+      lfoG.gain.setValueAtTime(25 + tomoeCount * 12, now);
+      lfo.connect(osc.frequency);
       lfo.start(now);
 
-      osc1.type = 'sine';
-      osc2.type = 'sine';
-      osc1.frequency.setValueAtTime(528, now); // Сольфеджио чакры
-      osc2.frequency.setValueAtTime(880, now);
-      osc1.frequency.exponentialRampToValueAtTime(1174, now + 0.35);
-      osc2.frequency.exponentialRampToValueAtTime(1760, now + 0.35);
-
-      gain.gain.setValueAtTime(0.24, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.75);
-
-      osc1.connect(gain);
-      osc2.connect(gain);
-      gain.connect(this.sfxGain);
-
-      osc1.start(now);
-      osc2.start(now);
-      osc1.stop(now + 0.8);
-      osc2.stop(now + 0.8);
-      lfo.stop(now + 0.8);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(520 + tomoeCount * 80, now);
+      osc.frequency.exponentialRampToValueAtTime(1100 + tomoeCount * 220, now + 0.3);
+      gain.gain.setValueAtTime(0.22 + tomoeCount * 0.03, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6 + tomoeCount * 0.1);
+      osc.connect(gain); gain.connect(this.sfxGain);
+      osc.start(now); osc.stop(now + 0.75 + tomoeCount * 0.1); lfo.stop(now + 0.75 + tomoeCount * 0.1);
     }
   }
 }

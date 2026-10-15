@@ -403,6 +403,72 @@ export default function ClanModal({
           {activeTab === 'members' && myClan && (
             <div className="space-y-5">
               
+              {/* Императорское Знамя Клана */}
+              <div 
+                className="p-4 sm:p-5 rounded-3xl border relative overflow-hidden transition-all duration-300 flex flex-col sm:flex-row items-center gap-4"
+                style={{
+                  background: `radial-gradient(circle at 15% 50%, ${currentEmblem.themeColor}25 0%, rgba(15, 15, 20, 0.95) 75%)`,
+                  borderColor: `${currentEmblem.themeColor}70`,
+                  boxShadow: `0 0 35px ${currentEmblem.themeColor}20, inset 0 0 20px ${currentEmblem.themeColor}15`
+                }}
+              >
+                <div className="relative shrink-0 flex items-center justify-center">
+                  <div 
+                    className="absolute -inset-3 rounded-full blur-xl opacity-60 animate-pulse pointer-events-none"
+                    style={{ backgroundColor: currentEmblem.themeColor }}
+                  />
+                  <div 
+                    className="p-3 rounded-3xl bg-black/85 border shadow-2xl relative transition-transform duration-300 transform hover:scale-105"
+                    style={{
+                      borderColor: `${currentEmblem.themeColor}90`,
+                      boxShadow: `0 0 30px ${currentEmblem.themeColor}50, inset 0 0 15px ${currentEmblem.themeColor}30`
+                    }}
+                  >
+                    {currentEmblem.renderSvg("w-20 h-20 sm:w-24 sm:h-24")}
+                  </div>
+                  <span 
+                    className="absolute -bottom-2 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black tracking-widest uppercase bg-black/90 border shadow-lg"
+                    style={{
+                      borderColor: currentEmblem.themeColor,
+                      color: currentEmblem.themeColor
+                    }}
+                  >
+                    {currentEmblem.kanji}
+                  </span>
+                </div>
+
+                <div className="flex-1 text-center sm:text-left space-y-1.5 min-w-0">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                    <h3 className="text-base sm:text-xl font-black text-white">
+                      {myClan.name}
+                    </h3>
+                    {currentEmblem.elementBadge && (
+                      <span 
+                        className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-black/70 border shadow-sm"
+                        style={{
+                          borderColor: `${currentEmblem.themeColor}70`,
+                          color: '#fef08a'
+                        }}
+                      >
+                        {currentEmblem.elementBadge}
+                      </span>
+                    )}
+                  </div>
+                  {myClan.motto ? (
+                    <p className="text-xs sm:text-sm text-amber-200/90 italic font-serif leading-relaxed">
+                      «{myClan.motto}»
+                    </p>
+                  ) : (
+                    <p className="text-xs text-zinc-400 italic font-serif">
+                      «{currentEmblem.defaultMotto}»
+                    </p>
+                  )}
+                  <p className="text-[11px] text-zinc-300 leading-relaxed font-sans line-clamp-2">
+                    {currentEmblem.desc}
+                  </p>
+                </div>
+              </div>
+
               {/* Статистическая плашка клана */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="p-3.5 rounded-2xl bg-zinc-900/80 border border-white/10 text-center">
@@ -788,11 +854,86 @@ export default function ClanModal({
               </div>
 
               {/* Выбор герба из 18 императорских 3D медальонов */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="text-xs font-bold text-zinc-300 flex items-center justify-between">
                   <span>Выбор священного герба клана (Камон 3D):</span>
                   <span className="text-[10px] text-amber-400 font-mono font-bold">{CLAN_EMBLEMS.length} императорских медальонов</span>
                 </label>
+
+                {/* Императорский Пьедестал Выбранного Герба (Master Crest Showcase) */}
+                <div 
+                  className="p-4 rounded-3xl border relative overflow-hidden transition-all duration-500 flex flex-col sm:flex-row items-center gap-4"
+                  style={{
+                    background: `radial-gradient(circle at 18% 50%, ${currentEmblem.themeColor}22 0%, rgba(9, 9, 11, 0.95) 70%)`,
+                    borderColor: `${currentEmblem.themeColor}70`,
+                    boxShadow: `0 0 35px ${currentEmblem.themeColor}20, inset 0 0 20px ${currentEmblem.themeColor}15`
+                  }}
+                >
+                  <div className="relative shrink-0 flex items-center justify-center">
+                    <div 
+                      className="absolute -inset-3 rounded-full blur-xl opacity-60 animate-pulse pointer-events-none"
+                      style={{ backgroundColor: currentEmblem.themeColor }}
+                    />
+                    <div 
+                      className="p-2.5 sm:p-3 rounded-3xl bg-black/85 border shadow-2xl relative transition-transform duration-300 transform hover:scale-105"
+                      style={{
+                        borderColor: `${currentEmblem.themeColor}90`,
+                        boxShadow: `0 0 30px ${currentEmblem.themeColor}50, inset 0 0 15px ${currentEmblem.themeColor}30`
+                      }}
+                    >
+                      {currentEmblem.renderSvg("w-18 h-18 sm:w-22 sm:h-22")}
+                    </div>
+                    <span 
+                      className="absolute -bottom-2 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black tracking-widest uppercase bg-black/90 border shadow-lg"
+                      style={{
+                        borderColor: currentEmblem.themeColor,
+                        color: currentEmblem.themeColor
+                      }}
+                    >
+                      {currentEmblem.kanji}
+                    </span>
+                  </div>
+
+                  <div className="flex-1 text-center sm:text-left space-y-1 min-w-0">
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                      <h4 className="text-sm sm:text-base font-black text-white">
+                        {currentEmblem.name}
+                      </h4>
+                      {currentEmblem.elementBadge && (
+                        <span 
+                          className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-black/70 border shadow-sm"
+                          style={{
+                            borderColor: `${currentEmblem.themeColor}70`,
+                            color: '#fef08a'
+                          }}
+                        >
+                          {currentEmblem.elementBadge}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-zinc-300 leading-relaxed font-sans">
+                      {currentEmblem.desc}
+                    </p>
+                    {currentEmblem.defaultMotto && (
+                      <div className="pt-1 flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] text-amber-300/90 font-serif italic">
+                        <span className="flex items-center gap-1">
+                          <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                          <span>«{currentEmblem.defaultMotto}»</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            audioManager.playSfx('click');
+                            setNewClanMotto(currentEmblem.defaultMotto);
+                          }}
+                          className="text-[10px] font-mono text-amber-400 hover:text-amber-200 underline cursor-pointer not-italic transition-colors"
+                        >
+                          [Вставить девиз]
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 max-h-[300px] overflow-y-auto pr-1 scrollbar-thin">
                   {CLAN_EMBLEMS.map((emblem) => {
@@ -800,7 +941,10 @@ export default function ClanModal({
                     return (
                       <div
                         key={emblem.id}
-                        onClick={() => setSelectedEmblemId(emblem.id)}
+                        onClick={() => {
+                          audioManager.playSfx('click');
+                          setSelectedEmblemId(emblem.id);
+                        }}
                         className={`p-2.5 rounded-2xl border text-center transition-all duration-200 cursor-pointer flex flex-col items-center justify-between gap-1.5 relative group ${
                           isSelected
                             ? 'bg-amber-950/50 border-amber-500 ring-2 ring-amber-400/60 shadow-xl scale-[1.02]'

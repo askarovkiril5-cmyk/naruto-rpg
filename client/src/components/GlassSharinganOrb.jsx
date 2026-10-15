@@ -568,19 +568,23 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
   }
 
   // ========================================================
-  // [6] ТОЛЬКО 5 КАНОНИЧЕСКИХ ОБЛАДАТЕЛЕЙ МАНГЁКЁ (ПО АНИМЕ)
+  // [6] ТОЛЬКО 5 КАНОНИЧЕСКИХ ОБЛАДАТЕЛЕЙ МАНГЁКЁ (ПО АНИМЕ И ЭТАЛОНУ)
   // ========================================================
   switch (pattern) {
-    // 1. ИТАЧИ УЧИХА (3 клинка мельницы)
+    // 1. ИТАЧИ УЧИХА (3 органических клинка мельницы, канон аниме и сетки 4x4)
     case MANGEKYO_PATTERNS.ITACHI:
       return (
         <g fill="#050505">
-          <circle r="14" />
-          <circle r="4" fill="#ffffff" filter="drop-shadow(0 0 4px #ff2a4b)" />
+          {/* Центральный обод зрачка и ядро */}
+          <circle r="15" fill="#050505" />
+          <circle r="5.5" fill="#991b1b" opacity="0.85" />
+          <circle r="3.2" fill="#ffffff" filter="drop-shadow(0 0 3px #ffffff)" />
+
+          {/* 3 мощных каноничных серпа мельницы Итачи */}
           {[0, 120, 240].map((deg) => (
             <path
               key={deg}
-              d="M -6,-13 C 14,-32 50,-52 42,-74 C 24,-54 8,-34 12,-8 Z"
+              d="M -7,-13 C 18,-35 56,-52 46,-78 C 24,-58 6,-36 14,-5 Z"
               transform={`rotate(${deg})`}
               stroke="#180003"
               strokeWidth="0.8"
@@ -589,22 +593,45 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
         </g>
       );
 
-    // 2а. САСКЕ УЧИХА — ВМШ (Слияние звезды Саске и лезвий Итачи)
+    // 2а. САСКЕ УЧИХА — ВМШ (Слияние 6-конечной звезды Чоку-Томоэ Саске и лезвий Итачи)
     case MANGEKYO_PATTERNS.SASUKE_EMS:
       return (
-        <g fill="#050505">
-          {/* 6-конечная прямая звезда Саске */}
-          <path d="M 0,-80 L 15,-26 L 69.3,-40 L 30,0 L 69.3,40 L 15,26 L 0,80 L -15,26 L -69.3,40 L -30,0 L -69.3,-40 L -15,-26 Z" />
-          {/* 3 серпа Итачи в промежутках лучей (30°, 150°, 270°) */}
-          {[30, 150, 270].map((deg) => (
-            <path
-              key={deg}
-              d="M -6,-13 C 14,-32 50,-52 42,-74 C 24,-54 8,-34 12,-8 Z"
-              transform={`rotate(${deg})`}
-            />
-          ))}
-          <circle r="14" />
-          <circle r="4" fill="#ffffff" filter="drop-shadow(0 0 4px #ff2a4b)" />
+        <g>
+          {/* Подложка: 6 пылающих алых лепестков звезды Саске (из сетки 4х4 и аниме) */}
+          <g id="sasuke_ems_bg_petals">
+            {[0, 60, 120].map((deg) => (
+              <ellipse
+                key={deg}
+                cx="0"
+                cy="0"
+                rx="16"
+                ry="82"
+                fill="#ff1a35"
+                opacity="0.85"
+                transform={`rotate(${deg})`}
+                filter="drop-shadow(0 0 8px #ff1a35)"
+              />
+            ))}
+          </g>
+
+          {/* Черный слитый узор ВМШ: 6-конечная прямая звезда + 3 серпа Итачи */}
+          <g fill="#050505">
+            {/* 6-конечная прямая звезда Саске */}
+            <path d="M 0,-78 L 14,-28 L 67.5,-39 L 28,0 L 67.5,39 L 14,28 L 0,78 L -14,28 L -67.5,39 L -28,0 L -67.5,-39 L -14,-28 Z" />
+
+            {/* 3 серпа Итачи в межлучевых секторах (30°, 150°, 270°) */}
+            {[30, 150, 270].map((deg) => (
+              <path
+                key={deg}
+                d="M -7,-13 C 18,-35 56,-52 46,-78 C 24,-58 6,-36 14,-5 Z"
+                transform={`rotate(${deg})`}
+              />
+            ))}
+
+            {/* Центральный черный зрачок и блик */}
+            <circle r="15" fill="#050505" />
+            <circle r="3.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ffffff)" />
+          </g>
         </g>
       );
 
@@ -618,73 +645,78 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
               cx="0"
               cy="0"
               rx="18"
-              ry="84"
-              fill="#ff1744"
+              ry="82"
+              fill="#ff1836"
               stroke="#ff5252"
               strokeWidth="0.8"
               transform={`rotate(${deg})`}
-              filter="drop-shadow(0 0 8px #ff1744)"
+              filter="drop-shadow(0 0 8px #ff1836)"
             />
           ))}
           <polygon
             points="0,-26 22.5,-13 22.5,13 0,26 -22.5,13 -22.5,-13"
-            fill="#ff1744"
+            fill="#ff1836"
           />
-          <circle r="13" fill="#040001" stroke="#991b1b" strokeWidth="1.2" />
-          <circle r="4" fill="#ffffff" filter="drop-shadow(0 0 5px #ffffff)" />
+          <circle r="14" fill="#020001" stroke="#991b1b" strokeWidth="1.2" />
+          <circle r="3.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ffffff)" />
         </g>
       );
 
-    // 3а. МАДАРА УЧИХА — ВМШ (Внешний обруч + 3 петли с просветами + клинья Изуны)
+    // 3а. МАДАРА УЧИХА — ВМШ (Внешний черный обруч + 3 петли со сквозными просветами + клинья Изуны)
     case MANGEKYO_PATTERNS.MADARA_EMS:
       return (
         <g fill="#050505">
-          <circle r="77" fill="none" stroke="#050505" strokeWidth="12" />
-          <circle r="16" />
-          <circle r="4.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ff2a4b)" />
+          {/* Мощный внешний обруч по периметру */}
+          <circle r="78" fill="none" stroke="#050505" strokeWidth="12" />
+          <circle r="15" />
+          <circle r="3.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ff2a4b)" />
+
+          {/* 3 петли Мадары с открытыми окнами радужки */}
           {[0, 120, 240].map((deg) => (
             <g key={deg} transform={`rotate(${deg})`}>
               <path
                 fillRule="evenodd"
-                d="M 0,-76 A 20 20 0 1 1 0,-36 A 20 20 0 1 1 0,-76 Z M 0,-66 A 10 10 0 1 0 0,-46 A 10 10 0 1 0 0,-66 Z"
+                d="M 0,-76 A 20 20 0 1 1 0,-36 A 20 20 0 1 1 0,-76 Z M 0,-66 A 9.5 9.5 0 1 0 0,-47 A 9.5 9.5 0 1 0 0,-66 Z"
               />
               <polygon points="-6,-14 6,-14 8,-38 -8,-38" />
             </g>
           ))}
+
+          {/* 3 клина Изуны между петлями */}
           {[60, 180, 300].map((deg) => (
-            <polygon key={`izuna-${deg}`} points="0,-16 9,-46 0,-76 -9,-46" transform={`rotate(${deg})`} />
+            <polygon key={`izuna-${deg}`} points="0,-14 8,-44 0,-76 -8,-44" transform={`rotate(${deg})`} />
           ))}
         </g>
       );
 
-    // 3б. МАДАРА УЧИХА — МШ (3 замкнутые круговые петли с просветами радужки)
+    // 3б. МАДАРА УЧИХА — МШ (3 замкнутые круговые петли со сквозными просветами радужки)
     case MANGEKYO_PATTERNS.MADARA_MS:
       return (
         <g fill="#050505">
-          <circle r="15" />
-          <circle r="4.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ff2a4b)" />
+          <circle r="14" />
+          <circle r="3.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ff2a4b)" />
           {[0, 120, 240].map((deg) => (
             <g key={deg} transform={`rotate(${deg})`}>
               <path
                 fillRule="evenodd"
-                d="M 0,-68 A 22 22 0 1 1 0,-24 A 22 22 0 1 1 0,-68 Z M 0,-57 A 11 11 0 1 0 0,-35 A 11 11 0 1 0 0,-57 Z"
+                d="M 0,-68 A 21 21 0 1 1 0,-26 A 21 21 0 1 1 0,-68 Z M 0,-57 A 10.5 10.5 0 1 0 0,-37 A 10.5 10.5 0 1 0 0,-57 Z"
               />
-              <polygon points="-6,-14 6,-14 8,-26 -8,-26" />
+              <polygon points="-6,-14 6,-14 7,-28 -7,-28" />
             </g>
           ))}
         </g>
       );
 
-    // 4. ОБИТО УЧИХА / КАКАШИ (Камуи — 3 хищных клыка-крюка воронки)
+    // 4. ОБИТО УЧИХА / КАКАШИ (Камуи — 3 хищных клыка-крюка воронки сингулярности)
     case MANGEKYO_PATTERNS.KAMUI:
       return (
         <g fill="#050505">
-          <circle r="15" />
-          <circle r="4.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ff2a4b)" />
+          <circle r="14" />
+          <circle r="3.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ff2a4b)" />
           {[0, 120, 240].map((deg) => (
             <path
               key={deg}
-              d="M -4,-14 C -10,-35 -24,-58 -32,-76 C 0,-74 48,-62 66,-48 C 42,-36 20,-24 14,-6 Z"
+              d="M -5,-14 C -12,-36 -28,-58 -38,-78 C -8,-80 48,-66 70,-46 C 46,-34 24,-22 14,-5 Z"
               transform={`rotate(${deg})`}
               stroke="#180003"
               strokeWidth="0.8"
@@ -693,16 +725,16 @@ export const OrbPatternRenderer = ({ pattern, family = 'Sharingan', stageId = nu
         </g>
       );
 
-    // 5. ШИСУИ УЧИХА (Котоамацуками — 4-лопастной сюрикен)
+    // 5. ШИСУИ УЧИХА (Котоамацуками — 4-лопастной сюрикен абсолютного гендзюцу)
     case MANGEKYO_PATTERNS.SHISUI:
       return (
         <g fill="#050505">
           <circle r="14" />
-          <circle r="4" fill="#ffffff" filter="drop-shadow(0 0 4px #ff2a4b)" />
+          <circle r="3.5" fill="#ffffff" filter="drop-shadow(0 0 4px #ff2a4b)" />
           {[45, 135, 225, 315].map((deg) => (
             <path
               key={deg}
-              d="M -5,-13 C 14,-32 50,-56 68,-52 C 46,-40 22,-24 12,-7 Z"
+              d="M -6,-13 C 16,-32 54,-56 72,-52 C 48,-40 24,-24 13,-6 Z"
               transform={`rotate(${deg})`}
               stroke="#180003"
               strokeWidth="0.8"
@@ -925,6 +957,24 @@ export default function GlassSharinganOrb({
         <g clipPath="url(#sphereClip)">
           {/* Layer 1: Подложка радужки с дымчатой структурой */}
           <circle cx="100" cy="100" r="88" fill="url(#orbIrisBase)" filter="url(#chakraTurbulence)" />
+
+          {/* Layer 1b: Тонкие каноничные кольца разметки додзюцу и насечки шкалы фокуса (Anime Precision Rings) */}
+          <circle cx="100" cy="100" r="54" fill="none" stroke="#000000" strokeWidth="0.8" opacity="0.22" />
+          <circle cx="100" cy="100" r="76" fill="none" stroke="#000000" strokeWidth="0.8" opacity="0.18" />
+          <g transform="translate(100, 100)" opacity="0.25">
+            {Array.from({ length: 48 }).map((_, i) => (
+              <line
+                key={i}
+                x1="0"
+                y1="-85"
+                x2="0"
+                y2={i % 4 === 0 ? "-79" : "-82"}
+                stroke="#000000"
+                strokeWidth={i % 4 === 0 ? "1.2" : "0.7"}
+                transform={`rotate(${i * 7.5})`}
+              />
+            ))}
+          </g>
 
           {/* Layer 2: Радиальные волокна стромы чакры */}
           <g transform="translate(100, 100)">

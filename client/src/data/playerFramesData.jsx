@@ -2,12 +2,11 @@ import React from 'react';
 
 /**
  * playerFramesData.jsx
- * Каталог аватарок и система наградных рамок за боевые достижения (Achievement Frames).
- * Дизайн рамок выполнен по высочайшим стандартам Mobile Legends: Bang Bang (MLBB Masterpiece Edition):
- * - Полный силуэтный прорыв (Silhouette Breakout & Asymmetry)
- * - Скульптурные 3D-артефакты на углах (шляпа Хокаге, маска АНБУ, ремень шиноби, рога Сусаноо, корона Творца)
- * - Чеканная трехмерная фаска, скосы и тени окклюзии (3-Tier Chiseled Lighting)
- * - Многослойный контраст материалов (кованое золото, вороненый титан, фарфор, кожа, драгоценные камни, плазма)
+ * Каталог наградных рамок за боевые достижения (Achievement Frames).
+ * Выполнены по высшему стандарту Mobile Legends: Bang Bang (MLBB Masterpiece Edition):
+ * - Скульптурный силуэтный вынос (viewBox="-30 -30 160 160", overflow-visible)
+ * - Настоящие 3D-артефакты: шляпа Хокаге, маска АНБУ, драконьи крылья, рога они Сусаноо, корона Творца
+ * - Металлическая чеканка, филигрань, глубокие тени и фотоника
  */
 
 export const DEVELOPER_EMAIL = 'askarovkiril5@gmail.com';
@@ -17,29 +16,9 @@ export function isDeveloperAccount(email) {
   return String(email).trim().toLowerCase() === DEVELOPER_EMAIL;
 }
 
-export const PRESET_AVATARS = [
-  { id: 'av_naruto', name: 'Наруто Удзумаки', icon: '🍥', desc: 'Джинчурики Девятихвостого и Седьмой Хокаге' },
-  { id: 'av_sasuke', name: 'Саске Учиха', icon: '⚡', desc: 'Теневой Хокаге и мастер Вечного Мангёкё' },
-  { id: 'av_itachi', name: 'Итачи Учиха', icon: '👁️', desc: 'Гений клана Учиха и мастер Цукуёми' },
-  { id: 'av_kakashi', name: 'Какаши Хатаке', icon: '🐕', desc: 'Копирующий ниндзя Конохи и Шестой Хокаге' },
-  { id: 'av_madara', name: 'Мадара Учиха', icon: '🔥', desc: 'Легендарный патриарх Учиха и Бог войны' },
-  { id: 'av_minato', name: 'Минато Намикадзе', icon: '⚡', desc: 'Жёлтая Молния Конохи и Четвёртый Хокаге' },
-  { id: 'av_pain', name: 'Пейн (Тэндо)', icon: '🌀', desc: 'Бог Деревни Дождя и носитель Риннегана' },
-  { id: 'av_jiraiya', name: 'Джирайя', icon: '🐸', desc: 'Жабий Мудрец с горы Мёбоку' },
-  { id: 'av_tsunade', name: 'Цунаде Сенджу', icon: '🎲', desc: 'Величайший ниндзя-медик и Пятая Хокаге' },
-  { id: 'av_gaara', name: 'Гаара Песчаный', icon: '⏳', desc: 'Пятый Казекаге Сунагакуре' },
-  { id: 'av_orochimaru', name: 'Орочимару', icon: '🐍', desc: 'Бессмертный исследователь запретных техник' },
-  { id: 'av_tobirama', name: 'Тобирама Сенджу', icon: '🌊', desc: 'Второй Хокаге и создатель Летящего Бога Грома' },
-  { id: 'av_hashirama', name: 'Хаширама Сенджу', icon: '🌿', desc: 'Первый Хокаге и Бог Шиноби' },
-  { id: 'av_hinata', name: 'Хината Хьюга', icon: '🕊️', desc: 'Принцесса Бьякугана' },
-  { id: 'av_anbu_fox', name: 'Маска АНБУ Лиса', icon: '🎭', desc: 'Секретная служба тайных операций Конохи' },
-  { id: 'av_creator', name: '👑 Создатель Мира Шиноби', icon: '👑', desc: 'Верховный Архитектор и Разработчик игры' }
-];
-
 export const PLAYER_FRAMES = [
   // =========================================================================
-  // 1. АКАДЕМИЯ (Warrior Rank - MLBB Starlight Style)
-  // Дерево Хиноки + диагональный кожаный ремень с латунной пряжкой + резной лист
+  // 1. Дерево Академии Листа
   // =========================================================================
   {
     id: 'frame_academy',
@@ -49,61 +28,107 @@ export const PLAYER_FRAMES = [
     rarityColor: '#94a3b8',
     requirementText: 'Доступна всем новобранцам Конохи',
     checkUnlocked: () => true,
-    progressText: () => 'Разблокировано',
+    progressText: () => "Разблокировано",
     badge: '🍃 Академия',
     borderClass: 'border-emerald-600/70',
     glowClass: 'shadow-md shadow-emerald-900/30',
+    
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
-        {/* Изумрудно-древесный ореол чакры */}
-        <div style={{ transform: "translateZ(-15px)" }} className="absolute -inset-1.5 rounded-2xl bg-gradient-to-br from-emerald-600/25 via-amber-800/20 to-transparent blur-sm opacity-80 pointer-events-none" />
+      <div 
+        className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <svg 
+          viewBox="-30 -30 160 160" 
+          className="w-full h-full overflow-visible pointer-events-none"
+        >
+          <defs>
+            
+      <linearGradient id="fr_acad_wood" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#78350f" />
+        <stop offset="50%" stopColor="#451a03" />
+        <stop offset="100%" stopColor="#290e02" />
+      </linearGradient>
+      <linearGradient id="fr_acad_brass" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#fef08a" />
+        <stop offset="40%" stopColor="#ca8a04" />
+        <stop offset="100%" stopColor="#713f12" />
+      </linearGradient>
+      <linearGradient id="fr_acad_leather" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#9a3412" />
+        <stop offset="50%" stopColor="#7c2d12" />
+        <stop offset="100%" stopColor="#431407" />
+      </linearGradient>
+      <linearGradient id="fr_acad_jade" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#6ee7b7" />
+        <stop offset="50%" stopColor="#059669" />
+        <stop offset="100%" stopColor="#064e3b" />
+      </linearGradient>
+      <filter id="fr_acad_shadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor="#000000" floodOpacity="0.8" />
+      </filter>
+    
+          </defs>
 
-        {/* Боковые деревянные пилоны с бронзовыми накладками */}
-        <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-2 h-7 bg-gradient-to-b from-amber-700 via-amber-900 to-amber-950 rounded-l border-l border-y border-amber-500/60 shadow pointer-events-none flex flex-col justify-between py-1 items-center">
-          <span className="w-1 h-1 rounded-full bg-amber-400" />
-          <span className="w-1 h-1 rounded-full bg-amber-400" />
-        </div>
-        <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-2 h-7 bg-gradient-to-b from-amber-700 via-amber-900 to-amber-950 rounded-r border-r border-y border-amber-500/60 shadow pointer-events-none flex flex-col justify-between py-1 items-center">
-          <span className="w-1 h-1 rounded-full bg-amber-400" />
-          <span className="w-1 h-1 rounded-full bg-amber-400" />
-        </div>
+          {/* Слой 0: Фоновая аура чакры */}
+          
+      {/* Изумрудно-янтарный ореол чакры */}
+      <rect x="-8" y="-8" width="116" height="116" rx="28" fill="none" stroke="#10b981" strokeWidth="4" opacity="0.3" filter="blur(6px)" />
+    
 
-        {/* Основной корпус рамки из резного дерева Хиноки */}
-        <div style={{ transform: "translateZ(16px)" }} className="absolute inset-0 rounded-2xl bg-gradient-to-b from-amber-950 via-zinc-950 to-emerald-950 border-2 border-emerald-600/80 shadow-xl shadow-black/80 overflow-hidden">
-          <div className="absolute inset-0.5 border border-amber-600/40 rounded-xl" />
-          {/* Бронзовые угловые скобы */}
-          <span className="absolute top-0.5 left-0.5 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-400 rounded-tl-md" />
-          <span className="absolute top-0.5 right-0.5 w-2.5 h-2.5 border-t-2 border-r-2 border-amber-400 rounded-tr-md" />
-          <span className="absolute bottom-0.5 left-0.5 w-2.5 h-2.5 border-b-2 border-l-2 border-amber-400 rounded-bl-md" />
-          <span className="absolute bottom-0.5 right-0.5 w-2.5 h-2.5 border-b-2 border-r-2 border-amber-400 rounded-br-md" />
-        </div>
+          {/* Слой 1: Карточка аватара шиноби с клиппингом */}
+          <foreignObject x="8" y="8" width="84" height="84" className="pointer-events-auto">
+            <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-zinc-950">
+              {avatarContent}
+            </div>
+          </foreignObject>
 
-        {/* Навершие (Top-Right): Резной нефритовый лист Конохи с росой */}
-        <div className="absolute -top-2.5 right-1 z-20 flex items-center justify-center filter drop-shadow-[0_0_8px_#10b981] pointer-events-none">
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-400 via-emerald-600 to-emerald-950 border border-amber-300 flex items-center justify-center text-xs shadow-md">
-            🍃
-          </div>
-        </div>
+          {/* Слой 2: Основной трехмерный несущий каркас */}
+          
+      {/* Массивный деревянный резной каркас Хиноки */}
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="url(#fr_acad_wood)" stroke="url(#fr_acad_brass)" strokeWidth="3" filter="url(#fr_acad_shadow)" />
+      <rect x="6" y="6" width="88" height="88" rx="18" fill="none" stroke="#10b981" strokeWidth="1.2" opacity="0.6" strokeDasharray="6 3" />
+      
+      {/* Литые латунные угловые скобы с заклепками */}
+      <g fill="url(#fr_acad_brass)">
+        <polygon points="4,4 18,4 18,8 8,8 8,18 4,18" />
+        <circle cx="10" cy="10" r="1.5" fill="#fef08a" />
+        <polygon points="96,4 82,4 82,8 92,8 92,18 96,18" />
+        <circle cx="90" cy="10" r="1.5" fill="#fef08a" />
+        <polygon points="4,96 18,96 18,92 8,92 8,82 4,82" />
+        <circle cx="10" cy="90" r="1.5" fill="#fef08a" />
+        <polygon points="96,96 82,96 82,92 92,92 92,82 96,82" />
+        <circle cx="90" cy="90" r="1.5" fill="#fef08a" />
+      </g>
+    
 
-        {/* Тактильный кожаный ремень шиноби с пряжкой через нижний левый угол (как в MLBB) */}
-        <div className="absolute -bottom-1 -left-1 z-20 pointer-events-none flex items-center filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-          <div className="w-8 h-2.5 bg-gradient-to-r from-amber-900 via-amber-800 to-amber-950 border border-amber-700 rounded-sm transform -rotate-12 flex items-center justify-center relative">
-            <span className="w-3 h-3 bg-gradient-to-b from-yellow-300 to-amber-600 border border-black rounded-sm shadow-sm" />
-            <span className="absolute w-1 h-0.5 bg-black" />
-          </div>
-        </div>
+          {/* Слой 3: Выступающие 3D-артефакты героя (MLBB Hero Props) */}
+          
+      {/* Топ-Правый угол: Светящийся Нефритовый Лист Конохи (вынос 20px) */}
+      <g transform="translate(85, -12)" filter="drop-shadow(0 0 8px #10b981)">
+        <path d="M 0,22 C 10,5 28,-2 32,-10 C 24,6 18,18 8,24 C 4,26 0,26 0,22 Z" fill="url(#fr_acad_jade)" stroke="#fef08a" strokeWidth="1.2" />
+        <path d="M 2,-8 Q 12,8 6,20" stroke="#a7f3d0" strokeWidth="0.8" fill="none" />
+        <circle cx="18" cy="2" r="2" fill="#ffffff" opacity="0.9" />
+      </g>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
-          {avatarContent}
-        </div>
+      {/* Низ-Левый угол: Тактильный ремень шиноби с латунной пряжкой (вынос 15px) */}
+      <g transform="translate(-16, 75)" filter="url(#fr_acad_shadow)">
+        <path d="M 0,20 L 38,-4 L 46,6 L 8,30 Z" fill="url(#fr_acad_leather)" stroke="#290e02" strokeWidth="1" />
+        <line x1="2" y1="21" x2="36" y2="-3" stroke="#f97316" strokeWidth="0.6" strokeDasharray="2 1" />
+        <line x1="6" y1="28" x2="44" y2="4" stroke="#f97316" strokeWidth="0.6" strokeDasharray="2 1" />
+        {/* Латунная пряжка */}
+        <rect x="14" y="5" width="16" height="16" rx="3" fill="none" stroke="url(#fr_acad_brass)" strokeWidth="3" transform="rotate(-30 22 13)" />
+        <rect x="20" y="7" width="4" height="12" fill="url(#fr_acad_brass)" transform="rotate(-30 22 13)" />
+      </g>
+    
+        </svg>
+
         {extraBadge}
       </div>
     )
   },
-
   // =========================================================================
-  // 2. ГЕНИН (Elite Rank - MLBB Style)
-  // Изогнутый стальной протектор с заклепками + тройные клинки-крылья куная
+  // 2. Сталь Протектора Генина
   // =========================================================================
   {
     id: 'frame_genin',
@@ -117,586 +142,1000 @@ export const PLAYER_FRAMES = [
     badge: '⚡ Генин',
     borderClass: 'border-sky-400',
     glowClass: 'shadow-lg shadow-sky-500/35',
+    
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
-        {/* Неоновый лазурный ореол чакры */}
-        <div className="absolute -inset-2 rounded-2xl bg-gradient-to-r from-sky-500/35 via-cyan-400/25 to-blue-600/35 blur-md opacity-90 animate-pulse pointer-events-none" />
+      <div 
+        className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <svg 
+          viewBox="-30 -30 160 160" 
+          className="w-full h-full overflow-visible pointer-events-none"
+        >
+          <defs>
+            
+      <linearGradient id="fr_genin_steel" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#f8fafc" />
+        <stop offset="25%" stopColor="#94a3b8" />
+        <stop offset="60%" stopColor="#334155" />
+        <stop offset="100%" stopColor="#0f172a" />
+      </linearGradient>
+      <linearGradient id="fr_genin_cyan" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#bae6fd" />
+        <stop offset="50%" stopColor="#0284c7" />
+        <stop offset="100%" stopColor="#0369a1" />
+      </linearGradient>
+      <filter id="fr_genin_glow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#38bdf8" floodOpacity="0.8" />
+      </filter>
+    
+          </defs>
 
-        {/* Боковые стальные клинки-крылья куная (MLBB Elite Bladed Winglets) */}
-        <div className="absolute -left-3.5 top-1/2 -translate-y-1/2 flex flex-col items-end pointer-events-none filter drop-shadow-[0_0_6px_#38bdf8]">
-          <span className="w-3 h-1.5 bg-gradient-to-r from-sky-300 to-slate-700 rounded-l transform -rotate-12" />
-          <span className="w-4.5 h-2.5 bg-gradient-to-r from-white via-cyan-300 to-slate-900 rounded-l border-l-2 border-white shadow -my-0.5" />
-          <span className="w-3 h-1.5 bg-gradient-to-r from-sky-300 to-slate-700 rounded-l transform rotate-12" />
-        </div>
-        <div className="absolute -right-3.5 top-1/2 -translate-y-1/2 flex flex-col items-start pointer-events-none filter drop-shadow-[0_0_6px_#38bdf8]">
-          <span className="w-3 h-1.5 bg-gradient-to-l from-sky-300 to-slate-700 rounded-r transform rotate-12" />
-          <span className="w-4.5 h-2.5 bg-gradient-to-l from-white via-cyan-300 to-slate-900 rounded-r border-r-2 border-white shadow -my-0.5" />
-          <span className="w-3 h-1.5 bg-gradient-to-l from-sky-300 to-slate-700 rounded-r transform -rotate-12" />
-        </div>
+          {/* Слой 0: Фоновая аура чакры */}
+          
+      {/* Лазурный контур энергии чакры */}
+      <rect x="-10" y="-10" width="120" height="120" rx="30" fill="none" stroke="#0284c7" strokeWidth="4" opacity="0.4" filter="blur(8px)" />
+    
 
-        {/* Корпус рамки из вороненого титана */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-slate-900 via-zinc-950 to-sky-950 border-2 border-sky-400 shadow-2xl overflow-hidden">
-          <div className="absolute inset-0.5 border border-sky-300/40 rounded-xl" />
-          {/* 4 стальных шестигранных болта */}
-          <span className="absolute top-1 left-1 w-1.5 h-1.5 rounded-full bg-slate-200 border border-slate-600 shadow-inner" />
-          <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-slate-200 border border-slate-600 shadow-inner" />
-          <span className="absolute bottom-1 left-1 w-1.5 h-1.5 rounded-full bg-slate-200 border border-slate-600 shadow-inner" />
-          <span className="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full bg-slate-200 border border-slate-600 shadow-inner" />
-        </div>
+          {/* Слой 1: Карточка аватара шиноби с клиппингом */}
+          <foreignObject x="8" y="8" width="84" height="84" className="pointer-events-auto">
+            <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-zinc-950">
+              {avatarContent}
+            </div>
+          </foreignObject>
 
-        {/* Навершие: Изогнутый стальной налобный протектор Хитаи-атэ со спиралью Листа */}
-        <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-20 w-11 h-3.5 bg-gradient-to-b from-white via-slate-300 to-slate-600 border border-slate-800 rounded shadow-md flex items-center justify-between px-1 pointer-events-none filter drop-shadow-[0_0_6px_#38bdf8]">
-          <span className="w-1 h-1 rounded-full bg-black/70" />
-          <span className="text-[9px] font-black leading-none text-zinc-900 select-none">🍥</span>
-          <span className="w-1 h-1 rounded-full bg-black/70" />
-        </div>
+          {/* Слой 2: Основной трехмерный несущий каркас */}
+          
+      {/* Корпус из вороненого титана */}
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="#090d16" stroke="url(#fr_genin_steel)" strokeWidth="3.5" />
+      <rect x="6" y="6" width="88" height="88" rx="18" fill="none" stroke="#38bdf8" strokeWidth="1.2" opacity="0.8" />
+    
 
-        {/* Нижний пьедестал: Граненый лазурный кристалл чакры (Socketed Azure Gem) */}
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center filter drop-shadow-[0_0_8px_#06b6d4] pointer-events-none">
-          <div className="w-4 h-4 rotate-45 bg-gradient-to-br from-white via-cyan-400 to-blue-900 border-2 border-sky-200 shadow-lg flex items-center justify-center">
-            <span className="w-1.5 h-1.5 bg-white rounded-full animate-ping opacity-75" />
-          </div>
-        </div>
+          {/* Слой 3: Выступающие 3D-артефакты героя (MLBB Hero Props) */}
+          
+      {/* Левые тройные клинки-крылья куная (вынос 25px) */}
+      <g transform="translate(-25, 25)" filter="url(#fr_genin_glow)">
+        <polygon points="20,8 2,16 20,24 24,16" fill="url(#fr_genin_steel)" stroke="#e2e8f0" strokeWidth="1" />
+        <polygon points="22,-2 0,6 22,14 26,6" fill="url(#fr_genin_steel)" stroke="#38bdf8" strokeWidth="1.2" />
+        <polygon points="20,22 4,32 20,38 24,30" fill="url(#fr_genin_steel)" stroke="#e2e8f0" strokeWidth="1" />
+        <line x1="2" y1="6" x2="24" y2="6" stroke="#ffffff" strokeWidth="1.2" />
+      </g>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
-          {avatarContent}
-        </div>
+      {/* Правые тройные клинки-крылья куная (вынос 25px) */}
+      <g transform="translate(100, 25)" filter="url(#fr_genin_glow)">
+        <polygon points="5,8 23,16 5,24 1,16" fill="url(#fr_genin_steel)" stroke="#e2e8f0" strokeWidth="1" />
+        <polygon points="3,-2 25,6 3,14 -1,6" fill="url(#fr_genin_steel)" stroke="#38bdf8" strokeWidth="1.2" />
+        <polygon points="5,22 21,32 5,38 1,30" fill="url(#fr_genin_steel)" stroke="#e2e8f0" strokeWidth="1" />
+        <line x1="3" y1="6" x2="25" y2="6" stroke="#ffffff" strokeWidth="1.2" />
+      </g>
+
+      {/* Верхнее навершие: Изогнутый стальной протектор Конохи с заклепками */}
+      <g transform="translate(18, -14)" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.9))">
+        <rect x="0" y="0" width="64" height="20" rx="6" fill="url(#fr_genin_steel)" stroke="#e2e8f0" strokeWidth="1.5" />
+        <circle cx="5" cy="10" r="2.2" fill="#0f172a" stroke="#cbd5e1" strokeWidth="0.8" />
+        <circle cx="59" cy="10" r="2.2" fill="#0f172a" stroke="#cbd5e1" strokeWidth="0.8" />
+        {/* Символ Листа */}
+        <path d="M 28,12 C 29,8 34,6 38,7 C 36,11 31,14 27,13 C 25,12 24,8 27,6 C 31,4 37,5 40,9" fill="none" stroke="#0f172a" strokeWidth="2.2" strokeLinecap="round" />
+        <polygon points="38,7 41,5 40,8" fill="#0f172a" />
+      </g>
+
+      {/* Нижний пьедестал: Граненый лазурный кристалл в оправе */}
+      <g transform="translate(38, 86)" filter="drop-shadow(0 0 10px #38bdf8)">
+        <polygon points="12,0 24,10 12,20 0,10" fill="url(#fr_genin_cyan)" stroke="#ffffff" strokeWidth="1.4" />
+        <polygon points="12,3 19,10 12,17 5,10" fill="#bae6fd" opacity="0.6" />
+      </g>
+    
+        </svg>
+
         {extraBadge}
       </div>
     )
   },
-
   // =========================================================================
-  // 3. ЧУНИН (Master Rank - MLBB Style)
-  // Бронепластины тактического жилета + золотые шевроны + картуш 『忍』
+  // 3. Броня Жилета Чунина
   // =========================================================================
   {
     id: 'frame_chunin',
-    name: 'Чеканная Бронза Чунина',
+    name: 'Броня Жилета Чунина',
     tier: 3,
-    rarity: 'Редкая (Master)',
-    rarityColor: '#fb923c',
-    requirementText: '10 побед в PvP дуэлях',
-    checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 10,
-    progressText: (p) => `${Math.min(10, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 10 побед`,
+    rarity: 'Мастер (Master)',
+    rarityColor: '#10b981',
+    requirementText: '7 побед в PvP дуэлях',
+    checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 7,
+    progressText: (p) => `${Math.min(7, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 7 побед`,
     badge: '📜 Чунин',
-    borderClass: 'border-amber-500',
-    glowClass: 'shadow-lg shadow-amber-500/40',
+    borderClass: 'border-emerald-500',
+    glowClass: 'shadow-lg shadow-emerald-500/40',
+    
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
-        {/* Янтарно-бронзовый ореол */}
-        <div className="absolute -inset-2 rounded-2xl bg-gradient-to-r from-amber-600/35 via-orange-500/25 to-yellow-600/35 blur-md opacity-90 pointer-events-none" />
+      <div 
+        className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <svg 
+          viewBox="-30 -30 160 160" 
+          className="w-full h-full overflow-visible pointer-events-none"
+        >
+          <defs>
+            
+      <linearGradient id="fr_chun_gold" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#fef08a" />
+        <stop offset="35%" stopColor="#eab308" />
+        <stop offset="70%" stopColor="#a16207" />
+        <stop offset="100%" stopColor="#422006" />
+      </linearGradient>
+      <linearGradient id="fr_chun_tactical" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#14532d" />
+        <stop offset="50%" stopColor="#052e16" />
+        <stop offset="100%" stopColor="#021a0c" />
+      </linearGradient>
+    
+          </defs>
 
-        {/* Боковые золотые шевроны-щиты (MLBB Master Armored Chevrons) */}
-        <div className="absolute -left-3 top-1/2 -translate-y-1/2 flex flex-col items-end pointer-events-none filter drop-shadow-[0_0_6px_#f59e0b]">
-          <span className="w-2.5 h-2.5 bg-gradient-to-r from-amber-300 to-amber-800 rounded-l border-y border-l border-yellow-200" />
-          <span className="w-4.5 h-3.5 bg-gradient-to-r from-yellow-200 via-amber-400 to-amber-900 rounded-l border-l-2 border-white shadow -my-0.5" />
-          <span className="w-2.5 h-2.5 bg-gradient-to-r from-amber-300 to-amber-800 rounded-l border-y border-l border-yellow-200" />
-        </div>
-        <div className="absolute -right-3 top-1/2 -translate-y-1/2 flex flex-col items-start pointer-events-none filter drop-shadow-[0_0_6px_#f59e0b]">
-          <span className="w-2.5 h-2.5 bg-gradient-to-l from-amber-300 to-amber-800 rounded-r border-y border-r border-yellow-200" />
-          <span className="w-4.5 h-3.5 bg-gradient-to-l from-yellow-200 via-amber-400 to-amber-900 rounded-r border-r-2 border-white shadow -my-0.5" />
-          <span className="w-2.5 h-2.5 bg-gradient-to-l from-amber-300 to-amber-800 rounded-r border-y border-r border-yellow-200" />
-        </div>
+          {/* Слой 0: Фоновая аура чакры */}
+          
+      <rect x="-8" y="-8" width="116" height="116" rx="26" fill="none" stroke="#22c55e" strokeWidth="3" opacity="0.3" filter="blur(6px)" />
+    
 
-        {/* Корпус рамки */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-950 via-zinc-950 to-orange-950 border-2 border-amber-500 shadow-2xl overflow-hidden">
-          <div className="absolute inset-1 border border-yellow-400/50 rounded-xl" />
-          {/* Литые золотые когти по углам */}
-          <span className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-yellow-300 rounded-tl-xl" />
-          <span className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-yellow-300 rounded-tr-xl" />
-          <span className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-yellow-300 rounded-bl-xl" />
-          <span className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-yellow-300 rounded-br-xl" />
-        </div>
+          {/* Слой 1: Карточка аватара шиноби с клиппингом */}
+          <foreignObject x="8" y="8" width="84" height="84" className="pointer-events-auto">
+            <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-zinc-950">
+              {avatarContent}
+            </div>
+          </foreignObject>
 
-        {/* Верхний картуш: Литой знак ниндзя 『忍』 с золотой фаской */}
-        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center filter drop-shadow-[0_0_8px_#f59e0b] pointer-events-none">
-          <div className="px-2.5 py-0.5 rounded-md bg-gradient-to-b from-yellow-300 via-amber-600 to-zinc-950 border-2 border-yellow-200 text-[10px] font-black text-black font-serif tracking-widest shadow-lg">
-            忍
-          </div>
-        </div>
+          {/* Слой 2: Основной трехмерный несущий каркас */}
+          
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="url(#fr_chun_tactical)" stroke="url(#fr_chun_gold)" strokeWidth="3.5" />
+      <rect x="6" y="6" width="88" height="88" rx="18" fill="none" stroke="#22c55e" strokeWidth="1.5" opacity="0.7" />
+    
 
-        {/* Нижний пьедестал: Тигриный глаз чунина */}
-        <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center filter drop-shadow-[0_0_6px_#f59e0b] pointer-events-none">
-          <span className="w-3 h-3 rounded-full bg-gradient-to-br from-yellow-300 via-amber-500 to-amber-900 border border-white shadow" />
-        </div>
+          {/* Слой 3: Выступающие 3D-артефакты героя (MLBB Hero Props) */}
+          
+      {/* Боковые золотые шевроны чунина */}
+      <g transform="translate(-16, 25)" fill="url(#fr_chun_gold)">
+        <polygon points="18,0 4,8 18,16 14,8" />
+        <polygon points="18,18 4,26 18,34 14,26" />
+        <polygon points="18,36 4,44 18,52 14,44" />
+      </g>
+      <g transform="translate(98, 25)" fill="url(#fr_chun_gold)">
+        <polygon points="0,0 14,8 0,16 4,8" />
+        <polygon points="0,18 14,26 0,34 4,26" />
+        <polygon points="0,36 14,44 0,52 4,44" />
+      </g>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
-          {avatarContent}
-        </div>
+      {/* Верхний картуш с двумя скрещенными кунаями */}
+      <g transform="translate(30, -16)" filter="drop-shadow(0 3px 6px rgba(0,0,0,0.85))">
+        <polygon points="0,18 40,18 36,0 4,0" fill="url(#fr_chun_gold)" stroke="#fef08a" strokeWidth="1" />
+        <line x1="8" y1="2" x2="32" y2="16" stroke="#000000" strokeWidth="2.5" strokeLinecap="round" />
+        <line x1="8" y1="2" x2="32" y2="16" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" />
+        <line x1="32" y1="2" x2="8" y2="16" stroke="#000000" strokeWidth="2.5" strokeLinecap="round" />
+        <line x1="32" y1="2" x2="8" y2="16" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" />
+      </g>
+
+      {/* Нижний золотой картуш 『忍』 (Шиноби) */}
+      <g transform="translate(32, 85)" filter="drop-shadow(0 0 10px #eab308)">
+        <rect x="0" y="0" width="36" height="18" rx="5" fill="#090d16" stroke="url(#fr_chun_gold)" strokeWidth="2" />
+        <text x="18" y="14" fill="#fef08a" fontSize="13" fontWeight="900" fontFamily="serif" textAnchor="middle">忍</text>
+      </g>
+    
+        </svg>
+
         {extraBadge}
       </div>
     )
   },
-
   // =========================================================================
-  // 4. ДЖОНИН (Grandmaster Rank - MLBB Style)
-  // Платиновые крылья Летящего Бога Грома + дуги молний Райкири + сапфир
+  // 4. Крылья Бога Грома Джонина
   // =========================================================================
   {
     id: 'frame_jonin',
-    name: 'Серебряный Вихрь Джонина',
+    name: 'Крылья Бога Грома Джонина',
     tier: 4,
-    rarity: 'Эпическая (Grandmaster)',
-    rarityColor: '#818cf8',
-    requirementText: '25 побед в PvP дуэлях',
-    checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 25,
-    progressText: (p) => `${Math.min(25, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 25 побед`,
-    badge: '🌪️ Джонин',
-    borderClass: 'border-indigo-400',
-    glowClass: 'shadow-xl shadow-indigo-500/50',
+    rarity: 'Грандмастер (Grandmaster)',
+    rarityColor: '#60a5fa',
+    requirementText: '15 побед в PvP дуэлях',
+    checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 15,
+    progressText: (p) => `${Math.min(15, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 15 побед`,
+    badge: '⚡ Джонин',
+    borderClass: 'border-blue-400',
+    glowClass: 'shadow-xl shadow-blue-500/50',
+    
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
-        {/* Сапфирово-платиновый сияющий контур */}
-        <div className="absolute -inset-2.5 rounded-2xl bg-gradient-to-tr from-indigo-500/45 via-sky-400/35 to-purple-500/45 blur-lg opacity-90 animate-pulse pointer-events-none" />
+      <div 
+        className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <svg 
+          viewBox="-30 -30 160 160" 
+          className="w-full h-full overflow-visible pointer-events-none"
+        >
+          <defs>
+            
+      <linearGradient id="fr_jonin_silver" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#ffffff" />
+        <stop offset="40%" stopColor="#cbd5e1" />
+        <stop offset="75%" stopColor="#64748b" />
+        <stop offset="100%" stopColor="#1e293b" />
+      </linearGradient>
+      <linearGradient id="fr_jonin_plasma" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#67e8f9" />
+        <stop offset="50%" stopColor="#06b6d4" />
+        <stop offset="100%" stopColor="#083344" />
+      </linearGradient>
+    
+          </defs>
 
-        {/* Боковые трехлопастные клинки-крылья Хирайшин (MLBB Grandmaster Wing Blades) */}
-        <div className="absolute -left-4 top-1/2 -translate-y-1/2 flex flex-col items-end pointer-events-none filter drop-shadow-[0_0_8px_#818cf8]">
-          <span className="w-3.5 h-2 bg-gradient-to-r from-indigo-300 via-white to-indigo-700 rounded-l transform -rotate-15 shadow" />
-          <span className="w-5.5 h-3 bg-gradient-to-r from-sky-200 via-white to-indigo-900 rounded-l border-l-2 border-white shadow-lg -my-0.5" />
-          <span className="w-3.5 h-2 bg-gradient-to-r from-indigo-300 via-white to-indigo-700 rounded-l transform rotate-15 shadow" />
-        </div>
-        <div className="absolute -right-4 top-1/2 -translate-y-1/2 flex flex-col items-start pointer-events-none filter drop-shadow-[0_0_8px_#818cf8]">
-          <span className="w-3.5 h-2 bg-gradient-to-l from-indigo-300 via-white to-indigo-700 rounded-r transform rotate-15 shadow" />
-          <span className="w-5.5 h-3 bg-gradient-to-l from-sky-200 via-white to-indigo-900 rounded-r border-r-2 border-white shadow-lg -my-0.5" />
-          <span className="w-3.5 h-2 bg-gradient-to-l from-indigo-300 via-white to-indigo-700 rounded-r transform -rotate-15 shadow" />
-        </div>
+          {/* Слой 0: Фоновая аура чакры */}
+          
+      {/* Молниевые разряды Райкири */}
+      <g stroke="#38bdf8" strokeWidth="1.5" fill="none" opacity="0.8" filter="drop-shadow(0 0 6px #38bdf8)">
+        <path d="M -15,10 L -4,25 L -10,35 L -2,50" />
+        <path d="M 115,10 L 104,25 L 110,35 L 102,50" />
+      </g>
+    
 
-        {/* Корпус рамки */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-950 via-zinc-950 to-slate-900 border-2 border-indigo-400 shadow-2xl overflow-hidden">
-          <div className="absolute inset-1 border border-indigo-300/50 rounded-xl" />
-          <div className="absolute top-0 inset-x-3 h-0.5 bg-gradient-to-r from-transparent via-white to-transparent opacity-90" />
-        </div>
+          {/* Слой 1: Карточка аватара шиноби с клиппингом */}
+          <foreignObject x="8" y="8" width="84" height="84" className="pointer-events-auto">
+            <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-zinc-950">
+              {avatarContent}
+            </div>
+          </foreignObject>
 
-        {/* Навершие: Граненый сапфир Джонина с 4-лучевой фотонной звездой */}
-        <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center filter drop-shadow-[0_0_10px_#6366f1] pointer-events-none">
-          <div className="w-5 h-5 rotate-45 bg-gradient-to-br from-white via-indigo-400 to-indigo-950 border-2 border-sky-200 flex items-center justify-center shadow-lg">
-            <span className="text-[9px] text-white font-black rotate-[-45deg]">✦</span>
-          </div>
-        </div>
+          {/* Слой 2: Основной трехмерный несущий каркас */}
+          
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="#040814" stroke="url(#fr_jonin_silver)" strokeWidth="3.5" />
+      <rect x="6" y="6" width="88" height="88" rx="18" fill="none" stroke="#38bdf8" strokeWidth="1.5" />
+    
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
-          {avatarContent}
-        </div>
+          {/* Слой 3: Выступающие 3D-артефакты героя (MLBB Hero Props) */}
+          
+      {/* Серебряные крылья Хирайшина Минато (вынос 28px) */}
+      <g transform="translate(-28, 15)" filter="drop-shadow(0 0 8px #60a5fa)">
+        <path d="M 28,0 L 4,18 L 28,26 L 10,38 L 28,48 L 18,58 L 28,68" fill="none" stroke="url(#fr_jonin_silver)" strokeWidth="3.2" strokeLinecap="round" />
+        <path d="M 28,0 L 4,18 L 28,26 L 10,38 L 28,48" fill="url(#fr_jonin_plasma)" opacity="0.3" />
+      </g>
+      <g transform="translate(100, 15)" filter="drop-shadow(0 0 8px #60a5fa)">
+        <path d="M 0,0 L 24,18 L 0,26 L 18,38 L 0,48 L 10,58 L 0,68" fill="none" stroke="url(#fr_jonin_silver)" strokeWidth="3.2" strokeLinecap="round" />
+        <path d="M 0,0 L 24,18 L 0,26 L 18,38 L 0,48" fill="url(#fr_jonin_plasma)" opacity="0.3" />
+      </g>
+
+      {/* Верхнее навершие: Барабан Райдзина с синей звездой */}
+      <g transform="translate(36, -18)" filter="drop-shadow(0 0 10px #38bdf8)">
+        <circle cx="14" cy="14" r="14" fill="#040814" stroke="url(#fr_jonin_silver)" strokeWidth="2" />
+        <polygon points="14,2 17,11 26,14 17,17 14,26 11,17 2,14 11,11" fill="#38bdf8" />
+        <circle cx="14" cy="14" r="3.5" fill="#ffffff" />
+      </g>
+
+      {/* Нижний граненый сапфир в золотой оправе */}
+      <g transform="translate(38, 86)" filter="drop-shadow(0 0 12px #3b82f6)">
+        <polygon points="12,0 24,9 12,22 0,9" fill="#2563eb" stroke="#93c5fd" strokeWidth="1.5" />
+        <polygon points="12,3 18,9 12,17 6,9" fill="#bfdbfe" opacity="0.75" />
+      </g>
+    
+        </svg>
+
         {extraBadge}
       </div>
     )
   },
-
   // =========================================================================
-  // 5. АНБУ (Epic Shadow Rank - MLBB Style)
-  // Скульптурная фарфоровая маска Лиса Кицунэ + обсидиановые крылья + капли крови
+  // 5. Фарфоровая Маска АНБУ Лиса
   // =========================================================================
   {
     id: 'frame_anbu',
-    name: 'Маска Тайных Операций АНБУ',
+    name: 'Фарфоровая Маска АНБУ Лиса',
     tier: 5,
-    rarity: 'Эпическая (Epic Shadow)',
+    rarity: 'Эпическая (Epic)',
     rarityColor: '#f43f5e',
-    requirementText: '50 побед в PvP дуэлях',
-    checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 50,
-    progressText: (p) => `${Math.min(50, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 50 побед`,
+    requirementText: '25 побед в PvP дуэлях',
+    checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 25,
+    progressText: (p) => `${Math.min(25, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 25 побед`,
     badge: '🎭 АНБУ',
     borderClass: 'border-rose-500',
-    glowClass: 'shadow-xl shadow-rose-600/60',
+    glowClass: 'shadow-xl shadow-rose-600/50',
+    
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
-        {/* Кроваво-алый теневой дым */}
-        <div className="absolute -inset-2.5 rounded-2xl bg-gradient-to-r from-rose-600/45 via-red-500/35 to-rose-700/45 blur-lg opacity-90 animate-pulse pointer-events-none" />
+      <div 
+        className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <svg 
+          viewBox="-30 -30 160 160" 
+          className="w-full h-full overflow-visible pointer-events-none"
+        >
+          <defs>
+            
+      <linearGradient id="fr_anbu_porcelain" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#ffffff" />
+        <stop offset="60%" stopColor="#f1f5f9" />
+        <stop offset="100%" stopColor="#cbd5e1" />
+      </linearGradient>
+      <linearGradient id="fr_anbu_crimson" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#f43f5e" />
+        <stop offset="70%" stopColor="#be123c" />
+        <stop offset="100%" stopColor="#881337" />
+      </linearGradient>
+    
+          </defs>
 
-        {/* Обсидиановые перья ворона и лезвия танто (MLBB Epic Dragon Wings) */}
-        <div className="absolute -left-4 top-1/2 -translate-y-1/2 flex flex-col items-end pointer-events-none filter drop-shadow-[0_0_8px_#e11d48]">
-          <span className="w-3.5 h-1.5 bg-gradient-to-r from-rose-500 to-black rounded-l border-l border-rose-300 transform -rotate-15" />
-          <span className="w-6 h-3 bg-gradient-to-r from-white via-rose-600 to-black rounded-l border-l-2 border-rose-400 shadow-lg -my-0.5" />
-          <span className="w-3.5 h-1.5 bg-gradient-to-r from-rose-500 to-black rounded-l border-l border-rose-300 transform rotate-15" />
-        </div>
-        <div className="absolute -right-4 top-1/2 -translate-y-1/2 flex flex-col items-start pointer-events-none filter drop-shadow-[0_0_8px_#e11d48]">
-          <span className="w-3.5 h-1.5 bg-gradient-to-l from-rose-500 to-black rounded-r border-r border-rose-300 transform rotate-15" />
-          <span className="w-6 h-3 bg-gradient-to-l from-white via-rose-600 to-black rounded-r border-r-2 border-rose-400 shadow-lg -my-0.5" />
-          <span className="w-3.5 h-1.5 bg-gradient-to-l from-rose-500 to-black rounded-r border-r border-rose-300 transform -rotate-15" />
-        </div>
+          {/* Слой 0: Фоновая аура чакры */}
+          
+      <rect x="-10" y="-10" width="120" height="120" rx="30" fill="none" stroke="#e11d48" strokeWidth="4" opacity="0.35" filter="blur(8px)" />
+    
 
-        {/* Корпус рамки */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-zinc-950 via-rose-950/60 to-black border-2 border-rose-500 shadow-2xl overflow-hidden">
-          <div className="absolute inset-1 border border-rose-400/50 rounded-xl" />
-          <span className="absolute top-3 left-0 w-1.5 h-4 bg-rose-500 rounded-r shadow-[0_0_8px_#f43f5e]" />
-          <span className="absolute top-3 right-0 w-1.5 h-4 bg-rose-500 rounded-l shadow-[0_0_8px_#f43f5e]" />
-        </div>
+          {/* Слой 1: Карточка аватара шиноби с клиппингом */}
+          <foreignObject x="8" y="8" width="84" height="84" className="pointer-events-auto">
+            <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-zinc-950">
+              {avatarContent}
+            </div>
+          </foreignObject>
 
-        {/* Асимметричный угол (Top-Left): Скульптурная фарфоровая маска Лиса Кицунэ */}
-        <div className="absolute -top-3.5 -left-2 z-30 pointer-events-none flex items-center justify-center filter drop-shadow-[0_0_10px_#f43f5e]">
-          <div className="w-7 h-7 rounded-full bg-gradient-to-b from-white via-rose-100 to-zinc-950 border-2 border-rose-400 flex items-center justify-center shadow-2xl text-sm">
-            🦊
-          </div>
-        </div>
+          {/* Слой 2: Основной трехмерный несущий каркас */}
+          
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="#080204" stroke="url(#fr_anbu_crimson)" strokeWidth="3.5" />
+      <rect x="6" y="6" width="88" height="88" rx="18" fill="none" stroke="#fda4af" strokeWidth="1" opacity="0.7" />
+    
 
-        {/* Нижний правый угол: Рукоять зазубренного танто со свитком */}
-        <div className="absolute -bottom-1 -right-1 z-30 pointer-events-none filter drop-shadow-[0_0_6px_#f43f5e]">
-          <span className="text-xs">🗡️</span>
-        </div>
+          {/* Слой 3: Выступающие 3D-артефакты героя (MLBB Hero Props) */}
+          
+      {/* Обсидиановые перья по левому краю */}
+      <g transform="translate(-18, 30)" fill="#180509" stroke="#e11d48" strokeWidth="1">
+        <path d="M 18,0 C 6,10 0,24 4,32 C 10,24 16,12 18,0 Z" />
+        <path d="M 18,20 C 8,28 2,40 6,48 C 12,40 16,30 18,20 Z" />
+      </g>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
-          {avatarContent}
-        </div>
+      {/* ГЛАВНЫЙ АРТЕФАКТ: Скульптурная фарфоровая маска Лиса Кицунэ (вынос 35px) */}
+      <g transform="translate(68, -24)" filter="drop-shadow(0 6px 12px rgba(0,0,0,0.95))">
+        {/* Уши лиса */}
+        <polygon points="8,10 16,-8 24,8" fill="url(#fr_anbu_porcelain)" stroke="#be123c" strokeWidth="1.2" />
+        <polygon points="12,6 16,-4 20,6" fill="#be123c" />
+        <polygon points="28,8 36,-8 44,10" fill="url(#fr_anbu_porcelain)" stroke="#be123c" strokeWidth="1.2" />
+        <polygon points="32,6 36,-4 40,6" fill="#be123c" />
+        
+        {/* Морда лиса */}
+        <path d="M 6,12 C 4,26 12,40 26,46 C 40,40 48,26 46,12 C 34,8 18,8 6,12 Z" fill="url(#fr_anbu_porcelain)" stroke="#0f172a" strokeWidth="1.5" />
+        
+        {/* Алые ритуальные узоры глаз */}
+        <path d="M 12,22 Q 18,18 22,23 Q 18,26 12,22 Z" fill="#be123c" />
+        <path d="M 40,22 Q 34,18 30,23 Q 34,26 40,22 Z" fill="#be123c" />
+        <line x1="26" y1="20" x2="26" y2="34" stroke="#be123c" strokeWidth="1.6" strokeLinecap="round" />
+        <circle cx="26" cy="38" r="2.2" fill="#0f172a" />
+        
+        {/* Усы */}
+        <line x1="10" y1="32" x2="18" y2="34" stroke="#be123c" strokeWidth="1.2" />
+        <line x1="42" y1="32" x2="34" y2="34" stroke="#be123c" strokeWidth="1.2" />
+      </g>
+
+      {/* Низ-лево: Капли крови и золотой колокольчик */}
+      <g transform="translate(8, 86)" filter="drop-shadow(0 0 8px #f43f5e)">
+        <circle cx="6" cy="6" r="5" fill="url(#fr_anbu_crimson)" stroke="#fecdd3" strokeWidth="1.2" />
+        <circle cx="16" cy="12" r="3.5" fill="url(#fr_anbu_crimson)" />
+      </g>
+    
+        </svg>
+
         {extraBadge}
       </div>
     )
   },
-
   // =========================================================================
-  // 6. САННИН (Epic Flame Rank - MLBB Style)
-  // Каменная голова жабы Гамабунты + вздымающееся пламя Мёбоку + картуш 『油』
+  // 6. Жабий Мудрец Горы Мёбоку
   // =========================================================================
   {
     id: 'frame_sannin',
-    name: 'Пламя Легендарного Саннина',
+    name: 'Жабий Мудрец Горы Мёбоку',
     tier: 6,
-    rarity: 'Легендарная (Epic Flame)',
-    rarityColor: '#f59e0b',
-    requirementText: '75 побед в PvP дуэлях',
-    checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 75,
-    progressText: (p) => `${Math.min(75, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 75 побед`,
-    badge: '🐸 Саннин',
-    borderClass: 'border-amber-400',
-    glowClass: 'shadow-2xl shadow-amber-500/70',
-    renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
-        {/* Бушующее пламя Мёбоку */}
-        <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-600 to-red-600 blur-xl opacity-90 animate-pulse pointer-events-none" />
-
-        {/* Боковые огненные крылья жабьего масла (MLBB Flame Wings) */}
-        <div className="absolute -left-4 top-1/2 -translate-y-1/2 flex flex-col items-end pointer-events-none filter drop-shadow-[0_0_10px_#f59e0b]">
-          <span className="w-4 h-2 bg-gradient-to-r from-yellow-300 to-orange-600 rounded-l transform -rotate-15 shadow" />
-          <span className="w-6.5 h-3.5 bg-gradient-to-r from-white via-amber-400 to-red-700 rounded-l border-l-2 border-yellow-200 shadow-xl -my-0.5" />
-          <span className="w-4 h-2 bg-gradient-to-r from-yellow-300 to-orange-600 rounded-l transform rotate-15 shadow" />
-        </div>
-        <div className="absolute -right-4 top-1/2 -translate-y-1/2 flex flex-col items-start pointer-events-none filter drop-shadow-[0_0_10px_#f59e0b]">
-          <span className="w-4 h-2 bg-gradient-to-l from-yellow-300 to-orange-600 rounded-r transform rotate-15 shadow" />
-          <span className="w-6.5 h-3.5 bg-gradient-to-l from-white via-amber-400 to-red-700 rounded-r border-r-2 border-yellow-200 shadow-xl -my-0.5" />
-          <span className="w-4 h-2 bg-gradient-to-l from-yellow-300 to-orange-600 rounded-r transform -rotate-15 shadow" />
-        </div>
-
-        {/* Корпус рамки */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-950 via-zinc-950 to-orange-950 border-2 border-amber-400 shadow-2xl overflow-hidden">
-          <div className="absolute inset-1 border border-orange-400/60 rounded-xl" />
-        </div>
-
-        {/* Асимметричный угол (Top-Right): Монументальная каменная голова жабы Гамабунты с трубкой */}
-        <div className="absolute -top-3.5 -right-2 z-30 pointer-events-none flex items-center justify-center filter drop-shadow-[0_0_10px_#f59e0b]">
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-300 via-amber-600 to-zinc-950 border-2 border-yellow-200 flex items-center justify-center text-sm shadow-xl">
-            🐸
-          </div>
-        </div>
-
-        {/* Верхняя золотая плашка: Кандзи 『油』 (Масло Мёбоку) */}
-        <div className="absolute -top-2.5 left-1/3 -translate-x-1/2 z-20 flex items-center justify-center filter drop-shadow-[0_0_10px_#f59e0b] pointer-events-none">
-          <div className="px-2.5 py-0.5 rounded-lg bg-gradient-to-b from-yellow-300 via-amber-600 to-zinc-950 border-2 border-yellow-200 text-[10px] font-black text-black font-serif tracking-widest shadow-xl">
-            油
-          </div>
-        </div>
-
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
-          {avatarContent}
-        </div>
-        {extraBadge}
-      </div>
-    )
-  },
-
-  // =========================================================================
-  // 7. СУСАНОО (Legendary Astral - MLBB Style)
-  // Рогатый шлем Сусаноо + наплечники реберного доспеха + картуш 『覇』
-  // =========================================================================
-  {
-    id: 'frame_susanoo',
-    name: 'Астральная Броня Сусаноо',
-    tier: 7,
-    rarity: 'Легендарная (Legendary)',
-    rarityColor: '#a855f7',
-    requirementText: '30 техник в боевом арсенале + 30 побед',
-    checkUnlocked: (p) => ((p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 30) && ((p?.selectedJutsuIds?.length || 0) >= 30),
-    progressText: (p) => `${Math.min(30, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)}/30 побед, ${Math.min(30, p?.selectedJutsuIds?.length || 0)}/30 техник`,
-    badge: '⚔️ Сусаноо',
-    borderClass: 'border-purple-400',
-    glowClass: 'shadow-2xl shadow-purple-600/70',
-    renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
-        {/* Астральный фиолетовый ореол Сусаноо */}
-        <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-purple-600 via-fuchsia-500 to-indigo-600 blur-xl opacity-90 animate-pulse pointer-events-none" />
-
-        {/* Массивные астральные наплечники Сусаноо (MLBB Susanoo Pauldron Wings) */}
-        <div className="absolute -left-4.5 top-1/2 -translate-y-1/2 flex flex-col items-end pointer-events-none filter drop-shadow-[0_0_12px_#a855f7]">
-          <span className="w-4 h-2 bg-gradient-to-r from-purple-300 via-fuchsia-400 to-purple-800 rounded-l transform -rotate-20 shadow" />
-          <span className="w-7 h-4 bg-gradient-to-r from-white via-purple-500 to-indigo-950 rounded-l border-l-2 border-purple-200 shadow-xl -my-0.5" />
-          <span className="w-4 h-2 bg-gradient-to-r from-purple-300 via-fuchsia-400 to-purple-800 rounded-l transform rotate-20 shadow" />
-        </div>
-        <div className="absolute -right-4.5 top-1/2 -translate-y-1/2 flex flex-col items-start pointer-events-none filter drop-shadow-[0_0_12px_#a855f7]">
-          <span className="w-4 h-2 bg-gradient-to-l from-purple-300 via-fuchsia-400 to-purple-800 rounded-r transform rotate-20 shadow" />
-          <span className="w-7 h-4 bg-gradient-to-l from-white via-purple-500 to-indigo-950 rounded-r border-r-2 border-purple-200 shadow-xl -my-0.5" />
-          <span className="w-4 h-2 bg-gradient-to-l from-purple-300 via-fuchsia-400 to-purple-800 rounded-r transform -rotate-20 shadow" />
-        </div>
-
-        {/* Корпус рамки */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-950 via-black to-indigo-950 border-2 border-purple-400 shadow-2xl overflow-hidden">
-          <div className="absolute inset-1 border border-purple-300/60 rounded-xl" />
-        </div>
-
-        {/* Навершие: Скульптурный шлем Сусаноо с золотым картушем 『覇』 */}
-        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center filter drop-shadow-[0_0_12px_#c084fc] pointer-events-none">
-          <div className="px-3 py-0.5 rounded-lg bg-gradient-to-b from-purple-300 via-purple-700 to-zinc-950 border-2 border-purple-200 text-[11px] font-black text-white font-serif tracking-widest shadow-2xl">
-            覇
-          </div>
-        </div>
-
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
-          {avatarContent}
-        </div>
-        {extraBadge}
-      </div>
-    )
-  },
-
-  // =========================================================================
-  // 8. РЕЖИМ МУДРЕЦА (Legendary Sage - MLBB Style)
-  // Драконьи рога пещеры Рьючи + жабьи тени глаз + свиток Сендзюцу + картуш 『仙』
-  // =========================================================================
-  {
-    id: 'frame_sage',
-    name: 'Природная Чакра Мудреца',
-    tier: 8,
-    rarity: 'Легендарная (Legendary)',
-    rarityColor: '#10b981',
+    rarity: 'Легендарная (Legend)',
+    rarityColor: '#f97316',
     requirementText: '40 побед в PvP дуэлях',
     checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 40,
     progressText: (p) => `${Math.min(40, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 40 побед`,
-    badge: '🌿 Сеннин',
-    borderClass: 'border-emerald-400',
-    glowClass: 'shadow-2xl shadow-emerald-500/60',
+    badge: '🐸 Саннин',
+    borderClass: 'border-orange-500',
+    glowClass: 'shadow-2xl shadow-orange-500/50',
+    
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
-        {/* Изумрудно-нефритовый природный бриз */}
-        <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-green-600 blur-xl opacity-90 animate-pulse pointer-events-none" />
+      <div 
+        className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <svg 
+          viewBox="-30 -30 160 160" 
+          className="w-full h-full overflow-visible pointer-events-none"
+        >
+          <defs>
+            
+      <linearGradient id="fr_san_fire" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#fef08a" />
+        <stop offset="35%" stopColor="#f97316" />
+        <stop offset="75%" stopColor="#c2410c" />
+        <stop offset="100%" stopColor="#431407" />
+      </linearGradient>
+      <linearGradient id="fr_san_stone" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#78716c" />
+        <stop offset="50%" stopColor="#44403c" />
+        <stop offset="100%" stopColor="#1c1917" />
+      </linearGradient>
+    
+          </defs>
 
-        {/* Нефритовые крылья ветра дракона (MLBB Sage Jade Wings) */}
-        <div className="absolute -left-4 top-1/2 -translate-y-1/2 flex flex-col items-end pointer-events-none filter drop-shadow-[0_0_10px_#10b981]">
-          <span className="w-4 h-2 bg-gradient-to-r from-emerald-300 to-teal-700 rounded-l transform -rotate-15" />
-          <span className="w-6.5 h-3.5 bg-gradient-to-r from-white via-emerald-400 to-green-950 rounded-l border-l-2 border-emerald-200 shadow-md -my-0.5" />
-          <span className="w-4 h-2 bg-gradient-to-r from-emerald-300 to-teal-700 rounded-l transform rotate-15" />
-        </div>
-        <div className="absolute -right-4 top-1/2 -translate-y-1/2 flex flex-col items-start pointer-events-none filter drop-shadow-[0_0_10px_#10b981]">
-          <span className="w-4 h-2 bg-gradient-to-l from-emerald-300 to-teal-700 rounded-r transform rotate-15" />
-          <span className="w-6.5 h-3.5 bg-gradient-to-l from-white via-emerald-400 to-green-950 rounded-r border-r-2 border-emerald-200 shadow-md -my-0.5" />
-          <span className="w-4 h-2 bg-gradient-to-l from-emerald-300 to-teal-700 rounded-r transform -rotate-15" />
-        </div>
+          {/* Слой 0: Фоновая аура чакры */}
+          
+      <rect x="-12" y="-12" width="124" height="124" rx="32" fill="none" stroke="#ea580c" strokeWidth="4" opacity="0.4" filter="blur(8px)" />
+    
 
-        {/* Корпус рамки */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-950 via-zinc-950 to-teal-950 border-2 border-emerald-400 shadow-2xl overflow-hidden">
-          <div className="absolute inset-1 border border-teal-300/60 rounded-xl" />
-          {/* Оранжевые жабьи тени глаз Мудреца */}
-          <span className="absolute top-2 left-0.5 w-1.5 h-4 bg-orange-500 rounded-full shadow-[0_0_8px_#ea580c]" />
-          <span className="absolute top-2 right-0.5 w-1.5 h-4 bg-orange-500 rounded-full shadow-[0_0_8px_#ea580c]" />
-        </div>
+          {/* Слой 1: Карточка аватара шиноби с клиппингом */}
+          <foreignObject x="8" y="8" width="84" height="84" className="pointer-events-auto">
+            <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-zinc-950">
+              {avatarContent}
+            </div>
+          </foreignObject>
 
-        {/* Навершие: Золотой картуш Мудреца 『仙』 */}
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center filter drop-shadow-[0_0_10px_#f97316] pointer-events-none">
-          <div className="px-3 py-0.5 rounded-lg bg-gradient-to-b from-orange-300 via-amber-600 to-zinc-950 border-2 border-yellow-200 text-[10px] font-black text-black font-serif tracking-widest shadow-xl">
-            仙
-          </div>
-        </div>
+          {/* Слой 2: Основной трехмерный несущий каркас */}
+          
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="#140702" stroke="url(#fr_san_fire)" strokeWidth="3.8" />
+      <rect x="6" y="6" width="88" height="88" rx="18" fill="none" stroke="#fbbf24" strokeWidth="1.2" opacity="0.8" />
+    
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
-          {avatarContent}
-        </div>
+          {/* Слой 3: Выступающие 3D-артефакты героя (MLBB Hero Props) */}
+          
+      {/* ГЛАВНЫЙ АРТЕФАКТ: Скульптурная голова Жабы Гамабунты с курительной трубкой */}
+      <g transform="translate(24, -26)" filter="drop-shadow(0 6px 12px rgba(0,0,0,0.95))">
+        {/* Голова жабы */}
+        <ellipse cx="26" cy="18" rx="26" ry="16" fill="url(#fr_san_stone)" stroke="url(#fr_san_fire)" strokeWidth="2" />
+        
+        {/* Глаза с горизонтальными зрачками */}
+        <circle cx="14" cy="10" r="6" fill="#fef08a" stroke="#451a03" strokeWidth="1.2" />
+        <line x1="9" y1="10" x2="19" y2="10" stroke="#000000" strokeWidth="2.5" />
+        <circle cx="38" cy="10" r="6" fill="#fef08a" stroke="#451a03" strokeWidth="1.2" />
+        <line x1="33" y1="10" x2="43" y2="10" stroke="#000000" strokeWidth="2.5" />
+        
+        {/* Рот и курительная трубка кисэру */}
+        <path d="M 12,24 Q 26,28 40,24" stroke="#1c1917" strokeWidth="3" fill="none" />
+        <path d="M 38,23 L 56,18 L 58,12" stroke="#d97706" strokeWidth="3" fill="none" strokeLinecap="round" />
+        {/* Дым из трубки */}
+        <circle cx="58" cy="8" r="3" fill="#ffffff" opacity="0.7" />
+        <circle cx="62" cy="4" r="4.5" fill="#ffffff" opacity="0.5" />
+      </g>
+
+      {/* Языки пламени жабьего масла по бокам */}
+      <g transform="translate(-16, 40)" fill="url(#fr_san_fire)">
+        <path d="M 16,0 Q 2,12 8,24 Q 0,16 16,36 Z" />
+      </g>
+      <g transform="translate(100, 40)" fill="url(#fr_san_fire)">
+        <path d="M 0,0 Q 14,12 8,24 Q 16,16 0,36 Z" />
+      </g>
+
+      {/* Нижний огненный картуш 『油』 (Масло) */}
+      <g transform="translate(32, 85)" filter="drop-shadow(0 0 12px #ea580c)">
+        <rect x="0" y="0" width="36" height="18" rx="6" fill="#180402" stroke="url(#fr_san_fire)" strokeWidth="2" />
+        <text x="18" y="14" fill="#fed7aa" fontSize="13" fontWeight="900" fontFamily="serif" textAnchor="middle">油</text>
+      </g>
+    
+        </svg>
+
         {extraBadge}
       </div>
     )
   },
-
   // =========================================================================
-  // 9. СФЕРА РИННЕГАНА (Mythic Six Paths - MLBB Style)
-  // Обсидиановые штыри чакры Шести Путей + кольца гравитации + картуш 『六道』
+  // 7. Астральный Шлем Сусаноо Войны
   // =========================================================================
   {
-    id: 'frame_rinnegan',
-    name: 'Сфера Шести Путей (Риннеган)',
-    tier: 9,
+    id: 'frame_susanoo',
+    name: 'Астральный Шлем Сусаноо Войны',
+    tier: 7,
     rarity: 'Мифическая (Mythic)',
-    rarityColor: '#c084fc',
+    rarityColor: '#a855f7',
     requirementText: '60 побед в PvP дуэлях',
     checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 60,
     progressText: (p) => `${Math.min(60, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 60 побед`,
-    badge: '🌀 Риннеган',
-    borderClass: 'border-purple-400',
-    glowClass: 'shadow-2xl shadow-indigo-500/70',
+    badge: '🟣 Сусаноо',
+    borderClass: 'border-purple-500',
+    glowClass: 'shadow-2xl shadow-purple-600/60',
+    
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
-        {/* Гравитационная волна Синра Тэнсэй */}
-        <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-500 blur-xl opacity-90 animate-pulse pointer-events-none" />
+      <div 
+        className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <svg 
+          viewBox="-30 -30 160 160" 
+          className="w-full h-full overflow-visible pointer-events-none"
+        >
+          <defs>
+            
+      <linearGradient id="fr_sus_amethyst" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#f3e8ff" />
+        <stop offset="30%" stopColor="#c084fc" />
+        <stop offset="70%" stopColor="#7e22ce" />
+        <stop offset="100%" stopColor="#3b0764" />
+      </linearGradient>
+      <linearGradient id="fr_sus_horn" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#e9d5ff" />
+        <stop offset="40%" stopColor="#9333ea" />
+        <stop offset="80%" stopColor="#4c1d95" />
+        <stop offset="100%" stopColor="#1e0538" />
+      </linearGradient>
+    
+          </defs>
 
-        {/* Штыри чакры Шести Путей (MLBB Mythic Six Paths Spires) */}
-        <div className="absolute -left-4 top-1/2 -translate-y-1/2 flex flex-col items-end pointer-events-none filter drop-shadow-[0_0_10px_#c084fc]">
-          <span className="w-3.5 h-1.5 bg-black border border-purple-400 rounded-l" />
-          <span className="w-6 h-2.5 bg-gradient-to-r from-purple-300 via-black to-zinc-950 rounded-l border-l-2 border-purple-300 shadow -my-0.5" />
-          <span className="w-3.5 h-1.5 bg-black border border-purple-400 rounded-l" />
-        </div>
-        <div className="absolute -right-4 top-1/2 -translate-y-1/2 flex flex-col items-start pointer-events-none filter drop-shadow-[0_0_10px_#c084fc]">
-          <span className="w-3.5 h-1.5 bg-black border border-purple-400 rounded-r" />
-          <span className="w-6 h-2.5 bg-gradient-to-l from-purple-300 via-black to-zinc-950 rounded-r border-r-2 border-purple-300 shadow -my-0.5" />
-          <span className="w-3.5 h-1.5 bg-black border border-purple-400 rounded-r" />
-        </div>
+          {/* Слой 0: Фоновая аура чакры */}
+          
+      <rect x="-14" y="-14" width="128" height="128" rx="34" fill="none" stroke="#9333ea" strokeWidth="5" opacity="0.45" filter="blur(10px)" />
+    
 
-        {/* Корпус рамки с кольцами Риннегана */}
-        <div className="absolute inset-0 rounded-2xl bg-black border-2 border-purple-400 shadow-2xl overflow-hidden">
-          <div className="absolute inset-1 rounded-xl border border-purple-400/60" />
-          <div className="absolute inset-2 rounded-lg border border-purple-300/40" />
-          <div className="absolute inset-3 rounded-md border border-purple-200/20" />
-          <span className="absolute -top-1 -right-1 text-[11px] animate-spin" style={{ animationDuration: '6s' }}>🌀</span>
-        </div>
+          {/* Слой 1: Карточка аватара шиноби с клиппингом */}
+          <foreignObject x="8" y="8" width="84" height="84" className="pointer-events-auto">
+            <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-zinc-950">
+              {avatarContent}
+            </div>
+          </foreignObject>
 
-        {/* Нижний пьедестал: Кандзи 『六道』 (Шесть Путей) */}
-        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center filter drop-shadow-[0_0_12px_#a855f7] pointer-events-none">
-          <div className="px-3 py-0.5 rounded-lg bg-gradient-to-b from-purple-400 via-indigo-800 to-black border border-purple-300 text-[10px] font-black text-purple-100 font-serif tracking-widest shadow-2xl">
-            六道
-          </div>
-        </div>
+          {/* Слой 2: Основной трехмерный несущий каркас */}
+          
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="#0c0214" stroke="url(#fr_sus_amethyst)" strokeWidth="4" />
+      <rect x="6" y="6" width="88" height="88" rx="18" fill="none" stroke="#d8b4fe" strokeWidth="1.4" opacity="0.8" />
+    
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
-          {avatarContent}
-        </div>
+          {/* Слой 3: Выступающие 3D-артефакты героя (MLBB Hero Props) */}
+          
+      {/* ГЛАВНЫЙ АРТЕФАКТ MLBB: Массивные рога демонического шлема Тэнгу (вынос 38px) */}
+      <g transform="translate(14, -34)" filter="drop-shadow(0 8px 16px rgba(0,0,0,0.95))">
+        {/* Левый изогнутый рог они */}
+        <path d="M 18,28 C 12,14 -4,-4 -12,-8 C -8,6 2,24 14,34 Z" fill="url(#fr_sus_horn)" stroke="#e9d5ff" strokeWidth="1.5" />
+        {/* Правый изогнутый рог они */}
+        <path d="M 54,28 C 60,14 76,-4 84,-8 C 80,6 70,24 58,34 Z" fill="url(#fr_sus_horn)" stroke="#e9d5ff" strokeWidth="1.5" />
+        
+        {/* Центральный лобный гребень шлема */}
+        <polygon points="36,4 46,18 36,36 26,18" fill="url(#fr_sus_amethyst)" stroke="#f3e8ff" strokeWidth="1.6" />
+        <circle cx="36" cy="18" r="4" fill="#fef08a" filter="drop-shadow(0 0 6px #fef08a)" />
+      </g>
+
+      {/* Реберные щиты Сусаноо по бокам */}
+      <g transform="translate(-18, 20)" fill="none" stroke="url(#fr_sus_amethyst)" strokeWidth="3" strokeLinecap="round">
+        <path d="M 18,0 C 4,6 4,18 18,24" />
+        <path d="M 18,20 C 2,26 2,38 18,44" />
+        <path d="M 18,40 C 4,46 4,58 18,64" />
+      </g>
+      <g transform="translate(100, 20)" fill="none" stroke="url(#fr_sus_amethyst)" strokeWidth="3" strokeLinecap="round">
+        <path d="M 0,0 C 14,6 14,18 0,24" />
+        <path d="M 0,20 C 16,26 16,38 0,44" />
+        <path d="M 0,40 C 14,46 14,58 0,64" />
+      </g>
+
+      {/* Нижний имперский картуш 『覇』 (Владычество) */}
+      <g transform="translate(32, 85)" filter="drop-shadow(0 0 14px #a855f7)">
+        <rect x="0" y="0" width="36" height="18" rx="6" fill="#150324" stroke="url(#fr_sus_amethyst)" strokeWidth="2.2" />
+        <text x="18" y="14" fill="#f3e8ff" fontSize="13" fontWeight="900" fontFamily="serif" textAnchor="middle">覇</text>
+      </g>
+    
+        </svg>
+
         {extraBadge}
       </div>
     )
   },
-
   // =========================================================================
-  // 10. ХОКАГЕ (Mythic Immortal / Glory - MLBB Style)
-  // Скульптурная красно-белая шляпа Хокаге + золотые крылья огненного дракона + пламя
+  // 8. Ветвистые Рога Мудреца
+  // =========================================================================
+  {
+    id: 'frame_sage',
+    name: 'Ветвистые Рога Мудреца',
+    tier: 8,
+    rarity: 'Мифическая Слава (Mythic Glory)',
+    rarityColor: '#eab308',
+    requirementText: '80 побед в PvP дуэлях',
+    checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 80,
+    progressText: (p) => `${Math.min(80, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 80 побед`,
+    badge: '👑 Мудрец',
+    borderClass: 'border-yellow-400',
+    glowClass: 'shadow-2xl shadow-yellow-500/60',
+    
+    renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
+      <div 
+        className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <svg 
+          viewBox="-30 -30 160 160" 
+          className="w-full h-full overflow-visible pointer-events-none"
+        >
+          <defs>
+            
+      <linearGradient id="fr_sage_gold" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#ffffff" />
+        <stop offset="30%" stopColor="#fde047" />
+        <stop offset="70%" stopColor="#ca8a04" />
+        <stop offset="100%" stopColor="#713f12" />
+      </linearGradient>
+      <linearGradient id="fr_sage_jade" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#bbf7d0" />
+        <stop offset="50%" stopColor="#22c55e" />
+        <stop offset="100%" stopColor="#14532d" />
+      </linearGradient>
+    
+          </defs>
+
+          {/* Слой 0: Фоновая аура чакры */}
+          
+      <rect x="-14" y="-14" width="128" height="128" rx="34" fill="none" stroke="#eab308" strokeWidth="5" opacity="0.45" filter="blur(10px)" />
+    
+
+          {/* Слой 1: Карточка аватара шиноби с клиппингом */}
+          <foreignObject x="8" y="8" width="84" height="84" className="pointer-events-auto">
+            <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-zinc-950">
+              {avatarContent}
+            </div>
+          </foreignObject>
+
+          {/* Слой 2: Основной трехмерный несущий каркас */}
+          
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="#140f02" stroke="url(#fr_sage_gold)" strokeWidth="4" />
+      <rect x="6" y="6" width="88" height="88" rx="18" fill="none" stroke="#fef08a" strokeWidth="1.4" opacity="0.8" />
+    
+
+          {/* Слой 3: Выступающие 3D-артефакты героя (MLBB Hero Props) */}
+          
+      {/* Ветвистые рога дракона Мудреца Сендзюцу (вынос 35px) */}
+      <g transform="translate(10, -32)" filter="drop-shadow(0 6px 14px rgba(0,0,0,0.9))">
+        {/* Левый рог */}
+        <path d="M 22,28 C 16,10 0,-4 -8,-6 C -6,2 6,16 12,20 C 4,12 -2,4 -6,2 C -2,10 8,24 18,32 Z" fill="url(#fr_sage_gold)" stroke="#ffffff" strokeWidth="1.2" />
+        {/* Правый рог */}
+        <path d="M 58,28 C 64,10 80,-4 88,-6 C 86,2 74,16 68,20 C 76,12 82,4 86,2 C 82,10 72,24 62,32 Z" fill="url(#fr_sage_gold)" stroke="#ffffff" strokeWidth="1.2" />
+        {/* Центральный лотос */}
+        <polygon points="40,12 48,24 40,36 32,24" fill="url(#fr_sage_jade)" stroke="#fde047" strokeWidth="1.5" />
+      </g>
+
+      {/* Оранжевые тени глаз Мудреца по бокам */}
+      <g fill="#ea580c" opacity="0.85">
+        <path d="M 2,36 Q -6,45 2,54 Z" />
+        <path d="M 98,36 Q 106,45 98,54 Z" />
+      </g>
+
+      {/* Нижний свиток и картуш 『仙』 (Мудрец) */}
+      <g transform="translate(32, 85)" filter="drop-shadow(0 0 14px #eab308)">
+        <rect x="0" y="0" width="36" height="18" rx="6" fill="#1f1402" stroke="url(#fr_sage_gold)" strokeWidth="2.2" />
+        <text x="18" y="14" fill="#fef08a" fontSize="13" fontWeight="900" fontFamily="serif" textAnchor="middle">仙</text>
+      </g>
+    
+        </svg>
+
+        {extraBadge}
+      </div>
+    )
+  },
+  // =========================================================================
+  // 9. Гравитация Шести Путей Риннегана
+  // =========================================================================
+  {
+    id: 'frame_rinnegan',
+    name: 'Гравитация Шести Путей Риннегана',
+    tier: 9,
+    rarity: 'Бессмертная (Immortal)',
+    rarityColor: '#c084fc',
+    requirementText: '110 побед в PvP дуэлях',
+    checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 110,
+    progressText: (p) => `${Math.min(110, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 110 побед`,
+    badge: '🌀 Риннеган',
+    borderClass: 'border-fuchsia-500',
+    glowClass: 'shadow-2xl shadow-fuchsia-600/70',
+    
+    renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
+      <div 
+        className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <svg 
+          viewBox="-30 -30 160 160" 
+          className="w-full h-full overflow-visible pointer-events-none"
+        >
+          <defs>
+            
+      <linearGradient id="fr_rin_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#f5d0fe" />
+        <stop offset="35%" stopColor="#c084fc" />
+        <stop offset="70%" stopColor="#6b21a8" />
+        <stop offset="100%" stopColor="#1e0538" />
+      </linearGradient>
+      <linearGradient id="fr_rin_rod" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#475569" />
+        <stop offset="50%" stopColor="#0f172a" />
+        <stop offset="100%" stopColor="#020617" />
+      </linearGradient>
+    
+          </defs>
+
+          {/* Слой 0: Фоновая аура чакры */}
+          
+      {/* Концентрические кольца гравитации Риннегана */}
+      <circle cx="50" cy="50" r="62" fill="none" stroke="#c084fc" strokeWidth="1" strokeDasharray="6 4" opacity="0.4" />
+      <circle cx="50" cy="50" r="70" fill="none" stroke="#e879f9" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.3" />
+    
+
+          {/* Слой 1: Карточка аватара шиноби с клиппингом */}
+          <foreignObject x="8" y="8" width="84" height="84" className="pointer-events-auto">
+            <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-zinc-950">
+              {avatarContent}
+            </div>
+          </foreignObject>
+
+          {/* Слой 2: Основной трехмерный несущий каркас */}
+          
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="#08020e" stroke="url(#fr_rin_titanium)" strokeWidth="4.2" />
+      <rect x="6" y="6" width="88" height="88" rx="18" fill="none" stroke="#e879f9" strokeWidth="1.5" opacity="0.8" />
+    
+
+          {/* Слой 3: Выступающие 3D-артефакты героя (MLBB Hero Props) */}
+          
+      {/* 6 выступающих чёрных штырей чакры (вынос 25px) */}
+      <g fill="url(#fr_rin_rod)" stroke="#c084fc" strokeWidth="1">
+        {/* Верх-лево */}
+        <polygon points="-8,-8 -2,-4 -12,10 -16,6" />
+        {/* Верх-право */}
+        <polygon points="108,-8 102,-4 112,10 116,6" />
+        {/* Середина-лево */}
+        <polygon points="-16,46 -8,48 -8,52 -16,54" />
+        {/* Середина-право */}
+        <polygon points="116,46 108,48 108,52 116,54" />
+        {/* Низ-лево */}
+        <polygon points="-8,108 -2,104 -12,90 -16,94" />
+        {/* Низ-право */}
+        <polygon points="108,108 102,104 112,90 116,94" />
+      </g>
+
+      {/* Верхнее гравитационное ядро Шинра Тенсей */}
+      <g transform="translate(36, -20)" filter="drop-shadow(0 0 14px #c084fc)">
+        <circle cx="14" cy="14" r="14" fill="#020617" stroke="url(#fr_rin_titanium)" strokeWidth="2.5" />
+        <circle cx="14" cy="14" r="9" fill="none" stroke="#c084fc" strokeWidth="1.2" />
+        <circle cx="14" cy="14" r="4.5" fill="none" stroke="#e879f9" strokeWidth="1.2" />
+        <circle cx="14" cy="14" r="1.8" fill="#ffffff" />
+      </g>
+
+      {/* Нижний картуш 『六道』 (Шесть Путей) */}
+      <g transform="translate(28, 85)" filter="drop-shadow(0 0 14px #c084fc)">
+        <rect x="0" y="0" width="44" height="18" rx="6" fill="#0d0217" stroke="url(#fr_rin_titanium)" strokeWidth="2.2" />
+        <text x="22" y="14" fill="#f5d0fe" fontSize="11" fontWeight="900" fontFamily="serif" textAnchor="middle">六道</text>
+      </g>
+    
+        </svg>
+
+        {extraBadge}
+      </div>
+    )
+  },
+  // =========================================================================
+  // 10. Священный Венец Хокаге Листа
   // =========================================================================
   {
     id: 'frame_hokage',
-    name: 'Рубиновый Венец Хокаге',
+    name: 'Священный Венец Хокаге Листа',
     tier: 10,
-    rarity: 'Мифическая (Mythic Immortal)',
+    rarity: 'Хокаге (Hokage)',
     rarityColor: '#ef4444',
-    requirementText: '100 побед в PvP дуэлях',
-    checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 100,
-    progressText: (p) => `${Math.min(100, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 100 побед`,
+    requirementText: '150 побед в PvP дуэлях',
+    checkUnlocked: (p) => (p?.stats?.pvp?.battlesWon || p?.battlesWon || 0) >= 150,
+    progressText: (p) => `${Math.min(150, p?.stats?.pvp?.battlesWon || p?.battlesWon || 0)} / 150 побед`,
     badge: '🔥 Хокаге',
     borderClass: 'border-red-500',
-    glowClass: 'shadow-2xl shadow-red-500/80',
+    glowClass: 'shadow-2xl shadow-red-600/70',
+    
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
-        {/* Алое пламя Воли Огня */}
-        <div className="absolute -inset-3.5 rounded-2xl bg-gradient-to-r from-red-600 via-amber-500 to-rose-600 blur-xl opacity-90 animate-pulse pointer-events-none" />
+      <div 
+        className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <svg 
+          viewBox="-30 -30 160 160" 
+          className="w-full h-full overflow-visible pointer-events-none"
+        >
+          <defs>
+            
+      <linearGradient id="fr_hok_crimson" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#fca5a5" />
+        <stop offset="35%" stopColor="#ef4444" />
+        <stop offset="70%" stopColor="#b91c1c" />
+        <stop offset="100%" stopColor="#450a0a" />
+      </linearGradient>
+      <linearGradient id="fr_hok_gold" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#fef08a" />
+        <stop offset="50%" stopColor="#eab308" />
+        <stop offset="100%" stopColor="#713f12" />
+      </linearGradient>
+    
+          </defs>
 
-        {/* Императорские золотые крылья огненного дракона (MLBB Mythic Glory Dragon Wings) */}
-        <div className="absolute -left-4.5 top-1/2 -translate-y-1/2 flex flex-col items-end pointer-events-none filter drop-shadow-[0_0_12px_#ef4444]">
-          <span className="w-4 h-2 bg-gradient-to-r from-yellow-300 to-red-600 rounded-l transform -rotate-15 shadow" />
-          <span className="w-7 h-4 bg-gradient-to-r from-white via-yellow-400 to-red-700 rounded-l border-l-2 border-yellow-200 shadow-xl -my-0.5" />
-          <span className="w-4 h-2 bg-gradient-to-r from-yellow-300 to-red-600 rounded-l transform rotate-15 shadow" />
-        </div>
-        <div className="absolute -right-4.5 top-1/2 -translate-y-1/2 flex flex-col items-start pointer-events-none filter drop-shadow-[0_0_12px_#ef4444]">
-          <span className="w-4 h-2 bg-gradient-to-l from-yellow-300 to-red-600 rounded-r transform rotate-15 shadow" />
-          <span className="w-7 h-4 bg-gradient-to-l from-white via-yellow-400 to-red-700 rounded-r border-r-2 border-yellow-200 shadow-xl -my-0.5" />
-          <span className="w-4 h-2 bg-gradient-to-l from-yellow-300 to-red-600 rounded-r transform -rotate-15 shadow" />
-        </div>
+          {/* Слой 0: Фоновая аура чакры */}
+          
+      <rect x="-14" y="-14" width="128" height="128" rx="34" fill="none" stroke="#ef4444" strokeWidth="5" opacity="0.45" filter="blur(10px)" />
+    
 
-        {/* Корпус рамки */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-red-950 via-zinc-950 to-amber-950 border-2 border-red-500 shadow-2xl overflow-hidden">
-          <div className="absolute inset-1 border-2 border-amber-400/90 rounded-xl" />
-          {/* Белые языки пламени хаори Хокаге снизу */}
-          <div className="absolute bottom-0 inset-x-2 h-3 bg-gradient-to-t from-white/95 to-transparent rounded-t opacity-95" />
-        </div>
+          {/* Слой 1: Карточка аватара шиноби с клиппингом */}
+          <foreignObject x="8" y="8" width="84" height="84" className="pointer-events-auto">
+            <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-zinc-950">
+              {avatarContent}
+            </div>
+          </foreignObject>
 
-        {/* Навершие (вынос 30%): Скульптурная церемониальная шляпа Хокаге с кандзи 『火』 */}
-        <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center filter drop-shadow-[0_0_14px_#ef4444] pointer-events-none">
-          <div className="w-10 h-6 bg-gradient-to-b from-red-600 via-rose-700 to-zinc-950 border-2 border-yellow-300 rounded-t-full shadow-2xl flex items-center justify-center relative">
-            <span className="text-[11px] font-black text-yellow-200 font-serif">火</span>
-            {/* Белые поля шляпы */}
-            <span className="absolute -bottom-1 inset-x-[-4px] h-1.5 bg-white rounded-full border border-red-800" />
-          </div>
-        </div>
+          {/* Слой 2: Основной трехмерный несущий каркас */}
+          
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="#140203" stroke="url(#fr_hok_crimson)" strokeWidth="4.2" />
+      <rect x="6" y="6" width="88" height="88" rx="18" fill="none" stroke="url(#fr_hok_gold)" strokeWidth="1.6" />
+    
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
-          {avatarContent}
-        </div>
+          {/* Слой 3: Выступающие 3D-артефакты героя (MLBB Hero Props) */}
+          
+      {/* ГЛАВНЫЙ АРТЕФАКТ: Высокодетализированная скульптурная шляпа Хокаге (вынос 38px) */}
+      <g transform="translate(18, -34)" filter="drop-shadow(0 8px 16px rgba(0,0,0,0.95))">
+        {/* Поля шляпы Хокаге (трехлучевой зонт) */}
+        <polygon points="32,-2 0,22 64,22" fill="url(#fr_hok_crimson)" stroke="#450a0a" strokeWidth="1.2" />
+        
+        {/* Белый передний козырек с символом огня */}
+        <polygon points="32,2 18,22 46,22" fill="#ffffff" stroke="#94a3b8" strokeWidth="1" />
+        {/* Красный кандзи 『火』 (Огонь) на белом козырьке */}
+        <text x="32" y="18" fill="#b91c1c" fontSize="14" fontWeight="900" fontFamily="serif" textAnchor="middle">火</text>
+        
+        {/* Белые полосы ткани по бокам */}
+        <path d="M 0,22 L -6,34 L 2,32 Z" fill="#ffffff" />
+        <path d="M 64,22 L 70,34 L 62,32 Z" fill="#ffffff" />
+      </g>
+
+      {/* Огненные полы плаща Хокаге по бокам */}
+      <g transform="translate(-16, 45)" fill="url(#fr_hok_crimson)">
+        <polygon points="16,0 2,12 16,16 6,24 16,32" />
+      </g>
+      <g transform="translate(100, 45)" fill="url(#fr_hok_crimson)">
+        <polygon points="0,0 14,12 0,16 10,24 0,32" />
+      </g>
+
+      {/* Нижний картуш Хокаге */}
+      <g transform="translate(32, 85)" filter="drop-shadow(0 0 14px #ef4444)">
+        <rect x="0" y="0" width="36" height="18" rx="6" fill="#180103" stroke="url(#fr_hok_gold)" strokeWidth="2.2" />
+        <text x="18" y="14" fill="#fca5a5" fontSize="13" fontWeight="900" fontFamily="serif" textAnchor="middle">火</text>
+      </g>
+    
+        </svg>
+
         {extraBadge}
       </div>
     )
   },
-
   // =========================================================================
-  // 11. ЭКСКЛЮЗИВ: ВЕНЕЦ ТВОРЦА (GENESIS CREATOR) — ТОЛЬКО ДЛЯ КИРИЛЛА!
-  // (Supreme God / All-Star Collector Tier - MLBB Ultimate Masterpiece)
-  // Императорские 5-ярусные золотые крылья + корона Творца с рубинами + 6 сфер Гудодама
+  // 11. 👑 Венец Творца (Genesis Creator)
   // =========================================================================
   {
     id: 'frame_creator_genesis',
     name: '👑 Венец Творца (Genesis Creator)',
-    tier: 99,
-    rarity: 'Божественная (Создатель)',
-    rarityColor: '#facc15',
-    isCreatorExclusive: true,
+    tier: 11,
+    rarity: 'Создатель Мира (Genesis)',
+    rarityColor: '#fbbf24',
     requirementText: 'Священный артефакт Создателя игры (Кирилл)',
     checkUnlocked: (p) => isDeveloperAccount(p?.email),
-    progressText: (p) => isDeveloperAccount(p?.email) ? '👑 Создатель игры подтверждён' : '🔒 Эксклюзив Создателя игры',
+    progressText: (p) => isDeveloperAccount(p?.email) ? "👑 Создатель игры подтверждён" : "🔒 Эксклюзив Создателя игры",
     badge: '👑 Творец',
     borderClass: 'border-yellow-400',
     glowClass: 'shadow-[0_0_40px_rgba(250,204,21,0.9)]',
+    isCreatorExclusive: true,
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
-        {/* Радужно-призматический космический ореол Творца */}
-        <div style={{ transform: "translateZ(-22px)" }} className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-amber-400 via-fuchsia-500 to-cyan-400 blur-2xl opacity-90 animate-pulse pointer-events-none" />
+      <div 
+        className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        <svg 
+          viewBox="-30 -30 160 160" 
+          className="w-full h-full overflow-visible pointer-events-none"
+        >
+          <defs>
+            
+      <linearGradient id="fr_gen_gold" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#ffffff" />
+        <stop offset="25%" stopColor="#fef08a" />
+        <stop offset="50%" stopColor="#eab308" />
+        <stop offset="75%" stopColor="#ca8a04" />
+        <stop offset="100%" stopColor="#713f12" />
+      </linearGradient>
+      <linearGradient id="fr_gen_wing" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#ffffff" />
+        <stop offset="30%" stopColor="#fde047" />
+        <stop offset="70%" stopColor="#d97706" />
+        <stop offset="100%" stopColor="#451a03" />
+      </linearGradient>
+      <linearGradient id="fr_gen_rainbow" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#f43f5e" />
+        <stop offset="25%" stopColor="#eab308" />
+        <stop offset="50%" stopColor="#10b981" />
+        <stop offset="75%" stopColor="#06b6d4" />
+        <stop offset="100%" stopColor="#a855f7" />
+      </linearGradient>
+      <filter id="fr_gen_divine" x="-40%" y="-40%" width="180%" height="180%">
+        <feDropShadow dx="0" dy="0" stdDeviation="12" floodColor="#fde047" floodOpacity="0.9" />
+      </filter>
+    
+          </defs>
 
-        {/* Императорские Божественные Золотые Крылья (MLBB Supreme Celestial Dragon Wings, вынос 30px) */}
-        <div className="absolute -left-6 top-1/2 -translate-y-1/2 flex flex-col items-end pointer-events-none filter drop-shadow-[0_0_14px_#fde047]">
-          <span className="w-5 h-2 bg-gradient-to-r from-yellow-200 to-amber-600 rounded-l transform -rotate-25 shadow" />
-          <span className="w-7 h-3 bg-gradient-to-r from-white via-yellow-300 to-amber-700 rounded-l border-l-2 border-white shadow-lg -my-0.5" />
-          <span className="w-9 h-4 bg-gradient-to-r from-cyan-200 via-yellow-400 to-amber-900 rounded-l border-l-2 border-yellow-200 shadow-2xl -my-0.5" />
-          <span className="w-7 h-3 bg-gradient-to-r from-white via-yellow-300 to-amber-700 rounded-l border-l-2 border-white shadow-lg -my-0.5" />
-          <span className="w-5 h-2 bg-gradient-to-r from-yellow-200 to-amber-600 rounded-l transform rotate-25 shadow" />
-        </div>
-        <div className="absolute -right-6 top-1/2 -translate-y-1/2 flex flex-col items-start pointer-events-none filter drop-shadow-[0_0_14px_#fde047]">
-          <span className="w-5 h-2 bg-gradient-to-l from-yellow-200 to-amber-600 rounded-r transform rotate-25 shadow" />
-          <span className="w-7 h-3 bg-gradient-to-l from-white via-yellow-300 to-amber-700 rounded-r border-r-2 border-white shadow-lg -my-0.5" />
-          <span className="w-9 h-4 bg-gradient-to-l from-cyan-200 via-yellow-400 to-amber-900 rounded-r border-r-2 border-yellow-200 shadow-2xl -my-0.5" />
-          <span className="w-7 h-3 bg-gradient-to-l from-white via-yellow-300 to-amber-700 rounded-r border-r-2 border-white shadow-lg -my-0.5" />
-          <span className="w-5 h-2 bg-gradient-to-l from-yellow-200 to-amber-600 rounded-r transform -rotate-25 shadow" />
-        </div>
+          {/* Слой 0: Фоновая аура чакры */}
+          
+      {/* Радужно-призматический ореол Творца */}
+      <rect x="-18" y="-18" width="136" height="136" rx="36" fill="none" stroke="url(#fr_gen_rainbow)" strokeWidth="6" opacity="0.6" filter="blur(12px)" />
+    
 
-        {/* Парящая императорская золотая корона над рамкой с рубинами */}
-        <div className="absolute -top-6 z-30 flex items-center justify-center filter drop-shadow-[0_0_16px_#fde047] pointer-events-none" style={{ transform: "translateZ(52px)" }}>
-          <span className="text-2xl sm:text-3xl transform hover:scale-125 transition-transform animate-bounce">👑</span>
-        </div>
+          {/* Слой 1: Карточка аватара шиноби с клиппингом */}
+          <foreignObject x="8" y="8" width="84" height="84" className="pointer-events-auto">
+            <div className="w-full h-full flex items-center justify-center overflow-hidden rounded-2xl bg-zinc-950">
+              {avatarContent}
+            </div>
+          </foreignObject>
 
-        {/* 6 Сфер Гудодама по орбите с золотыми ореолами */}
-        <span className="absolute -top-2 -left-2 w-3.5 h-3.5 rounded-full bg-black border border-amber-300 shadow-[0_0_14px_#fde047] z-20 animate-pulse pointer-events-none" />
-        <span className="absolute -top-2 -right-2 w-3.5 h-3.5 rounded-full bg-black border border-amber-300 shadow-[0_0_14px_#fde047] z-20 animate-pulse pointer-events-none" />
-        <span className="absolute top-1/2 -left-3 -translate-y-1/2 w-3 h-3 rounded-full bg-black border border-cyan-400 shadow-[0_0_12px_#38bdf8] z-20 pointer-events-none" />
-        <span className="absolute top-1/2 -right-3 -translate-y-1/2 w-3 h-3 rounded-full bg-black border border-cyan-400 shadow-[0_0_12px_#38bdf8] z-20 pointer-events-none" />
-        <span className="absolute -bottom-2 -left-2 w-3.5 h-3.5 rounded-full bg-black border border-amber-300 shadow-[0_0_14px_#fde047] z-20 animate-pulse pointer-events-none" />
-        <span className="absolute -bottom-2 -right-2 w-3.5 h-3.5 rounded-full bg-black border border-amber-300 shadow-[0_0_14px_#fde047] z-20 animate-pulse pointer-events-none" />
+          {/* Слой 2: Основной трехмерный несущий каркас */}
+          
+      {/* Золотая ограненная броня с сакральными гранями */}
+      <rect x="2" y="2" width="96" height="96" rx="22" fill="#080310" stroke="url(#fr_gen_gold)" strokeWidth="4.5" filter="url(#fr_gen_divine)" />
+      <rect x="6" y="6" width="88" height="88" rx="18" fill="none" stroke="url(#fr_gen_rainbow)" strokeWidth="1.8" />
+      <rect x="9" y="9" width="82" height="82" rx="15" fill="none" stroke="#fef08a" strokeWidth="0.8" opacity="0.8" strokeDasharray="4 2" />
+    
 
-        {/* Золотая ограненная рамка с сакральной гравировкой */}
-        <div style={{ transform: "translateZ(18px)" }} className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-950 via-zinc-950 to-purple-950 border-2 border-yellow-400 shadow-[0_0_40px_rgba(250,204,21,0.9)] overflow-hidden">
-          <div className="absolute inset-1 rounded-xl border border-cyan-400/80" />
-          <div className="absolute inset-1.5 rounded-lg border border-fuchsia-400/70" />
-        </div>
+          {/* Слой 3: Выступающие 3D-артефакты героя (MLBB Hero Props) */}
+          
+      {/* 5-УРОВНЕВЫЕ ИМПЕРАТОРСКИЕ ЗОЛОТЫЕ ДРАКОНЬИ КРЫЛЬЯ (MLBB Collector, вынос 40px) */}
+      <g transform="translate(-36, 12)" filter="url(#fr_gen_divine)">
+        {/* 5 перьев-клинков дракона левого крыла */}
+        <polygon points="36,4 4,12 36,18" fill="url(#fr_gen_wing)" stroke="#ffffff" strokeWidth="1" />
+        <polygon points="36,16 -2,26 36,32" fill="url(#fr_gen_wing)" stroke="#fef08a" strokeWidth="1.2" />
+        <polygon points="36,30 -6,44 36,50" fill="url(#fr_gen_wing)" stroke="#ffffff" strokeWidth="1.5" />
+        <polygon points="36,48 -2,62 36,68" fill="url(#fr_gen_wing)" stroke="#fef08a" strokeWidth="1.2" />
+        <polygon points="36,66 6,78 36,84" fill="url(#fr_gen_wing)" stroke="#ffffff" strokeWidth="1" />
+      </g>
+      <g transform="translate(100, 12)" filter="url(#fr_gen_divine)">
+        {/* 5 перьев-клинков дракона правого крыла */}
+        <polygon points="0,4 32,12 0,18" fill="url(#fr_gen_wing)" stroke="#ffffff" strokeWidth="1" />
+        <polygon points="0,16 38,26 0,32" fill="url(#fr_gen_wing)" stroke="#fef08a" strokeWidth="1.2" />
+        <polygon points="0,30 42,44 0,50" fill="url(#fr_gen_wing)" stroke="#ffffff" strokeWidth="1.5" />
+        <polygon points="0,48 38,62 0,68" fill="url(#fr_gen_wing)" stroke="#fef08a" strokeWidth="1.2" />
+        <polygon points="0,66 30,78 0,84" fill="url(#fr_gen_wing)" stroke="#ffffff" strokeWidth="1" />
+      </g>
 
-        {/* Золотой императорский постамент с кандзи 『創世』 */}
-        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center filter drop-shadow-[0_0_14px_#facc15] pointer-events-none" style={{ transform: "translateZ(40px)" }}>
-          <div className="px-3.5 py-0.5 rounded-lg bg-gradient-to-b from-yellow-300 via-amber-600 to-zinc-950 border-2 border-yellow-200 text-[10px] font-black tracking-widest text-black font-serif shadow-2xl">
-            創世
-          </div>
-        </div>
+      {/* ГЛАВНЫЙ АРТЕФАКТ: 3D Скульптурная Корона Создателя с рубинами и лучами (вынос 38px) */}
+      <g transform="translate(18, -36)" filter="drop-shadow(0 8px 18px rgba(0,0,0,0.95))">
+        {/* Золотая 5-лучевая корона */}
+        <polygon points="32,2 40,16 54,6 48,26 16,26 10,6 24,16" fill="url(#fr_gen_gold)" stroke="#ffffff" strokeWidth="1.8" />
+        
+        {/* Рубины на зубцах короны */}
+        <circle cx="32" cy="2" r="3.5" fill="#ef4444" stroke="#ffffff" strokeWidth="1.2" filter="drop-shadow(0 0 6px #ef4444)" />
+        <circle cx="10" cy="6" r="2.8" fill="#38bdf8" stroke="#ffffff" strokeWidth="0.8" />
+        <circle cx="54" cy="6" r="2.8" fill="#38bdf8" stroke="#ffffff" strokeWidth="0.8" />
+        <circle cx="24" cy="16" r="2.2" fill="#ef4444" />
+        <circle cx="40" cy="16" r="2.2" fill="#ef4444" />
+        
+        {/* Основание короны с жемчужинами */}
+        <rect x="14" y="24" width="36" height="6" rx="2" fill="url(#fr_gen_gold)" stroke="#713f12" strokeWidth="1" />
+        <circle cx="22" cy="27" r="1.5" fill="#ffffff" />
+        <circle cx="32" cy="27" r="1.8" fill="#ef4444" />
+        <circle cx="42" cy="27" r="1.5" fill="#ffffff" />
+      </g>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
-          {avatarContent}
-        </div>
+      {/* 6 СФЕР ГУДОДАМА ПО ОРБИТЕ С ЗОЛОТЫМИ И ЛАЗУРНЫМИ ОРЕОЛАМИ */}
+      <g>
+        <circle cx="-6" cy="4" r="5" fill="#020617" stroke="#fef08a" strokeWidth="1.5" filter="drop-shadow(0 0 8px #fde047)" />
+        <circle cx="106" cy="4" r="5" fill="#020617" stroke="#fef08a" strokeWidth="1.5" filter="drop-shadow(0 0 8px #fde047)" />
+        <circle cx="-14" cy="50" r="4.5" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" filter="drop-shadow(0 0 8px #38bdf8)" />
+        <circle cx="114" cy="50" r="4.5" fill="#020617" stroke="#38bdf8" strokeWidth="1.5" filter="drop-shadow(0 0 8px #38bdf8)" />
+        <circle cx="-6" cy="96" r="5" fill="#020617" stroke="#fef08a" strokeWidth="1.5" filter="drop-shadow(0 0 8px #fde047)" />
+        <circle cx="106" cy="96" r="5" fill="#020617" stroke="#fef08a" strokeWidth="1.5" filter="drop-shadow(0 0 8px #fde047)" />
+      </g>
+
+      {/* НИЖНИЙ МОНОЛИТНЫЙ ПОСТАМЕНТ ТВОРЦА 『創世』 (Сотворение) */}
+      <g transform="translate(26, 84)" filter="drop-shadow(0 0 16px #fde047)">
+        <polygon points="4,0 44,0 48,22 0,22" fill="#090212" stroke="url(#fr_gen_gold)" strokeWidth="2.5" />
+        <text x="24" y="16" fill="#fef08a" fontSize="13" fontWeight="900" fontFamily="serif" letterSpacing="2" textAnchor="middle">創世</text>
+      </g>
+    
+        </svg>
+
         {extraBadge}
       </div>
     )
-  }
+  },
 ];
 
 export function getPlayerFrameById(frameId, userProfile = null) {

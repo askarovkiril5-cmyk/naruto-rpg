@@ -941,7 +941,61 @@ FRAMES_DATA.forEach((f) => {
     borderClass: '${f.borderClass}',
     glowClass: '${f.glowClass}',
     ${f.isCreatorExclusive ? 'isCreatorExclusive: true,' : ''}
-    renderFrame: (avatarContent, sizeClass = "w-16 h-16", extraBadge = null) => (
+`;
+
+  if (f.id === 'frame_creator_genesis') {
+    code += `    renderFrame: (avatarContent, sizeClass = "w-16 h-16", extraBadge = null) => (
+      <div 
+        className={\`relative \${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible group\`}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
+        {/* 0. Фоновая космическая аура Творца */}
+        <div 
+          className="absolute -inset-4 rounded-full blur-xl opacity-75 animate-pulse pointer-events-none bg-gradient-to-r from-amber-500 via-rose-500 to-cyan-500"
+          style={{ transform: 'translateZ(-10px)' }}
+        />
+
+        {/* 1. Слой АВАТАРА (Полноразмерный, глубокий, кристально четкий) */}
+        <div 
+          className="absolute inset-[3px] rounded-2xl overflow-hidden bg-gradient-to-br from-zinc-900 via-zinc-950 to-black flex items-center justify-center shadow-inner"
+          style={{ transform: 'translateZ(0px)' }}
+        >
+          {avatarContent}
+          {/* Посадочная внутренняя тень фаски */}
+          <div className="absolute inset-0 rounded-2xl shadow-[inset_0_2px_8px_rgba(0,0,0,0.9)] pointer-events-none" />
+        </div>
+
+        {/* 2. НАСТОЯЩИЙ ФОТОРЕАЛИСТИЧНЫЙ 3D CGI MLBB СЛОЙ РАМКИ */}
+        <img 
+          src="./frames/frame_creator_genesis_mlbb.png"
+          alt="Genesis Creator 3D Frame"
+          className="absolute pointer-events-none select-none max-w-none drop-shadow-[0_8px_16px_rgba(0,0,0,0.95)]"
+          style={{ 
+            left: '50%', 
+            top: '50%', 
+            width: '236%', 
+            height: '236%', 
+            transform: 'translate(-50%, -49.5%) translateZ(25px)' 
+          }}
+        />
+
+        {/* 3. Живой пульсирующий звездный рубин на короне */}
+        <div 
+          className="absolute inset-0 pointer-events-none overflow-visible"
+          style={{ transform: 'translateZ(35px)' }}
+        >
+          <div className="absolute top-[-21%] left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-red-500/70 blur-[3px] animate-pulse" />
+        </div>
+
+        {extraBadge}
+      </div>
+    )
+  },
+`;
+    return;
+  }
+
+  code += `    renderFrame: (avatarContent, sizeClass = "w-16 h-16", extraBadge = null) => (
       <div 
         className={\`relative \${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible group\`}
         style={{ transformStyle: 'preserve-3d' }}

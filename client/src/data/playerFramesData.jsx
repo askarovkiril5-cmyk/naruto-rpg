@@ -1269,187 +1269,43 @@ export const PLAYER_FRAMES = [
         className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center overflow-visible group`}
         style={{ transformStyle: 'preserve-3d' }}
       >
+        {/* 0. Фоновая космическая аура Творца */}
+        <div 
+          className="absolute -inset-4 rounded-full blur-xl opacity-75 animate-pulse pointer-events-none bg-gradient-to-r from-amber-500 via-rose-500 to-cyan-500"
+          style={{ transform: 'translateZ(-10px)' }}
+        />
+
         {/* 1. Слой АВАТАРА (Полноразмерный, глубокий, кристально четкий) */}
         <div 
           className="absolute inset-[3px] rounded-2xl overflow-hidden bg-gradient-to-br from-zinc-900 via-zinc-950 to-black flex items-center justify-center shadow-inner"
           style={{ transform: 'translateZ(0px)' }}
         >
           {avatarContent}
-          {/* Внутренняя тень фаски посадки аватара */}
-          <div className="absolute inset-0 rounded-2xl shadow-[inset_0_2px_8px_rgba(0,0,0,0.85)] pointer-events-none" />
+          {/* Посадочная внутренняя тень фаски */}
+          <div className="absolute inset-0 rounded-2xl shadow-[inset_0_2px_8px_rgba(0,0,0,0.9)] pointer-events-none" />
         </div>
 
-        {/* 2. Навесной 3D SVG ОВЕРЛЕЙ (Никогда не перекрывает аватар, fill="none"!) */}
-        <svg 
-          viewBox="-35 -35 170 170" 
-          className="absolute pointer-events-none overflow-visible"
+        {/* 2. НАСТОЯЩИЙ ФОТОРЕАЛИСТИЧНЫЙ 3D CGI MLBB СЛОЙ РАМКИ */}
+        <img 
+          src="./frames/frame_creator_genesis_mlbb.png"
+          alt="Genesis Creator 3D Frame"
+          className="absolute pointer-events-none select-none max-w-none drop-shadow-[0_8px_16px_rgba(0,0,0,0.95)]"
           style={{ 
-            left: '-35%', 
-            top: '-35%', 
-            width: '170%', 
-            height: '170%', 
-            transform: 'translateZ(20px)' 
+            left: '50%', 
+            top: '50%', 
+            width: '236%', 
+            height: '236%', 
+            transform: 'translate(-50%, -49.5%) translateZ(25px)' 
           }}
-        >
-          <defs>
-            
-      <linearGradient id="fr_gen_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#ffffff" />
-        <stop offset="20%" stopColor="#fef08a" />
-        <stop offset="45%" stopColor="#f59e0b" />
-        <stop offset="75%" stopColor="#b45309" />
-        <stop offset="100%" stopColor="#451a03" />
-      </linearGradient>
-      <linearGradient id="fr_gen_gold_light" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#ffffff" />
-        <stop offset="50%" stopColor="#fde047" />
-        <stop offset="100%" stopColor="#d97706" />
-      </linearGradient>
-      <linearGradient id="fr_gen_gold_dark" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#b45309" />
-        <stop offset="60%" stopColor="#78350f" />
-        <stop offset="100%" stopColor="#290e03" />
-      </linearGradient>
-      <radialGradient id="fr_gen_gudo" cx="35%" cy="35%" r="65%">
-        <stop offset="0%" stopColor="#475569" />
-        <stop offset="40%" stopColor="#0f172a" />
-        <stop offset="90%" stopColor="#020617" />
-        <stop offset="100%" stopColor="#000000" />
-      </radialGradient>
-      <linearGradient id="fr_gen_rainbow" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#f43f5e" />
-        <stop offset="25%" stopColor="#eab308" />
-        <stop offset="50%" stopColor="#10b981" />
-        <stop offset="75%" stopColor="#06b6d4" />
-        <stop offset="100%" stopColor="#a855f7" />
-      </linearGradient>
-      <filter id="fr_gen_divine" x="-50%" y="-50%" width="200%" height="200%">
-        <feDropShadow dx="0" dy="0" stdDeviation="10" floodColor="#fde047" floodOpacity="0.9" />
-      </filter>
-    
-          </defs>
-
-          {/* Слой АУРЫ под рамкой */}
-          
-      {/* Радужно-призматический космический ореол Творца */}
-      <rect x="-10" y="-10" width="120" height="120" rx="32" fill="none" stroke="url(#fr_gen_rainbow)" strokeWidth="5" opacity="0.6" filter="blur(10px)" />
-      <circle cx="50" cy="50" r="62" fill="none" stroke="#fef08a" strokeWidth="1" strokeDasharray="6 6" opacity="0.5" />
-    
-
-          {/* Основной литой каркас рамки (ТОЛЬКО STROKE, АВАТАР ВСЕГДА ВИДЕН!) */}
-          <rect 
-            x="2" y="2" width="96" height="96" rx="20" 
-            fill="none" 
-            stroke="url(#fr_gen_gold)" 
-            strokeWidth="9.5" 
-          />
-          <rect 
-            x="5.5" y="5.5" width="89" height="89" rx="17" 
-            fill="none" 
-            stroke="url(#fr_gen_rainbow)" 
-            strokeWidth="1.2" 
-            opacity="0.85" 
-          />
-
-          {/* Скульптурные 3D-артефакты героя (MLBB Hero Props) с массивным выносом */}
-          
-      {/* 5-УРОВНЕВЫЕ СКУЛЬПТУРНЫЕ КРЫЛЬЯ ДРАКОНА С 3D-ГРАНЯМИ И СВЕТОТЕНЕВЫМ ХРЕБТОМ (MLBB Collector) */}
-      {/* Левые крылья */}
-      <g filter="url(#fr_gen_divine)">
-        {/* Перо 1 (Верхнее) */}
-        <path d="M 0,16 C -12,12 -24,4 -30,-6 C -24,8 -12,18 0,22 Z" fill="url(#fr_gen_gold_light)" stroke="#ffffff" strokeWidth="0.8" />
-        <path d="M 0,22 C -12,18 -24,8 -30,-6 C -18,12 -8,22 0,26 Z" fill="url(#fr_gen_gold_dark)" />
-        {/* Перо 2 */}
-        <path d="M 0,28 C -14,24 -28,18 -34,8 C -26,20 -14,28 0,34 Z" fill="url(#fr_gen_gold_light)" stroke="#fef08a" strokeWidth="0.8" />
-        <path d="M 0,34 C -14,28 -26,20 -34,8 C -20,22 -8,32 0,38 Z" fill="url(#fr_gen_gold_dark)" />
-        {/* Перо 3 (Центральное, самое длинное) */}
-        <path d="M 0,40 C -16,38 -32,32 -38,24 C -28,34 -16,42 0,46 Z" fill="url(#fr_gen_gold_light)" stroke="#ffffff" strokeWidth="1" />
-        <path d="M 0,46 C -16,42 -28,34 -38,24 C -22,36 -10,46 0,52 Z" fill="url(#fr_gen_gold_dark)" />
-        {/* Перо 4 */}
-        <path d="M 0,54 C -14,52 -28,48 -32,42 C -24,50 -12,56 0,60 Z" fill="url(#fr_gen_gold_light)" stroke="#fef08a" strokeWidth="0.8" />
-        <path d="M 0,60 C -12,56 -24,50 -32,42 C -18,52 -8,60 0,64 Z" fill="url(#fr_gen_gold_dark)" />
-        {/* Перо 5 (Нижнее) */}
-        <path d="M 0,66 C -10,66 -20,64 -24,60 C -16,66 -8,70 0,72 Z" fill="url(#fr_gen_gold_light)" stroke="#ffffff" strokeWidth="0.6" />
-        <path d="M 0,72 C -8,70 -16,66 -24,60 C -12,66 -4,72 0,76 Z" fill="url(#fr_gen_gold_dark)" />
-      </g>
-
-      {/* Правые крылья */}
-      <g filter="url(#fr_gen_divine)">
-        {/* Перо 1 */}
-        <path d="M 100,16 C 112,12 124,4 130,-6 C 124,8 112,18 100,22 Z" fill="url(#fr_gen_gold_light)" stroke="#ffffff" strokeWidth="0.8" />
-        <path d="M 100,22 C 112,18 124,8 130,-6 C 118,12 108,22 100,26 Z" fill="url(#fr_gen_gold_dark)" />
-        {/* Перо 2 */}
-        <path d="M 100,28 C 114,24 128,18 134,8 C 126,20 114,28 100,34 Z" fill="url(#fr_gen_gold_light)" stroke="#fef08a" strokeWidth="0.8" />
-        <path d="M 100,34 C 114,28 126,20 134,8 C 120,22 108,32 100,38 Z" fill="url(#fr_gen_gold_dark)" />
-        {/* Перо 3 (Центральное) */}
-        <path d="M 100,40 C 116,38 132,32 138,24 C 128,34 116,42 100,46 Z" fill="url(#fr_gen_gold_light)" stroke="#ffffff" strokeWidth="1" />
-        <path d="M 100,46 C 116,42 128,34 138,24 C 122,36 110,46 100,52 Z" fill="url(#fr_gen_gold_dark)" />
-        {/* Перо 4 */}
-        <path d="M 100,54 C 114,52 128,48 132,42 C 124,50 112,56 100,60 Z" fill="url(#fr_gen_gold_light)" stroke="#fef08a" strokeWidth="0.8" />
-        <path d="M 100,60 C 112,56 124,50 132,42 C 118,52 108,60 100,64 Z" fill="url(#fr_gen_gold_dark)" />
-        {/* Перо 5 */}
-        <path d="M 100,66 C 110,66 120,64 124,60 C 116,66 108,70 100,72 Z" fill="url(#fr_gen_gold_light)" stroke="#ffffff" strokeWidth="0.6" />
-        <path d="M 100,72 C 108,70 116,66 124,60 C 112,66 104,72 100,76 Z" fill="url(#fr_gen_gold_dark)" />
-      </g>
-
-      {/* ШЕДЕВРАЛЬНЫЙ АРТЕФАКТ: 3D Ювелирная Корона Создателя (MLBB Collector Crown) */}
-      <g transform="translate(18, -36)" filter="drop-shadow(0 8px 16px rgba(0,0,0,0.95))">
-        {/* Золотая арка диадемы */}
-        <path d="M 2,24 Q 32,16 62,24 L 60,30 Q 32,22 4,30 Z" fill="url(#fr_gen_gold_dark)" stroke="#ca8a04" strokeWidth="1" />
-        
-        {/* 5 Зубцов короны с гранеными градиентами */}
-        {/* Центральный главный зубец */}
-        <polygon points="32,-2 40,22 24,22" fill="url(#fr_gen_gold_light)" stroke="#ffffff" strokeWidth="1" />
-        <polygon points="32,-2 40,22 32,22" fill="url(#fr_gen_gold_dark)" />
-        {/* Левый средний зубец */}
-        <polygon points="14,6 22,24 10,24" fill="url(#fr_gen_gold_light)" stroke="#fef08a" strokeWidth="0.8" />
-        <polygon points="14,6 22,24 16,24" fill="url(#fr_gen_gold_dark)" />
-        {/* Правый средний зубец */}
-        <polygon points="50,6 54,24 42,24" fill="url(#fr_gen_gold_light)" stroke="#fef08a" strokeWidth="0.8" />
-        <polygon points="50,6 54,24 48,24" fill="url(#fr_gen_gold_dark)" />
-        {/* Крайний левый зубец */}
-        <polygon points="2,14 8,26 0,26" fill="url(#fr_gen_gold_light)" />
-        {/* Крайний правый зубец */}
-        <polygon points="62,14 64,26 56,26" fill="url(#fr_gen_gold_light)" />
-
-        {/* Большой королевский ограненный рубин Творца в центре */}
-        <polygon points="32,2 38,10 32,18 26,10" fill="#ef4444" stroke="#ffffff" strokeWidth="1.2" filter="drop-shadow(0 0 10px #ef4444)" />
-        <polygon points="32,2 38,10 32,10" fill="#fca5a5" />
-        <polygon points="32,10 38,10 32,18" fill="#991b1b" />
-        <polygon points="32,10 26,10 32,18" fill="#450a0a" />
-        {/* Сверкающая 4-лучевая звезда-блик на рубине */}
-        <polygon points="32,7 33,10 35,10 33,11 32,13 31,11 29,10 31,10" fill="#ffffff" />
-
-        {/* Сапфиры на боковых зубцах */}
-        <circle cx="14" cy="10" r="2.8" fill="#38bdf8" stroke="#ffffff" strokeWidth="0.8" filter="drop-shadow(0 0 6px #38bdf8)" />
-        <circle cx="50" cy="10" r="2.8" fill="#38bdf8" stroke="#ffffff" strokeWidth="0.8" filter="drop-shadow(0 0 6px #38bdf8)" />
-      </g>
-
-      {/* 6 ОРБИТАЛЬНЫХ СФЕР ГУДОДАМА (ВРАЩАЮТСЯ ПО ОРБИТЕ В РЕАЛЬНОМ ВРЕМЕНИ!) */}
-      <g>
-        <animateTransform
-          attributeName="transform"
-          type="rotate"
-          from="0 50 50"
-          to="360 50 50"
-          dur="14s"
-          repeatCount="indefinite"
         />
-        <circle cx="50" cy="-14" r="5.5" fill="url(#fr_gen_gudo)" stroke="#fef08a" strokeWidth="1.8" filter="drop-shadow(0 0 8px #fde047)" />
-        <circle cx="110" cy="18" r="5" fill="url(#fr_gen_gudo)" stroke="#38bdf8" strokeWidth="1.8" filter="drop-shadow(0 0 8px #38bdf8)" />
-        <circle cx="110" cy="82" r="5.5" fill="url(#fr_gen_gudo)" stroke="#fef08a" strokeWidth="1.8" filter="drop-shadow(0 0 8px #fde047)" />
-        <circle cx="50" cy="114" r="5" fill="url(#fr_gen_gudo)" stroke="#38bdf8" strokeWidth="1.8" filter="drop-shadow(0 0 8px #38bdf8)" />
-        <circle cx="-10" cy="82" r="5.5" fill="url(#fr_gen_gudo)" stroke="#fef08a" strokeWidth="1.8" filter="drop-shadow(0 0 8px #fde047)" />
-        <circle cx="-10" cy="18" r="5" fill="url(#fr_gen_gudo)" stroke="#38bdf8" strokeWidth="1.8" filter="drop-shadow(0 0 8px #38bdf8)" />
-      </g>
 
-      {/* НИЖНИЙ МОНОЛИТНЫЙ ПОСТАМЕНТ ТВОРЦА 『創世』 (Сотворение) */}
-      <g transform="translate(26, 82)" filter="drop-shadow(0 0 16px #fde047)">
-        <polygon points="4,0 44,0 48,22 0,22" fill="#080210" stroke="url(#fr_gen_gold)" strokeWidth="2.6" />
-        <text x="24" y="16" fill="#fef08a" fontSize="14" fontWeight="900" fontFamily="serif" letterSpacing="2" textAnchor="middle">創世</text>
-      </g>
-    
-        </svg>
+        {/* 3. Живой пульсирующий звездный рубин на короне */}
+        <div 
+          className="absolute inset-0 pointer-events-none overflow-visible"
+          style={{ transform: 'translateZ(35px)' }}
+        >
+          <div className="absolute top-[-21%] left-1/2 -translate-x-1/2 w-3.5 h-3.5 rounded-full bg-red-500/70 blur-[3px] animate-pulse" />
+        </div>
 
         {extraBadge}
       </div>

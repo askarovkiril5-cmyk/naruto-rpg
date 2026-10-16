@@ -1831,16 +1831,20 @@ export default function App() {
                       const userFrame = getPlayerFrameById(userProfile?.frameId, userProfile);
                       const av = userProfile?.avatar || '🍥';
                       const isImg = (av.startsWith('data:') || av.startsWith('http://') || av.startsWith('https://'));
+                      const avContent = isImg ? (
+                        <img src={av} alt="Avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-2xl drop-shadow-md">{av}</span>
+                      );
+                      if (userFrame && typeof userFrame.renderFrame === 'function') {
+                        return userFrame.renderFrame(avContent, "w-12 h-12 sm:w-14 sm:h-14");
+                      }
                       return (
                         <div 
                           className={`w-12 h-12 rounded-2xl flex items-center justify-center relative overflow-hidden transition-all duration-300 group-hover:scale-105 border ${userFrame.borderClass} ${userFrame.glowClass}`}
                           style={userFrame.style || {}}
                         >
-                          {isImg ? (
-                            <img src={av} alt="Avatar" className="w-full h-full object-cover" />
-                          ) : (
-                            <span className="text-2xl drop-shadow-md">{av}</span>
-                          )}
+                          {avContent}
                           {userFrame.badge && (
                             <span className="absolute bottom-0 right-0 text-[10px] leading-none bg-black/85 px-1 py-0.5 rounded-tl border-t border-l border-white/20">
                               {userFrame.badge}

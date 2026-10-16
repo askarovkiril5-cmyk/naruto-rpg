@@ -49,8 +49,8 @@ export default function TopMenu({
     });
   }, []);
   return (
-    <aside className="shrink-0 p-3 z-30 flex flex-col select-none">
-      <div className="glass-panel border border-white/10 rounded-2xl p-2.5 flex flex-col gap-2 shadow-2xl backdrop-blur-md w-16 sm:w-44 transition-all duration-300">
+    <aside className="shrink-0 p-2 sm:p-3 z-30 flex flex-col select-none h-screen max-h-screen">
+      <div className="glass-panel border border-white/10 rounded-2xl p-2 sm:p-2.5 flex flex-col gap-1.5 sm:gap-2 shadow-2xl backdrop-blur-md w-16 sm:w-44 max-h-[calc(100vh-1.5rem)] overflow-y-auto overflow-x-hidden transition-all duration-300">
         
         {/* Карточка уровня и ранга шиноби (открывает Личный Профиль, победы и винрейт) */}
         <div 

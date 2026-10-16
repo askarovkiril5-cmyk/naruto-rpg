@@ -3,21 +3,18 @@ import React from 'react';
 /**
  * clanEmblemsData.jsx
  * Элитная коллекция императорских гербов и медальонов кланов (Kamon 3D Masterpiece Edition):
- * - 7-слойная ювелирная архитектура:
- *   [0] Наружный ореол чакры (Chakra Bloom Aura)
- *   [1] Чеканный трехслойный золотой обод с 12 заклепками-самоцветами и гравированными зубцами
- *   [2] Дно из полированного обсидиана / драгоценной эмали клуазоне
- *   [3] Сакральная гильош-гравировка (Сейгайха, 8 триграмм, лучи, годовые кольца)
- *   [4] Рельефный каноничный гербовый символ с металлической фаской и глубокой тенью
- *   [5] Неоновые микро-элементы и рунические кандзи
- *   [6] Двойной купольный софтбокс-блик (глянцевое стекло + рефлекс Френеля)
- * - Полная изоляция SVG <defs> с уникальными префиксами для каждого клана.
+ * Стандарт детализации кинематографической иконки игры (icon.png):
+ * - [0] Корона чакры (Corona & Lightning Arcs) - вырывается за пределы обода (overflow="visible")
+ * - [1] Чеканный трехмерный золотой обод с 12 заклепками
+ * - [2] Кованая пластина протектора из титана со следами сражений (Battle Scars & Hex Bolts)
+ * - [3] Двухкомпонентный вихревой диск Инь-Ян (темный титан + клановый цветной лак)
+ * - [4] Сакральные узоры и рельефная фаска
+ * - [5] Скульптурный 3D-символ клана с металлической фаской (feDropShadow)
+ * - [6] Центральное фотонное око со звездой-бликом (Lens Flare Star)
+ * - [7] Купольный софтбокс-блик стекла и контурный рефлекс Френеля
  */
 
 export const CLAN_EMBLEMS = [
-  // =========================================================================
-  // 1. УЧИХА (Огненный Веер Гунбай & Золотые Томоэ)
-  // =========================================================================
   {
     id: 'emblem_uchiha',
     name: 'Герб Учиха (Огненный Веер & Томоэ)',
@@ -29,121 +26,133 @@ export const CLAN_EMBLEMS = [
     borderColor: 'border-red-500/50',
     glowColor: 'shadow-red-500/40',
     defaultMotto: 'Тот, кто владеет пламенем, разгоняет тьму!',
-    desc: 'Легендарный церемониальный веер Учиха из слоновой кости и рубинового шелка. Окаймлен золотыми томоэ Шарингана, шелковой кистью и венцом священного пламени Катона.',
+    desc: 'Легендарный церемониальный веер Учиха Гунбай из кости и рубинового шелка. Окаймлен золотыми томоэ Шарингана, кованой пластиной с боевыми шрамами и ревущей огненной короной Катона.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_uchiha_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fffbeb" />
-            <stop offset="20%" stopColor="#fef08a" />
-            <stop offset="45%" stopColor="#ca8a04" />
-            <stop offset="70%" stopColor="#854d0e" />
-            <stop offset="90%" stopColor="#eab308" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
             <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_uchiha_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#6b0d16" />
-            <stop offset="40%" stopColor="#3b040a" />
-            <stop offset="75%" stopColor="#180104" />
-            <stop offset="100%" stopColor="#050001" />
-          </radialGradient>
-          <linearGradient id="m_uchiha_red" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#ff4d6d" />
-            <stop offset="35%" stopColor="#ef4444" />
-            <stop offset="75%" stopColor="#b91c1c" />
-            <stop offset="100%" stopColor="#7f1d1d" />
+
+          <linearGradient id="m_uchiha_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
           </linearGradient>
-          <linearGradient id="m_uchiha_ivory" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="50%" stopColor="#f4f4f5" />
-            <stop offset="100%" stopColor="#cbd5e1" />
+
+          <linearGradient id="m_uchiha_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#ff4d6d" />
+      <stop offset="35%" stopColor="#ef4444" />
+      <stop offset="75%" stopColor="#b91c1c" />
+      <stop offset="100%" stopColor="#450a0a" />
+    
           </linearGradient>
-          <filter id="m_uchiha_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+
+          <filter id="m_uchiha_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_uchiha_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.18" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        {/* Наружное огненное сияние чакры */}
-        <circle cx="50" cy="50" r="49" stroke="#ef4444" strokeWidth="1" opacity="0.35" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #ef4444)">
+        <path d="M 50 2 C 53 -4 60 -1 58 7 C 65 3 71 8 67 15 C 75 12 80 18 77 24 C 84 21 88 28 85 35 C 92 33 96 41 93 48 C 98 47 101 54 96 61 C 100 62 101 70 95 76 C 98 79 97 86 91 90 C 93 94 89 99 83 99 C 83 103 76 105 71 102 C 68 106 61 106 58 101 C 54 105 47 104 45 99 C 40 102 34 100 33 95 C 27 96 23 90 26 84 C 20 83 19 76 23 70 C 17 68 17 60 22 55 C 16 52 18 44 24 41 C 19 36 22 28 29 27 C 26 21 32 14 39 16 C 38 10 45 4 50 2 Z" fill="none" stroke="#ef4444" strokeWidth="1.6" strokeDasharray="6 3" />
+        <path d="M 48 0 C 51 -6 58 -2 55 6 C 63 2 68 8 64 14 C 72 11 77 17 74 23" fill="none" stroke="#fde047" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M 88 32 C 94 36 96 44 91 49 C 97 51 98 59 93 64" fill="none" stroke="#fde047" strokeWidth="1.8" strokeLinecap="round" />
+        <polyline points="85,25 90,20 88,28 94,22" stroke="#38bdf8" strokeWidth="1.2" fill="none" />
+        <polyline points="15,70 10,75 12,68 6,72" stroke="#38bdf8" strokeWidth="1.2" fill="none" />
+      </g>
+    
 
-        {/* Чеканный золотой обод с тройной фаской */}
-        <circle cx="50" cy="50" r="48" stroke="url(#m_uchiha_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_uchiha_gold)" strokeWidth="1" strokeDasharray="3 2" />
-
-        {/* 12 Золотых заклепок по ободу */}
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_uchiha_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_uchiha_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_uchiha_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        {/* Обсидиановое эмалевое дно */}
-        <circle cx="50" cy="50" r="42" fill="url(#m_uchiha_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_uchiha_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_uchiha_lacquer)" />
 
-        {/* Гравированные лучи Катона и язычки пламени */}
-        <g stroke="url(#m_uchiha_gold)" strokeWidth="0.5" opacity="0.25">
-          {Array.from({ length: 12 }).map((_, i) => {
-            const rad = (i * 30 * Math.PI) / 180;
-            return <line key={i} x1="50" y1="50" x2={50 + 40 * Math.cos(rad)} y2={50 + 40 * Math.sin(rad)} />;
-          })}
-          <circle cx="50" cy="50" r="32" strokeDasharray="4 3" />
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_uchiha_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_uchiha_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_uchiha_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
+
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_uchiha_chisel)">
+        <path d="M46 64 L46 88 C46 90.5 47.8 92 50 92 C52.2 92 54 90.5 54 88 L54 64 Z" fill="url(#m_uchiha_gold)" stroke="#713f12" strokeWidth="0.8" />
+        <line x1="46" y1="70" x2="54" y2="70" stroke="#451a03" strokeWidth="1.2" />
+        <line x1="46" y1="76" x2="54" y2="76" stroke="#451a03" strokeWidth="1.2" />
+        <line x1="46" y1="82" x2="54" y2="82" stroke="#451a03" strokeWidth="1.2" />
+        <circle cx="50" cy="90" r="1.8" fill="#18181b" stroke="url(#m_uchiha_gold)" strokeWidth="0.8" />
+        <path d="M49 92 L47 96 M51 92 L53 96 M50 92 L50 97" stroke="#ef4444" strokeWidth="1" strokeLinecap="round" />
+        <path d="M24 48 C24 62 35 68 50 68 C65 68 76 62 76 48 Z" fill="#f8fafc" stroke="url(#m_uchiha_gold)" strokeWidth="1.5" />
+        <path d="M35 50 Q42 62 50 67" stroke="#cbd5e1" strokeWidth="0.8" opacity="0.6" />
+        <path d="M65 50 Q58 62 50 67" stroke="#cbd5e1" strokeWidth="0.8" opacity="0.6" />
+        <path d="M24 48 C24 32 35 20 50 20 C65 20 76 32 76 48 Z" fill="url(#m_uchiha_lacquer)" stroke="url(#m_uchiha_gold)" strokeWidth="1.6" />
+        <path d="M35 46 Q42 28 50 22" stroke="#fca5a5" strokeWidth="0.8" opacity="0.4" />
+        <path d="M65 46 Q58 28 50 22" stroke="#fca5a5" strokeWidth="0.8" opacity="0.4" />
+        <line x1="24" y1="48" x2="76" y2="48" stroke="url(#m_uchiha_gold)" strokeWidth="2.6" strokeLinecap="round" />
+        <line x1="26" y1="48" x2="74" y2="48" stroke="#ffffff" strokeWidth="0.8" strokeLinecap="round" opacity="0.8" />
+        <g fill="url(#m_uchiha_gold)" filter="drop-shadow(0 0 4px #ef4444)">
+          <circle cx="30" cy="30" r="2.2" />
+          <path d="M30 28 C32 28 33 31 31 32.5 C29.5 33.5 28 31 30 28 Z" />
+          <circle cx="70" cy="30" r="2.2" />
+          <path d="M70 28 C72 28 73 31 71 32.5 C69.5 33.5 68 31 70 28 Z" />
+          <circle cx="50" cy="14" r="2.2" />
+          <path d="M50 12 C52 12 53 15 51 16.5 C49.5 17.5 48 15 50 12 Z" />
         </g>
+      </g>
+    
 
-        {/* Рельефный веер Учиха Гунбай */}
-        <g filter="url(#m_uchiha_shadow)">
-          {/* Рукоять веера с золотой оплеткой и кистью */}
-          <path d="M46 64 L46 88 C46 90.5 47.8 92 50 92 C52.2 92 54 90.5 54 88 L54 64 Z" fill="url(#m_uchiha_gold)" stroke="#713f12" strokeWidth="0.8" />
-          <line x1="46" y1="70" x2="54" y2="70" stroke="#451a03" strokeWidth="1.2" />
-          <line x1="46" y1="76" x2="54" y2="76" stroke="#451a03" strokeWidth="1.2" />
-          <line x1="46" y1="82" x2="54" y2="82" stroke="#451a03" strokeWidth="1.2" />
-          {/* Шелковая кисть на рукояти */}
-          <circle cx="50" cy="90" r="1.8" fill="#18181b" stroke="url(#m_uchiha_gold)" strokeWidth="0.8" />
-          <path d="M49 92 L47 96 M51 92 L53 96 M50 92 L50 97" stroke="#ef4444" strokeWidth="1" strokeLinecap="round" />
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 48)" filter="drop-shadow(0 0 8px #ef4444)">
+        <circle cx="0" cy="0" r="7.5" fill="#180104" stroke="url(#m_uchiha_gold)" strokeWidth="1.5" />
+        <circle cx="0" cy="0" r="5.5" fill="#ef4444" />
+        <path d="M 0 0 C 2 -4 5 -5 5 -1 C 3 2 1 4 0 0 Z" fill="#000000" />
+        <path d="M 0 0 C -4 -2 -5 1 -1 5 C 2 3 4 1 0 0 Z" fill="#000000" transform="rotate(120)" />
+        <path d="M 0 0 C -4 -2 -5 1 -1 5 C 2 3 4 1 0 0 Z" fill="#000000" transform="rotate(240)" />
+        <circle cx="0" cy="0" r="1.5" fill="#000000" />
+        <polygon points="0,-9 1.2,-1.5 9,0 1.2,1.5 0,9 -1.2,1.5 -9,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+        <polygon points="0,-5 0.8,-1 5,0 0.8,1 0,5 -0.8,1 -5,0 -0.8,-1" fill="#fde047" opacity="0.75" transform="rotate(45)" />
+      </g>
+    
 
-          {/* Нижняя половина (слоновая кость с текстурными ребрами) */}
-          <path d="M22 48 C22 62 34 68 50 68 C66 68 78 62 78 48 Z" fill="url(#m_uchiha_ivory)" stroke="url(#m_uchiha_gold)" strokeWidth="1.4" />
-          <path d="M34 50 Q42 62 50 67" stroke="#e4e4e7" strokeWidth="0.8" opacity="0.6" />
-          <path d="M66 50 Q58 62 50 67" stroke="#e4e4e7" strokeWidth="0.8" opacity="0.6" />
-
-          {/* Верхняя алая половина (рубин с золотой фаской) */}
-          <path d="M22 48 C22 30 34 18 50 18 C66 18 78 30 78 48 Z" fill="url(#m_uchiha_red)" stroke="url(#m_uchiha_gold)" strokeWidth="1.6" />
-          <path d="M34 46 Q42 26 50 20" stroke="#fca5a5" strokeWidth="0.8" opacity="0.4" />
-          <path d="M66 46 Q58 26 50 20" stroke="#fca5a5" strokeWidth="0.8" opacity="0.4" />
-
-          {/* Золотой разделительный молдинг */}
-          <line x1="22" y1="48" x2="78" y2="48" stroke="url(#m_uchiha_gold)" strokeWidth="2.8" strokeLinecap="round" />
-          <line x1="24" y1="48" x2="76" y2="48" stroke="#ffffff" strokeWidth="0.8" strokeLinecap="round" opacity="0.7" />
-
-          {/* Три золотых томоэ Шарингана вокруг веера */}
-          <g fill="url(#m_uchiha_gold)" filter="drop-shadow(0 0 4px #ef4444)">
-            <circle cx="28" cy="28" r="2.4" />
-            <path d="M28 26 C30 26 31 29 29 31 C27.5 32.5 26 30 28 26 Z" />
-            <circle cx="72" cy="28" r="2.4" />
-            <path d="M72 26 C74 26 75 29 73 31 C71.5 32.5 70 30 72 26 Z" />
-            <circle cx="50" cy="12" r="2.4" />
-            <path d="M50 10 C52 10 53 13 51 15 C49.5 16.5 48 14 50 10 Z" />
-          </g>
-        </g>
-
-        {/* Купольный софтбокс-блик стекла */}
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_uchiha_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        {/* Рефлекс Френеля снизу справа */}
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 2. УДЗУМАКИ (Алая Спираль Сейгайха & Печать Фуиндзюцу)
-  // =========================================================================
   {
     id: 'emblem_uzumaki',
     name: 'Герб Удзумаки (Алая Спираль & Фуиндзюцу)',
@@ -155,112 +164,138 @@ export const CLAN_EMBLEMS = [
     borderColor: 'border-orange-500/50',
     glowColor: 'shadow-orange-500/40',
     defaultMotto: 'Воля водоворота никогда не угаснет!',
-    desc: 'Священный вихрь Удзусио: многослойная золотая спираль жизненной силы, волны Сейгайха и 4 священные печати четырех стихий Сики Фудзин.',
+    desc: 'Священный вихрь Удзусио: кованый золотой обод, цепи чакры Конго Фуса, 4 священные печати Сики Фудзин и раскаленное ядро жизненной силы.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_uzu_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fff7ed" />
-            <stop offset="25%" stopColor="#fed7aa" />
-            <stop offset="50%" stopColor="#f59e0b" />
-            <stop offset="75%" stopColor="#b45309" />
-            <stop offset="100%" stopColor="#fde68a" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
+            <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_uzu_gem" cx="45%" cy="40%" r="65%">
-            <stop offset="0%" stopColor="#9a3412" />
-            <stop offset="45%" stopColor="#431407" />
-            <stop offset="80%" stopColor="#1c0602" />
-            <stop offset="100%" stopColor="#050100" />
-          </radialGradient>
-          <linearGradient id="m_uzu_spiral" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ff8a4c" />
-            <stop offset="45%" stopColor="#ea580c" />
-            <stop offset="85%" stopColor="#c2410c" />
-            <stop offset="100%" stopColor="#7c2d12" />
+
+          <linearGradient id="m_uzu_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
           </linearGradient>
-          <filter id="m_uzu_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_uzu_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#fb923c" />
+      <stop offset="35%" stopColor="#ea580c" />
+      <stop offset="75%" stopColor="#c2410c" />
+      <stop offset="100%" stopColor="#431407" />
+    
+          </linearGradient>
+
+          <filter id="m_uzu_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_uzu_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        {/* Внешний ореол */}
-        <circle cx="50" cy="50" r="49" stroke="#f97316" strokeWidth="1" opacity="0.35" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #f97316)">
+        <circle cx="50" cy="50" r="51" stroke="#f97316" strokeWidth="1.4" strokeDasharray="8 4" fill="none" />
+        <circle cx="50" cy="50" r="53" stroke="#fde047" strokeWidth="0.8" strokeDasharray="3 3" fill="none" />
+        <path d="M 50 -2 Q 62 10 52 20" stroke="#fde047" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <path d="M 102 50 Q 90 62 80 52" stroke="#fde047" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <path d="M 50 102 Q 38 90 48 80" stroke="#fde047" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <path d="M -2 50 Q 10 38 20 48" stroke="#fde047" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+      </g>
+    
 
-        {/* Чеканный золотой обод */}
-        <circle cx="50" cy="50" r="48" stroke="url(#m_uzu_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_uzu_gold)" strokeWidth="1" strokeDasharray="3 2" />
-
-        {/* 12 Заклепок */}
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_uzu_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_uzu_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_uzu_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        {/* Огненное эмалевое дно */}
-        <circle cx="50" cy="50" r="42" fill="url(#m_uzu_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_uzu_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_uzu_lacquer)" />
 
-        {/* Волны Сейгайха и кольца печати */}
-        <g stroke="url(#m_uzu_gold)" strokeWidth="0.6" opacity="0.3" fill="none">
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_uzu_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_uzu_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_uzu_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
+
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_uzu_chisel)">
+        <g stroke="url(#m_uzu_gold)" strokeWidth="0.6" opacity="0.35" fill="none">
           <circle cx="50" cy="50" r="37" strokeDasharray="6 4" />
           <circle cx="50" cy="50" r="29" strokeDasharray="4 3" />
-          <circle cx="50" cy="50" r="21" strokeDasharray="3 2" />
         </g>
-
-        {/* 3D Спираль Удзумаки с золотым гребнем */}
-        <g filter="url(#m_uzu_shadow)">
-          <path 
-            d="M50 50 m 0, -4.5 a 4.5,4.5 0 0,1 4.5,4.5 a 9,9 0 0,1 -9,9 a 14.5,14.5 0 0,1 -14.5,-14.5 a 20,20 0 0,1 20,-20 a 25.5,25.5 0 0,1 25.5,25.5 a 31,31 0 0,1 -31,31" 
-            stroke="url(#m_uzu_spiral)" 
-            strokeWidth="7.5" 
-            strokeLinecap="round" 
-          />
-          <path 
-            d="M50 50 m 0, -4.5 a 4.5,4.5 0 0,1 4.5,4.5 a 9,9 0 0,1 -9,9 a 14.5,14.5 0 0,1 -14.5,-14.5 a 20,20 0 0,1 20,-20 a 25.5,25.5 0 0,1 25.5,25.5 a 31,31 0 0,1 -31,31" 
-            stroke="url(#m_uzu_gold)" 
-            strokeWidth="1.8" 
-            strokeLinecap="round" 
-            opacity="0.95"
-          />
-          <path 
-            d="M50 50 m 0, -4.5 a 4.5,4.5 0 0,1 4.5,4.5 a 9,9 0 0,1 -9,9 a 14.5,14.5 0 0,1 -14.5,-14.5 a 20,20 0 0,1 20,-20" 
-            stroke="#ffffff" 
-            strokeWidth="0.8" 
-            strokeLinecap="round" 
-            opacity="0.75"
-          />
-        </g>
-
-        {/* 4 Священные печати Сики Фудзин с руническими символами */}
+        <path 
+          d="M50 50 m 0, -4.5 a 4.5,4.5 0 0,1 4.5,4.5 a 9,9 0 0,1 -9,9 a 14.5,14.5 0 0,1 -14.5,-14.5 a 20,20 0 0,1 20,-20 a 25.5,25.5 0 0,1 25.5,25.5 a 31,31 0 0,1 -31,31" 
+          stroke="url(#m_uzu_lacquer)" 
+          strokeWidth="7.5" 
+          strokeLinecap="round" 
+          fill="none"
+        />
+        <path 
+          d="M50 50 m 0, -4.5 a 4.5,4.5 0 0,1 4.5,4.5 a 9,9 0 0,1 -9,9 a 14.5,14.5 0 0,1 -14.5,-14.5 a 20,20 0 0,1 20,-20 a 25.5,25.5 0 0,1 25.5,25.5 a 31,31 0 0,1 -31,31" 
+          stroke="url(#m_uzu_gold)" 
+          strokeWidth="1.8" 
+          strokeLinecap="round" 
+          fill="none"
+          opacity="0.95"
+        />
         <g fill="url(#m_uzu_gold)">
-          <circle cx="50" cy="14" r="3.2" stroke="#431407" strokeWidth="0.8" />
-          <circle cx="86" cy="50" r="3.2" stroke="#431407" strokeWidth="0.8" />
-          <circle cx="50" cy="86" r="3.2" stroke="#431407" strokeWidth="0.8" />
-          <circle cx="14" cy="50" r="3.2" stroke="#431407" strokeWidth="0.8" />
+          <circle cx="50" cy="14" r="3" stroke="#431407" strokeWidth="0.8" />
+          <circle cx="86" cy="50" r="3" stroke="#431407" strokeWidth="0.8" />
+          <circle cx="50" cy="86" r="3" stroke="#431407" strokeWidth="0.8" />
+          <circle cx="14" cy="50" r="3" stroke="#431407" strokeWidth="0.8" />
           <circle cx="50" cy="14" r="1.2" fill="#ffffff" />
           <circle cx="86" cy="50" r="1.2" fill="#ffffff" />
           <circle cx="50" cy="86" r="1.2" fill="#ffffff" />
           <circle cx="14" cy="50" r="1.2" fill="#ffffff" />
         </g>
+      </g>
+    
 
-        {/* Стеклянный блик */}
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 50)" filter="drop-shadow(0 0 8px #f97316)">
+        <circle cx="0" cy="0" r="6" fill="#431407" stroke="url(#m_uzu_gold)" strokeWidth="1.4" />
+        <circle cx="0" cy="0" r="4" fill="#ea580c" />
+        <circle cx="0" cy="0" r="2" fill="#fed7aa" />
+        <polygon points="0,-8 1.2,-1.5 8,0 1.2,1.5 0,8 -1.2,1.5 -8,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+        <polygon points="0,-4.5 0.8,-1 4.5,0 0.8,1 0,4.5 -0.8,1 -4.5,0 -0.8,-1" fill="#fde047" opacity="0.75" transform="rotate(45)" />
+      </g>
+    
+
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_uzu_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 3. СЕНДЖУ (Ваджра Мокутона & Древо Тысячи Рук)
-  // =========================================================================
   {
     id: 'emblem_senju',
     name: 'Герб Сенджу (Ваджра & Древо Мокутона)',
@@ -273,89 +308,118 @@ export const CLAN_EMBLEMS = [
     glowColor: 'shadow-emerald-500/40',
     defaultMotto: 'Воля Огня пускает корни глубоко в сердце!',
     desc: 'Священный скипетр Ваджра клана Сенджу из древней бронзы и золота. Обвит живыми побегами священного древа Мокутон с ограненным изумрудом чакры Асуры.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_senju_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ecfdf5" />
-            <stop offset="25%" stopColor="#a7f3d0" />
-            <stop offset="50%" stopColor="#10b981" />
-            <stop offset="75%" stopColor="#047857" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
             <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_senju_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#065f46" />
-            <stop offset="45%" stopColor="#022c22" />
-            <stop offset="80%" stopColor="#011811" />
-            <stop offset="100%" stopColor="#000906" />
-          </radialGradient>
-          <filter id="m_senju_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_senju_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_senju_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#34d399" />
+      <stop offset="35%" stopColor="#10b981" />
+      <stop offset="75%" stopColor="#047857" />
+      <stop offset="100%" stopColor="#022c22" />
+    
+          </linearGradient>
+
+          <filter id="m_senju_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_senju_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#10b981" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_senju_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_senju_gold)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #10b981)">
+        <circle cx="50" cy="50" r="51" stroke="#10b981" strokeWidth="1.4" strokeDasharray="10 5" fill="none" />
+        <path d="M 48 -3 Q 44 8 52 14 Q 60 8 56 -3" fill="#10b981" opacity="0.8" />
+        <path d="M 103 48 Q 92 44 86 52 Q 92 60 103 56" fill="#10b981" opacity="0.8" />
+        <path d="M 48 103 Q 44 92 52 86 Q 60 92 56 103" fill="#10b981" opacity="0.8" />
+        <path d="M -3 48 Q 8 44 14 52 Q 8 60 -3 56" fill="#10b981" opacity="0.8" />
+      </g>
+    
 
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_senju_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_senju_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_senju_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_senju_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_senju_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_senju_lacquer)" />
 
-        {/* Кольца древесного среза */}
-        <g stroke="url(#m_senju_gold)" strokeWidth="0.5" opacity="0.3">
-          <circle cx="50" cy="50" r="36" />
-          <circle cx="50" cy="50" r="28" />
-          <circle cx="50" cy="50" r="20" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_senju_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_senju_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_senju_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Рельефная Ваджра Мокутона */}
-        <g filter="url(#m_senju_shadow)">
-          <line x1="50" y1="13" x2="50" y2="87" stroke="url(#m_senju_gold)" strokeWidth="6" strokeLinecap="round" />
-          <line x1="50" y1="15" x2="50" y2="85" stroke="#ffffff" strokeWidth="1.6" strokeLinecap="round" opacity="0.8" />
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_senju_chisel)">
+        <line x1="50" y1="13" x2="50" y2="87" stroke="url(#m_senju_gold)" strokeWidth="6" strokeLinecap="round" />
+        <line x1="50" y1="15" x2="50" y2="85" stroke="#ffffff" strokeWidth="1.6" strokeLinecap="round" opacity="0.8" />
+        <line x1="26" y1="34" x2="74" y2="34" stroke="url(#m_senju_gold)" strokeWidth="4.2" strokeLinecap="round" />
+        <line x1="30" y1="50" x2="70" y2="50" stroke="url(#m_senju_gold)" strokeWidth="3.8" strokeLinecap="round" />
+        <line x1="26" y1="66" x2="74" y2="66" stroke="url(#m_senju_gold)" strokeWidth="4.2" strokeLinecap="round" />
+        <path d="M38 22 L50 11 L62 22" fill="none" stroke="url(#m_senju_gold)" strokeWidth="3.8" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M38 78 L50 89 L62 78" fill="none" stroke="url(#m_senju_gold)" strokeWidth="3.8" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M26 34 Q18 22 28 18 Q36 28 26 34" fill="#34d399" stroke="url(#m_senju_gold)" strokeWidth="1.2" />
+        <path d="M74 34 Q82 22 72 18 Q64 28 74 34" fill="#34d399" stroke="url(#m_senju_gold)" strokeWidth="1.2" />
+        <path d="M26 66 Q18 78 28 82 Q36 72 26 66" fill="#34d399" stroke="url(#m_senju_gold)" strokeWidth="1.2" />
+        <path d="M74 66 Q82 78 72 82 Q64 72 74 66" fill="#34d399" stroke="url(#m_senju_gold)" strokeWidth="1.2" />
+      </g>
+    
 
-          {/* Перекладины */}
-          <line x1="26" y1="34" x2="74" y2="34" stroke="url(#m_senju_gold)" strokeWidth="4.2" strokeLinecap="round" />
-          <line x1="30" y1="50" x2="70" y2="50" stroke="url(#m_senju_gold)" strokeWidth="3.8" strokeLinecap="round" />
-          <line x1="26" y1="66" x2="74" y2="66" stroke="url(#m_senju_gold)" strokeWidth="4.2" strokeLinecap="round" />
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 50)" filter="drop-shadow(0 0 8px #10b981)">
+        <circle cx="0" cy="0" r="7" fill="#022c22" stroke="url(#m_senju_gold)" strokeWidth="1.6" />
+        <circle cx="0" cy="0" r="5" fill="#10b981" />
+        <circle cx="0" cy="0" r="2.5" fill="#a7f3d0" />
+        <polygon points="0,-9 1.2,-1.5 9,0 1.2,1.5 0,9 -1.2,1.5 -9,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+        <polygon points="0,-5 0.8,-1 5,0 0.8,1 0,5 -0.8,1 -5,0 -0.8,-1" fill="#34d399" opacity="0.75" transform="rotate(45)" />
+      </g>
+    
 
-          {/* Верхний и нижний трехзубец */}
-          <path d="M38 22 L50 11 L62 22" fill="none" stroke="url(#m_senju_gold)" strokeWidth="3.8" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M38 78 L50 89 L62 78" fill="none" stroke="url(#m_senju_gold)" strokeWidth="3.8" strokeLinecap="round" strokeLinejoin="round" />
-
-          {/* Живые изумрудные листья чакры */}
-          <path d="M26 34 Q18 22 28 18 Q36 28 26 34" fill="#34d399" stroke="url(#m_senju_gold)" strokeWidth="1.2" />
-          <path d="M74 34 Q82 22 72 18 Q64 28 74 34" fill="#34d399" stroke="url(#m_senju_gold)" strokeWidth="1.2" />
-          <path d="M26 66 Q18 78 28 82 Q36 72 26 66" fill="#34d399" stroke="url(#m_senju_gold)" strokeWidth="1.2" />
-          <path d="M74 66 Q82 78 72 82 Q64 72 74 66" fill="#34d399" stroke="url(#m_senju_gold)" strokeWidth="1.2" />
-
-          {/* Центральный ограненный изумруд чакры Асуры */}
-          <circle cx="50" cy="50" r="8" fill="#10b981" stroke="url(#m_senju_gold)" strokeWidth="2" />
-          <circle cx="50" cy="50" r="4" fill="#a7f3d0" />
-          <circle cx="48.5" cy="48.5" r="1.5" fill="#ffffff" />
-        </g>
-
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_senju_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 4. ХЬЮГА (Мандала 8 Триграмм Багуа & Пламя Дзюкэн)
-  // =========================================================================
   {
     id: 'emblem_hyuga',
     name: 'Герб Хьюга (8 Триграмм Багуа & Дзюкэн)',
@@ -368,1350 +432,1668 @@ export const CLAN_EMBLEMS = [
     glowColor: 'shadow-purple-500/40',
     defaultMotto: 'Всеведущий взор не знает слепых зон!',
     desc: 'Священная мандала Багуа: 8 триграмм поля 64 ладоней, перламутровое пламя Мягкого кулака и вращающийся знак Тайцзи (Инь-Ян).',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
-          <linearGradient id="m_hyuga_plat" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="m_hyuga_gold" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="30%" stopColor="#f3e8ff" />
-            <stop offset="65%" stopColor="#c084fc" />
-            <stop offset="85%" stopColor="#7e22ce" />
-            <stop offset="100%" stopColor="#e9d5ff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
+            <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_hyuga_gem" cx="45%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#4c1d95" />
-            <stop offset="45%" stopColor="#2e1065" />
-            <stop offset="80%" stopColor="#110328" />
-            <stop offset="100%" stopColor="#04000d" />
-          </radialGradient>
-          <linearGradient id="m_hyuga_flame" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="45%" stopColor="#f5f3ff" />
-            <stop offset="80%" stopColor="#d8b4fe" />
-            <stop offset="100%" stopColor="#a855f7" />
+
+          <linearGradient id="m_hyuga_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
           </linearGradient>
-          <filter id="m_hyuga_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_hyuga_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#d8b4fe" />
+      <stop offset="35%" stopColor="#c084fc" />
+      <stop offset="75%" stopColor="#7e22ce" />
+      <stop offset="100%" stopColor="#2e1065" />
+    
+          </linearGradient>
+
+          <filter id="m_hyuga_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_hyuga_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#c084fc" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_hyuga_plat)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_hyuga_plat)" strokeWidth="1" strokeDasharray="4 2" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #c084fc)">
+        <circle cx="50" cy="50" r="51" stroke="#c084fc" strokeWidth="1.4" strokeDasharray="4 4" fill="none" />
+        <circle cx="50" cy="50" r="53" stroke="#e9d5ff" strokeWidth="0.8" fill="none" opacity="0.6" />
+      </g>
+    
 
-        <g fill="url(#m_hyuga_plat)">
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_hyuga_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_hyuga_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
+        <g fill="url(#m_hyuga_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_hyuga_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_hyuga_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_hyuga_lacquer)" />
 
-        {/* 8 Триграмм И-Цзин поля Багуа */}
-        <g stroke="url(#m_hyuga_plat)" strokeWidth="1.3" opacity="0.5">
-          {/* Верхняя триграмма Цянь (☰) */}
-          <line x1="44" y1="13.5" x2="56" y2="13.5" />
-          <line x1="44" y1="16" x2="56" y2="16" />
-          <line x1="44" y1="18.5" x2="56" y2="18.5" />
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_hyuga_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_hyuga_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_hyuga_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-          {/* Нижняя триграмма Кунь (☷) */}
-          <line x1="44" y1="81.5" x2="48.5" y2="81.5" /><line x1="51.5" y1="81.5" x2="56" y2="81.5" />
-          <line x1="44" y1="84" x2="48.5" y2="84" /><line x1="51.5" y1="84" x2="56" y2="84" />
-          <line x1="44" y1="86.5" x2="48.5" y2="86.5" /><line x1="51.5" y1="86.5" x2="56" y2="86.5" />
-
-          {/* Правая триграмма Ли (☲) */}
-          <line x1="81.5" y1="45" x2="86.5" y2="45" />
-          <line x1="81.5" y1="50" x2="83.2" y2="50" /><line x1="84.8" y1="50" x2="86.5" y2="50" />
-          <line x1="81.5" y1="55" x2="86.5" y2="55" />
-
-          {/* Левая триграмма Кань (☵) */}
-          <line x1="13.5" y1="45" x2="15.2" y2="45" /><line x1="16.8" y1="45" x2="18.5" y2="45" />
-          <line x1="13.5" y1="50" x2="18.5" y2="50" />
-          <line x1="13.5" y1="55" x2="15.2" y2="55" /><line x1="16.8" y1="55" x2="18.5" y2="55" />
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_hyuga_chisel)">
+        {Array.from({ length: 8 }).map((_, i) => {
+          const deg = i * 45;
+          return (
+            <g key={i} transform={`translate(50,50) rotate(${deg}) translate(0, -32)`}>
+              <line x1="-5" y1="-2" x2="5" y2="-2" stroke="url(#m_hyuga_gold)" strokeWidth="1.2" />
+              <line x1="-5" y1="0" x2="-1" y2="0" stroke="url(#m_hyuga_gold)" strokeWidth="1.2" />
+              <line x1="1" y1="0" x2="5" y2="0" stroke="url(#m_hyuga_gold)" strokeWidth="1.2" />
+              <line x1="-5" y1="2" x2="5" y2="2" stroke="url(#m_hyuga_gold)" strokeWidth="1.2" />
+            </g>
+          );
+        })}
+        <g transform="translate(50,50)">
+          <path d="M 0 -18 A 18 18 0 0 1 0 18 A 9 9 0 0 1 0 0 A 9 9 0 0 0 0 -18 Z" fill="#ffffff" />
+          <path d="M 0 -18 A 18 18 0 0 0 0 18 A 9 9 0 0 0 0 0 A 9 9 0 0 1 0 -18 Z" fill="#09090b" stroke="url(#m_hyuga_gold)" strokeWidth="1.2" />
+          <circle cx="0" cy="-9" r="2.5" fill="#09090b" />
+          <circle cx="0" cy="9" r="2.5" fill="#ffffff" />
         </g>
+      </g>
+    
 
-        <circle cx="50" cy="50" r="31" stroke="url(#m_hyuga_plat)" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.6" />
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 50)" filter="drop-shadow(0 0 8px #c084fc)">
+        <polygon points="0,-8 1.2,-1.5 8,0 1.2,1.5 0,8 -1.2,1.5 -8,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+        <polygon points="0,-4.5 0.8,-1 4.5,0 0.8,1 0,4.5 -0.8,1 -4.5,0 -0.8,-1" fill="#e9d5ff" opacity="0.75" transform="rotate(45)" />
+      </g>
+    
 
-        {/* Перламутровое пламя Дзюкэн */}
-        <g filter="url(#m_hyuga_shadow)">
-          <path 
-            d="M50 17 C39 31 35 44 35 54 C35 67 41 75 50 75 C59 75 65 67 65 54 C65 44 61 31 50 17 Z" 
-            fill="url(#m_hyuga_flame)" 
-            stroke="url(#m_hyuga_plat)" 
-            strokeWidth="2"
-          />
-          <path 
-            d="M50 31 C44 41 42 48 42 55 C42 62 45 67 50 67 C55 67 58 62 58 55 C58 48 56 41 50 31 Z" 
-            fill="#a855f7" 
-            opacity="0.85" 
-          />
-
-          {/* Знак Тайцзи (Инь-Ян) в ядре пламени */}
-          <circle cx="50" cy="55" r="5.5" fill="#ffffff" stroke="#4c1d95" strokeWidth="1.2" />
-          <path d="M50 49.5 A2.75 2.75 0 0 1 50 55 A2.75 2.75 0 0 0 50 60.5 A5.5 5.5 0 0 1 50 49.5 Z" fill="#4c1d95" />
-          <circle cx="50" cy="52.2" r="1" fill="#4c1d95" />
-          <circle cx="50" cy="57.8" r="1" fill="#ffffff" />
-        </g>
-
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_hyuga_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 5. ТЭНРАЙ (Громовой Трезубец & Барабаны Райдзина)
-  // =========================================================================
   {
     id: 'emblem_tenrai',
-    name: 'Герб Тэнрай (Трезубец & Барабаны Райдзина)',
+    name: 'Герб Тэнрай (Небесный Трезубец & Барабаны Райдзина)',
     kanji: '天雷',
     element: 'LIGHTNING',
-    elementBadge: '⚡ Райтон & Икадзути',
-    themeColor: '#38bdf8',
-    bgGradient: 'from-sky-950 via-zinc-950 to-blue-950',
-    borderColor: 'border-sky-500/50',
-    glowColor: 'shadow-sky-500/40',
-    defaultMotto: 'Скорость небесной молнии разит без пощады!',
-    desc: 'Герб громового клана Тэнрай: небесный трезубец разрядов Икадзутигана, 3 барабана Томоэ бога грома Райдзина и искрящиеся электрические дуги Райтона.',
+    elementBadge: '⚡ Райтон & Райдзин',
+    themeColor: '#06b6d4',
+    bgGradient: 'from-cyan-950 via-zinc-950 to-blue-950',
+    borderColor: 'border-cyan-500/50',
+    glowColor: 'shadow-cyan-500/40',
+    defaultMotto: 'Скорость мысли, удар небесного грома!',
+    desc: 'Священный трезубец бога грома Райдзина с тремя барабанами Томоэ и высокочастотными разрядами Райтона.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_tenrai_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#f0f9ff" />
-            <stop offset="30%" stopColor="#38bdf8" />
-            <stop offset="65%" stopColor="#0284c7" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
             <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_tenrai_gem" cx="45%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#075985" />
-            <stop offset="45%" stopColor="#032b43" />
-            <stop offset="80%" stopColor="#011420" />
-            <stop offset="100%" stopColor="#00060a" />
-          </radialGradient>
-          <filter id="m_tenrai_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_tenrai_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_tenrai_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#38bdf8" />
+      <stop offset="35%" stopColor="#0284c7" />
+      <stop offset="75%" stopColor="#0369a1" />
+      <stop offset="100%" stopColor="#082f49" />
+    
+          </linearGradient>
+
+          <filter id="m_tenrai_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_tenrai_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#38bdf8" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_tenrai_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_tenrai_gold)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #06b6d4)">
+        <polyline points="50,-4 54,6 48,12 55,20" stroke="#38bdf8" strokeWidth="1.6" fill="none" />
+        <polyline points="104,50 94,54 88,48 80,55" stroke="#38bdf8" strokeWidth="1.6" fill="none" />
+        <polyline points="50,104 46,94 52,88 45,80" stroke="#38bdf8" strokeWidth="1.6" fill="none" />
+        <polyline points="-4,50 6,46 12,52 20,45" stroke="#38bdf8" strokeWidth="1.6" fill="none" />
+      </g>
+    
 
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_tenrai_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_tenrai_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_tenrai_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_tenrai_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_tenrai_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_tenrai_lacquer)" />
 
-        {/* 3 Барабана Райдзина с черными томоэ */}
-        <g stroke="url(#m_tenrai_gold)" strokeWidth="1.4">
-          <circle cx="50" cy="19" r="6.8" fill="#082f49" />
-          <circle cx="50" cy="19" r="2.6" fill="#38bdf8" />
-          <circle cx="23" cy="66" r="6.8" fill="#082f49" />
-          <circle cx="23" cy="66" r="2.6" fill="#38bdf8" />
-          <circle cx="77" cy="66" r="6.8" fill="#082f49" />
-          <circle cx="77" cy="66" r="2.6" fill="#38bdf8" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_tenrai_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_tenrai_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_tenrai_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Рельефный Громовой Трезубец */}
-        <g filter="url(#m_tenrai_shadow)">
-          <path d="M50 13 L43 42 L53 42 L41 87 L65 48 L53 48 L61 13 Z" fill="url(#m_tenrai_gold)" stroke="#e0f2fe" strokeWidth="1.4" />
-          <path d="M25 33 L36 42 L30 49 L44 55" stroke="#7dd3fc" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <path d="M75 33 L64 42 L70 49 L56 55" stroke="#7dd3fc" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          <circle cx="50" cy="46" r="3.2" fill="#ffffff" />
-        </g>
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_tenrai_chisel)">
+        {/**/}
+        <line x1="50" y1="16" x2="50" y2="84" stroke="url(#m_tenrai_gold)" strokeWidth="4.5" strokeLinecap="round" />
+        <path d="M 34 32 C 34 50 66 50 66 32" fill="none" stroke="url(#m_tenrai_gold)" strokeWidth="3.5" strokeLinecap="round" />
+        <polyline points="34,36 34,22 30,26" fill="none" stroke="url(#m_tenrai_gold)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline points="66,36 66,22 70,26" fill="none" stroke="url(#m_tenrai_gold)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline points="50,22 50,12" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" />
+        {/**/}
+        <circle cx="30" cy="65" r="5" fill="#082f49" stroke="url(#m_tenrai_gold)" strokeWidth="1.2" />
+        <circle cx="70" cy="65" r="5" fill="#082f49" stroke="url(#m_tenrai_gold)" strokeWidth="1.2" />
+        <circle cx="50" cy="78" r="5" fill="#082f49" stroke="url(#m_tenrai_gold)" strokeWidth="1.2" />
+      </g>
+    
 
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 42)" filter="drop-shadow(0 0 8px #06b6d4)">
+        <polygon points="0,-9 1.2,-1.5 9,0 1.2,1.5 0,9 -1.2,1.5 -9,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+        <polygon points="0,-5 0.8,-1 5,0 0.8,1 0,5 -0.8,1 -5,0 -0.8,-1" fill="#38bdf8" opacity="0.75" transform="rotate(45)" />
+      </g>
+    
+
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_tenrai_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 6. СИНКАЙ (Океанический Водоворот & Чешуя Морского Дракона)
-  // =========================================================================
   {
     id: 'emblem_shinkai',
-    name: 'Герб Синкай (Дракон & Глубинная Бездна)',
+    name: 'Герб Синкай (Водный Дракон & Око Аойган)',
     kanji: '深海',
     element: 'WATER',
     elementBadge: '🌊 Суйтон & Аойган',
-    themeColor: '#06b6d4',
-    bgGradient: 'from-cyan-950 via-zinc-950 to-teal-950',
-    borderColor: 'border-cyan-500/50',
-    glowColor: 'shadow-cyan-500/40',
-    defaultMotto: 'Океан сокрушает даже самые крепкие утесы!',
-    desc: 'Лазурный герб морского клана Синкай: закрученный в спираль драконий водоворот Аойгана, пенные гребни волн и жемчужное ядро океанской бездны.',
+    themeColor: '#0ea5e9',
+    bgGradient: 'from-blue-950 via-zinc-950 to-teal-950',
+    borderColor: 'border-blue-500/50',
+    glowColor: 'shadow-blue-500/40',
+    defaultMotto: 'Вода принимает любую форму и сокрушает скалы!',
+    desc: 'Герб повелителей бездны: чеканный золотой обод, пенные гребни Водного Дракона Суйрюдан и лазурная жемчужина Аойгана.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_shinkai_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#ecfeff" />
-            <stop offset="30%" stopColor="#06b6d4" />
-            <stop offset="70%" stopColor="#0e7490" />
-            <stop offset="100%" stopColor="#a5f3fc" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
+            <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_shinkai_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#155e75" />
-            <stop offset="50%" stopColor="#083344" />
-            <stop offset="85%" stopColor="#011822" />
-            <stop offset="100%" stopColor="#00070a" />
-          </radialGradient>
-          <linearGradient id="m_shinkai_drop" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#a5f3fc" />
-            <stop offset="50%" stopColor="#06b6d4" />
-            <stop offset="100%" stopColor="#0891b2" />
+
+          <linearGradient id="m_shinkai_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
           </linearGradient>
-          <filter id="m_shinkai_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.8" />
+
+          <linearGradient id="m_shinkai_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#38bdf8" />
+      <stop offset="35%" stopColor="#0284c7" />
+      <stop offset="75%" stopColor="#0f766e" />
+      <stop offset="100%" stopColor="#042f2e" />
+    
+          </linearGradient>
+
+          <filter id="m_shinkai_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_shinkai_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#06b6d4" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_shinkai_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_shinkai_gold)" strokeWidth="1" strokeDasharray="3 2" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #0ea5e9)">
+        <circle cx="50" cy="50" r="51" stroke="#0ea5e9" strokeWidth="1.4" strokeDasharray="6 3" fill="none" />
+        <path d="M 45 -3 Q 55 5 48 15" stroke="#ffffff" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+        <path d="M 103 45 Q 95 55 85 48" stroke="#ffffff" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+      </g>
+    
 
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_shinkai_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_shinkai_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_shinkai_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_shinkai_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_shinkai_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_shinkai_lacquer)" />
 
-        <g stroke="url(#m_shinkai_gold)" strokeWidth="1.2" opacity="0.35" fill="none">
-          <circle cx="50" cy="50" r="35" strokeDasharray="5 3" />
-          <path d="M15 67 Q33 58 50 67 T85 67" strokeWidth="1.8" />
-          <path d="M19 75 Q35 68 50 75 T81 75" strokeWidth="2.2" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_shinkai_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_shinkai_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_shinkai_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Рельефная тройная капля Аойгана */}
-        <g filter="url(#m_shinkai_shadow)">
-          <path 
-            d="M50 19 C50 19 67 39 67 54 C67 64 59 71 50 71 C41 71 33 64 33 54 C33 39 50 19 50 19 Z" 
-            fill="url(#m_shinkai_drop)" 
-            stroke="url(#m_shinkai_gold)" 
-            strokeWidth="2" 
-          />
-          <path 
-            d="M31 52 C31 52 19 60 19 68 C19 75 25 79 31 79 C37 79 42 75 42 68 C42 60 31 52 31 52 Z" 
-            fill="url(#m_shinkai_drop)" 
-            stroke="url(#m_shinkai_gold)" 
-            strokeWidth="1.4" 
-          />
-          <path 
-            d="M69 52 C69 52 58 60 58 68 C58 75 63 79 69 79 C75 79 81 75 81 68 C81 60 69 52 69 52 Z" 
-            fill="url(#m_shinkai_drop)" 
-            stroke="url(#m_shinkai_gold)" 
-            strokeWidth="1.4" 
-          />
-          <circle cx="50" cy="54" r="5.5" fill="#cffafe" stroke="#0891b2" strokeWidth="1.2" />
-          <circle cx="48.2" cy="52.2" r="1.8" fill="#ffffff" />
-        </g>
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_shinkai_chisel)">
+        {/**/}
+        <path d="M 50 18 C 72 24 82 48 70 70 C 58 64 62 52 50 50 C 38 52 42 64 30 70 C 18 48 28 24 50 18 Z" fill="url(#m_shinkai_lacquer)" stroke="url(#m_shinkai_gold)" strokeWidth="2" />
+        <path d="M 50 25 C 62 30 68 44 60 58 C 50 54 50 40 50 25 Z" fill="#f0fdfa" opacity="0.75" />
+      </g>
+    
 
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 50)" filter="drop-shadow(0 0 8px #0ea5e9)">
+        <circle cx="0" cy="0" r="7" fill="#042f2e" stroke="url(#m_shinkai_gold)" strokeWidth="1.5" />
+        <circle cx="0" cy="0" r="5" fill="#0ea5e9" />
+        <polygon points="0,-8 1.2,-1.5 8,0 1.2,1.5 0,8 -1.2,1.5 -8,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+      </g>
+    
+
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_shinkai_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 7. КИНГАН (Солнечный Алмаз & Спектральные Грани Разлома)
-  // =========================================================================
   {
     id: 'emblem_kingan',
-    name: 'Герб Кинган (Солнечный Алмаз & Разлом)',
+    name: 'Герб Кинган (Золотое Око & Раскол Уязвимостей)',
     kanji: '金眼',
-    element: 'ANALYSIS',
-    elementBadge: '💎 Кинган & Раскол',
+    element: 'EARTH',
+    elementBadge: '💎 Дотон & Кинган',
     themeColor: '#eab308',
     bgGradient: 'from-amber-950 via-zinc-950 to-yellow-950',
     borderColor: 'border-yellow-500/50',
     glowColor: 'shadow-yellow-500/40',
-    defaultMotto: 'В любой броне и технике есть роковой шов!',
-    desc: 'Ограненный кристалл червонного золота Кингана с зеркальными призмами анализа уязвимостей, лазерным прицелом и линиями раскола барьеров.',
+    defaultMotto: 'В любой несокрушимой броне есть роковая трещина!',
+    desc: 'Октаэдрическая призма анализа слабых мест клана Кинган: золотые призматические лучи и алмазное око прозрения.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_kingan_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fffbeb" />
-            <stop offset="30%" stopColor="#fef08a" />
-            <stop offset="60%" stopColor="#ca8a04" />
-            <stop offset="85%" stopColor="#854d0e" />
-            <stop offset="100%" stopColor="#fde047" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
+            <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_kingan_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#854d0e" />
-            <stop offset="50%" stopColor="#451a03" />
-            <stop offset="85%" stopColor="#1a0901" />
-            <stop offset="100%" stopColor="#050100" />
-          </radialGradient>
-          <linearGradient id="m_kingan_prism" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fef9c3" />
-            <stop offset="45%" stopColor="#eab308" />
-            <stop offset="80%" stopColor="#ca8a04" />
-            <stop offset="100%" stopColor="#78350f" />
+
+          <linearGradient id="m_kingan_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
           </linearGradient>
-          <filter id="m_kingan_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_kingan_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#fef08a" />
+      <stop offset="35%" stopColor="#eab308" />
+      <stop offset="75%" stopColor="#a16207" />
+      <stop offset="100%" stopColor="#451a03" />
+    
+          </linearGradient>
+
+          <filter id="m_kingan_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_kingan_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#eab308" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_kingan_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_kingan_gold)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #eab308)">
+        <circle cx="50" cy="50" r="51" stroke="#eab308" strokeWidth="1.4" strokeDasharray="4 2" fill="none" />
+        {Array.from({ length: 8 }).map((_, i) => {
+          const rad = (i * 45 * Math.PI) / 180;
+          return <line key={i} x1={50 + 49 * Math.cos(rad)} y1={50 + 49 * Math.sin(rad)} x2={50 + 54 * Math.cos(rad)} y2={50 + 54 * Math.sin(rad)} stroke="#fef08a" strokeWidth="1.8" strokeLinecap="round" />;
+        })}
+      </g>
+    
 
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_kingan_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_kingan_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_kingan_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_kingan_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_kingan_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_kingan_lacquer)" />
 
-        {/* Лазерные оси разлома с угловыми насечками */}
-        <g stroke="url(#m_kingan_gold)" strokeWidth="0.8" opacity="0.4">
-          <circle cx="50" cy="50" r="36" strokeDasharray="4 4" />
-          <line x1="14" y1="50" x2="86" y2="50" strokeDasharray="2 3" />
-          <line x1="50" y1="14" x2="50" y2="86" strokeDasharray="2 3" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_kingan_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_kingan_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_kingan_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Ограненный кристалл Кингана */}
-        <g filter="url(#m_kingan_shadow)">
-          <polygon points="50,14 83,50 50,86 17,50" fill="url(#m_kingan_prism)" stroke="url(#m_kingan_gold)" strokeWidth="2.2" />
-          <polygon points="50,25 72,50 50,75 28,50" fill="#a16207" stroke="url(#m_kingan_gold)" strokeWidth="1.4" />
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_kingan_chisel)">
+        {/**/}
+        <polygon points="50,16 76,46 50,84 24,46" fill="url(#m_kingan_lacquer)" stroke="url(#m_kingan_gold)" strokeWidth="2.2" />
+        <polygon points="50,16 64,46 50,84 36,46" fill="#fef08a" opacity="0.5" />
+        <line x1="24" y1="46" x2="76" y2="46" stroke="url(#m_kingan_gold)" strokeWidth="2" />
+      </g>
+    
 
-          {/* Центральный солнечный диск */}
-          <circle cx="50" cy="50" r="14" fill="url(#m_kingan_gold)" stroke="#713f12" strokeWidth="1.4" />
-          <circle cx="50" cy="50" r="6.5" fill="#ffffff" />
-          <circle cx="48.5" cy="48.5" r="2" fill="#fef08a" />
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 46)" filter="drop-shadow(0 0 8px #eab308)">
+        <circle cx="0" cy="0" r="6" fill="#451a03" stroke="url(#m_kingan_gold)" strokeWidth="1.5" />
+        <polygon points="0,-8 1.2,-1.5 8,0 1.2,1.5 0,8 -1.2,1.5 -8,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+      </g>
+    
 
-          {/* 4 Золотые призматические вершины */}
-          <circle cx="50" cy="14" r="2.4" fill="#ffffff" stroke="url(#m_kingan_gold)" strokeWidth="0.8" />
-          <circle cx="83" cy="50" r="2.4" fill="#ffffff" stroke="url(#m_kingan_gold)" strokeWidth="0.8" />
-          <circle cx="50" cy="86" r="2.4" fill="#ffffff" stroke="url(#m_kingan_gold)" strokeWidth="0.8" />
-          <circle cx="17" cy="50" r="2.4" fill="#ffffff" stroke="url(#m_kingan_gold)" strokeWidth="0.8" />
-        </g>
-
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_kingan_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 8. НАРА (Золотые Оленьи Рога & Зеркало Теней Каге)
-  // =========================================================================
   {
     id: 'emblem_nara',
-    name: 'Герб Нара (Оленьи Рога & Зеркало Теней)',
+    name: 'Герб Нара (Оленьи Рога & Теневой Компас)',
     kanji: '奈良',
     element: 'SHADOW',
-    elementBadge: '🌑 Каге & Интеллект',
+    elementBadge: '🦌 Тень Каге & Инь',
     themeColor: '#84cc16',
-    bgGradient: 'from-lime-950 via-zinc-950 to-emerald-950',
+    bgGradient: 'from-lime-950 via-zinc-950 to-neutral-950',
     borderColor: 'border-lime-500/50',
     glowColor: 'shadow-lime-500/40',
-    defaultMotto: 'Победа куется тактикой и холодным расчетом!',
-    desc: 'Благородные ветвистые рога священного белого оленя клана Нара на фоне зеркала теневых нитей Каге Мане но Дзюцу.',
+    defaultMotto: 'Тень подчиняет тело, разум предвидит сотню ходов!',
+    desc: 'Ветвистые золотые оленьи рога священного леса Нара с черным обсидиановым компасом Теневого подражания.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_nara_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#f7fee7" />
-            <stop offset="25%" stopColor="#bef264" />
-            <stop offset="55%" stopColor="#65a30d" />
-            <stop offset="85%" stopColor="#365314" />
-            <stop offset="100%" stopColor="#d9f99d" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
+            <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_nara_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#166534" />
-            <stop offset="45%" stopColor="#052e16" />
-            <stop offset="80%" stopColor="#02140a" />
-            <stop offset="100%" stopColor="#000703" />
-          </radialGradient>
-          <filter id="m_nara_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_nara_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_nara_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#a3e635" />
+      <stop offset="35%" stopColor="#65a30d" />
+      <stop offset="75%" stopColor="#3f6212" />
+      <stop offset="100%" stopColor="#142605" />
+    
+          </linearGradient>
+
+          <filter id="m_nara_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_nara_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#84cc16" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_nara_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_nara_gold)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #84cc16)">
+        <circle cx="50" cy="50" r="51" stroke="#84cc16" strokeWidth="1.4" strokeDasharray="6 3" fill="none" />
+        <polyline points="48,-2 52,8 50,15" stroke="#a3e635" strokeWidth="1.6" fill="none" />
+      </g>
+    
 
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_nara_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_nara_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_nara_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_nara_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_nara_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_nara_lacquer)" />
 
-        {/* Обсидиановое зеркало тени */}
-        <circle cx="50" cy="50" r="29" fill="#09090b" stroke="url(#m_nara_gold)" strokeWidth="2" />
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_nara_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_nara_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_nara_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Теневые щупальца Каге Мане */}
-        <g stroke="#65a30d" strokeWidth="1.6" strokeLinecap="round" opacity="0.65" fill="none">
-          <path d="M50 50 Q36 60 26 52 Q18 46 22 36" />
-          <path d="M50 50 Q64 60 74 52 Q82 46 78 36" />
-          <path d="M50 50 Q42 34 50 24" />
-        </g>
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_nara_chisel)">
+        {/**/}
+        <path d="M 50 78 C 45 60 30 45 22 28 C 26 34 32 35 34 26 C 36 34 44 38 42 48" fill="none" stroke="url(#m_nara_gold)" strokeWidth="3" strokeLinecap="round" />
+        <path d="M 50 78 C 55 60 70 45 78 28 C 74 34 68 35 66 26 C 64 34 56 38 58 48" fill="none" stroke="url(#m_nara_gold)" strokeWidth="3" strokeLinecap="round" />
+      </g>
+    
 
-        {/* Рельефные золотые оленьи рога */}
-        <g filter="url(#m_nara_shadow)" stroke="url(#m_nara_gold)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" fill="none">
-          <path d="M48 68 C46 54 38 42 26 34" />
-          <path d="M38 48 C30 44 24 45 18 43" />
-          <path d="M44 68 C44 48 38 32 32 20" />
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 52)" filter="drop-shadow(0 0 8px #84cc16)">
+        <circle cx="0" cy="0" r="7" fill="#000000" stroke="url(#m_nara_gold)" strokeWidth="1.5" />
+        <circle cx="0" cy="0" r="4.5" fill="#3f6212" />
+        <polygon points="0,-8 1.2,-1.5 8,0 1.2,1.5 0,8 -1.2,1.5 -8,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+      </g>
+    
 
-          <path d="M52 68 C54 54 62 42 74 34" />
-          <path d="M62 48 C70 44 76 45 82 43" />
-          <path d="M56 68 C56 48 62 32 68 20" />
-
-          <polygon points="50,62 46,74 54,74" fill="url(#m_nara_gold)" strokeWidth="1" />
-        </g>
-
-        <circle cx="50" cy="74" r="3.8" fill="#a3e635" stroke="#365314" strokeWidth="1.2" />
-
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_nara_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 9. АКИМИЧИ (Кандзи «食» & Крылья Чакровой Бабочки)
-  // =========================================================================
   {
     id: 'emblem_akimichi',
-    name: 'Герб Акимичи (Кандзи «食» & Бабочка)',
+    name: 'Герб Акимичи (Кандзи Сёку & Крылья Бабочки)',
     kanji: '秋道',
     element: 'YANG',
-    elementBadge: '💥 Калории & Титан',
+    elementBadge: '🦋 Ян & Бабочка Чоджи',
     themeColor: '#f43f5e',
     bgGradient: 'from-rose-950 via-zinc-950 to-pink-950',
     borderColor: 'border-rose-500/50',
     glowColor: 'shadow-rose-500/40',
-    defaultMotto: 'Истинная мощь рождается в великом теле!',
-    desc: 'Величественные сияющие крылья чакровой бабочки Чодан Бакугеки и рубиновый щит со священным золотым рельефным кандзи «食» (Пища / Богатырская мощь).',
+    defaultMotto: 'Калории обращаются в сокрушительную мощь!',
+    desc: 'Бронированный щит богатырей Акимичи: золотой каллиграфический кандзи 『食』 (Пища) и сияющие крылья бабочки чакры.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_aki_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fff1f2" />
-            <stop offset="25%" stopColor="#fecdd3" />
-            <stop offset="55%" stopColor="#f43f5e" />
-            <stop offset="85%" stopColor="#9f1239" />
-            <stop offset="100%" stopColor="#fde047" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
+            <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_aki_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#9f1239" />
-            <stop offset="45%" stopColor="#4c0519" />
-            <stop offset="80%" stopColor="#1f020a" />
-            <stop offset="100%" stopColor="#080002" />
-          </radialGradient>
-          <filter id="m_aki_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_aki_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_aki_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#fb7185" />
+      <stop offset="35%" stopColor="#e11d48" />
+      <stop offset="75%" stopColor="#9f1239" />
+      <stop offset="100%" stopColor="#4c0519" />
+    
+          </linearGradient>
+
+          <filter id="m_aki_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_aki_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#f43f5e" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_aki_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_aki_gold)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #f43f5e)">
+        <circle cx="50" cy="50" r="51" stroke="#f43f5e" strokeWidth="1.4" strokeDasharray="8 4" fill="none" />
+      </g>
+    
 
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_aki_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_aki_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_aki_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_aki_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_aki_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_aki_lacquer)" />
 
-        {/* Крылья бабочки Чодан Бакугеки */}
-        <g opacity="0.65" stroke="url(#m_aki_gold)" strokeWidth="1.4">
-          <path d="M50 50 C28 16 8 22 12 48 C15 67 33 73 50 56 Z" fill="#fb7185" fillOpacity="0.45" />
-          <path d="M50 50 C72 16 92 22 88 48 C85 67 67 73 50 56 Z" fill="#fb7185" fillOpacity="0.45" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_aki_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_aki_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_aki_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Центральный рубиновый щит с кандзи 食 */}
-        <g filter="url(#m_aki_shadow)">
-          <circle cx="50" cy="50" r="23" fill="#e11d48" stroke="url(#m_aki_gold)" strokeWidth="2.6" />
-          <circle cx="50" cy="50" r="20" stroke="#fda4af" strokeWidth="0.9" />
-          <text 
-            x="50" 
-            y="59" 
-            fontSize="26" 
-            fontWeight="900" 
-            fill="url(#m_aki_gold)" 
-            stroke="#881337" 
-            strokeWidth="0.8" 
-            textAnchor="middle" 
-            fontFamily="'Hiragino Mincho Pro', 'Yu Mincho', serif"
-          >
-            食
-          </text>
-        </g>
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_aki_chisel)">
+        {/**/}
+        <circle cx="50" cy="50" r="26" fill="url(#m_aki_lacquer)" stroke="url(#m_aki_gold)" strokeWidth="2" />
+        <text x="50" y="58" textAnchor="middle" fill="url(#m_aki_gold)" fontSize="24" fontWeight="900" fontFamily="serif">食</text>
+      </g>
+    
 
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 24)" filter="drop-shadow(0 0 8px #f43f5e)">
+        <polygon points="0,-7 1,-1.2 7,0 1,1.2 0,7 -1,1.2 -7,0 -1,-1.2" fill="#ffffff" opacity="0.95" />
+      </g>
+    
+
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_aki_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 10. ЯМАНАКА (Цветок Хаги & Пси-Мандала Синтенсин)
-  // =========================================================================
   {
     id: 'emblem_yamanaka',
-    name: 'Герб Яманака (Цветок Хаги & Пси-Кольца)',
+    name: 'Герб Яманака (Цветок Хаги & Пси-Око)',
     kanji: '山中',
-    element: 'YIN',
-    elementBadge: '🔮 Телепатия & Разум',
+    element: 'MIND',
+    elementBadge: '🌸 Телепатия & Синтенсин',
     themeColor: '#a855f7',
-    bgGradient: 'from-purple-950 via-zinc-950 to-violet-950',
+    bgGradient: 'from-purple-950 via-zinc-950 to-fuchsia-950',
     borderColor: 'border-purple-500/50',
     glowColor: 'shadow-purple-500/40',
-    defaultMotto: 'Разум проникает сквозь любые преграды!',
-    desc: 'Аметистовый цветок кустарникового клевера Хаги с золотой сердцевиной и кольцами телепатической пси-связи Синтенсин но Дзюцу.',
+    defaultMotto: 'Чужой разум открыт перед истинным мастером!',
+    desc: 'Священный цветок клевера Хаги: концентрические телепатические кольца Синтенсин но Дзюцу и ядро ментального проникновения.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
-          <linearGradient id="m_yama_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#faf5ff" />
-            <stop offset="25%" stopColor="#e9d5ff" />
-            <stop offset="55%" stopColor="#a855f7" />
-            <stop offset="85%" stopColor="#6b21a8" />
+          <linearGradient id="m_yam_gold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
             <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_yama_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#6b21a8" />
-            <stop offset="45%" stopColor="#3b0764" />
-            <stop offset="80%" stopColor="#1a012d" />
-            <stop offset="100%" stopColor="#06000a" />
-          </radialGradient>
-          <filter id="m_yama_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.8" />
+
+          <linearGradient id="m_yam_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_yam_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#c084fc" />
+      <stop offset="35%" stopColor="#9333ea" />
+      <stop offset="75%" stopColor="#6b21a8" />
+      <stop offset="100%" stopColor="#3b0764" />
+    
+          </linearGradient>
+
+          <filter id="m_yam_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
-          <radialGradient id="m_yama_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+
+          <radialGradient id="m_yam_glint" cx="35%" cy="30%" r="50%">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#a855f7" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_yama_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_yama_gold)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #a855f7)">
+        <circle cx="50" cy="50" r="51" stroke="#a855f7" strokeWidth="1.4" strokeDasharray="5 5" fill="none" />
+      </g>
+    
 
-        <g fill="url(#m_yama_gold)">
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_yam_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_yam_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
+        <g fill="url(#m_yam_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_yama_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_yam_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_yam_lacquer)" />
 
-        {/* Кольца телепатической пси-связи */}
-        <g stroke="url(#m_yama_gold)" strokeWidth="0.9" opacity="0.45" fill="none">
-          <circle cx="50" cy="50" r="35" strokeDasharray="4 3" />
-          <circle cx="50" cy="50" r="27" strokeDasharray="3 2" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_yam_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_yam_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_yam_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Аметистовый цветок кустарникового клевера Хаги */}
-        <g filter="url(#m_yama_shadow)">
-          <circle cx="50" cy="33" r="11" fill="#9333ea" stroke="url(#m_yama_gold)" strokeWidth="1.4" />
-          <circle cx="65" cy="44" r="11" fill="#7e22ce" stroke="url(#m_yama_gold)" strokeWidth="1.4" />
-          <circle cx="60" cy="63" r="11" fill="#6b21a8" stroke="url(#m_yama_gold)" strokeWidth="1.4" />
-          <circle cx="40" cy="63" r="11" fill="#6b21a8" stroke="url(#m_yama_gold)" strokeWidth="1.4" />
-          <circle cx="35" cy="44" r="11" fill="#7e22ce" stroke="url(#m_yama_gold)" strokeWidth="1.4" />
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_yam_chisel)">
+        {/**/}
+        <path d="M 50 50 C 40 30 40 18 50 18 C 60 18 60 30 50 50 Z" fill="url(#m_yam_lacquer)" stroke="url(#m_yam_gold)" strokeWidth="1.5" />
+        <path d="M 50 50 C 30 40 18 40 18 50 C 18 60 30 60 50 50 Z" fill="url(#m_yam_lacquer)" stroke="url(#m_yam_gold)" strokeWidth="1.5" transform="rotate(120 50 50)" />
+        <path d="M 50 50 C 30 40 18 40 18 50 C 18 60 30 60 50 50 Z" fill="url(#m_yam_lacquer)" stroke="url(#m_yam_gold)" strokeWidth="1.5" transform="rotate(240 50 50)" />
+      </g>
+    
 
-          {/* Золотая сердцевина цветка с глазом разума */}
-          <circle cx="50" cy="50" r="8.5" fill="#f3e8ff" stroke="url(#m_yama_gold)" strokeWidth="2.2" />
-          <circle cx="50" cy="50" r="4" fill="#7e22ce" />
-          <circle cx="48.5" cy="48.5" r="1.2" fill="#ffffff" />
-        </g>
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 50)" filter="drop-shadow(0 0 8px #a855f7)">
+        <circle cx="0" cy="0" r="6" fill="#3b0764" stroke="url(#m_yam_gold)" strokeWidth="1.5" />
+        <polygon points="0,-8 1.2,-1.5 8,0 1.2,1.5 0,8 -1.2,1.5 -8,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+      </g>
+    
 
-        <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_yama_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
+        <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_yam_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 11. АБУРАМЕ (Изумрудный Кикайчу & Соты Роя)
-  // =========================================================================
   {
     id: 'emblem_aburame',
-    name: 'Герб Абураме (Кикайчу & Соты Роя)',
+    name: 'Герб Абурамэ (Скарабей Кикайчу & Соты)',
     kanji: '油女',
     element: 'INSECTS',
-    elementBadge: '🪲 Кикайчу & Рой',
+    elementBadge: '🪲 Кикайчу & Хитин',
     themeColor: '#14b8a6',
-    bgGradient: 'from-teal-950 via-zinc-950 to-slate-950',
+    bgGradient: 'from-teal-950 via-zinc-950 to-emerald-950',
     borderColor: 'border-teal-500/50',
     glowColor: 'shadow-teal-500/40',
-    defaultMotto: 'Тихий рой поглощает любую чакру!',
-    desc: 'Хитиновый изумрудный скарабей Кикайчу с золотыми рунами симбиоза на панцире и шестиугольными сотами защитного гнезда.',
+    defaultMotto: 'Тихий рой поглощает чакру без остатка.',
+    desc: 'Хитиновый скарабей Кикайчу в золотой оправе с сотовой решеткой поглощения чакры.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_abu_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#f0fdfa" />
-            <stop offset="25%" stopColor="#99f6e4" />
-            <stop offset="55%" stopColor="#0d9488" />
-            <stop offset="85%" stopColor="#115e59" />
-            <stop offset="100%" stopColor="#5eead4" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
+            <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_abu_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#134e4a" />
-            <stop offset="45%" stopColor="#042f2e" />
-            <stop offset="80%" stopColor="#011615" />
-            <stop offset="100%" stopColor="#000606" />
-          </radialGradient>
-          <filter id="m_abu_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_abu_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_abu_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#2dd4bf" />
+      <stop offset="35%" stopColor="#0d9488" />
+      <stop offset="75%" stopColor="#115e59" />
+      <stop offset="100%" stopColor="#042f2e" />
+    
+          </linearGradient>
+
+          <filter id="m_abu_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_abu_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#14b8a6" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_abu_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_abu_gold)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #14b8a6)">
+        <circle cx="50" cy="50" r="51" stroke="#14b8a6" strokeWidth="1.4" strokeDasharray="3 3" fill="none" />
+      </g>
+    
 
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_abu_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_abu_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_abu_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_abu_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_abu_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_abu_lacquer)" />
 
-        {/* Сотовая решетка роя жуков */}
-        <g stroke="url(#m_abu_gold)" strokeWidth="0.8" opacity="0.25" fill="none">
-          <polygon points="50,17 59,22 59,33 50,38 41,33 41,22" />
-          <polygon points="68,27 77,32 77,43 68,48 59,43 59,32" />
-          <polygon points="32,27 41,32 41,43 32,48 23,43 23,32" />
-          <polygon points="50,63 59,68 59,79 50,84 41,79 41,68" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_abu_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_abu_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_abu_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Рельефный жук-скарабей Кикайчу */}
-        <g filter="url(#m_abu_shadow)">
-          <path d="M33 44 L19 38 M31 54 L15 54 M33 66 L19 72" stroke="url(#m_abu_gold)" strokeWidth="2.4" strokeLinecap="round" />
-          <path d="M67 44 L81 38 M69 54 L85 54 M67 66 L81 72" stroke="url(#m_abu_gold)" strokeWidth="2.4" strokeLinecap="round" />
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_abu_chisel)">
+        {/**/}
+        <ellipse cx="50" cy="52" rx="14" ry="18" fill="url(#m_abu_lacquer)" stroke="url(#m_abu_gold)" strokeWidth="2" />
+        <line x1="50" y1="34" x2="50" y2="70" stroke="url(#m_abu_gold)" strokeWidth="1.5" />
+        <circle cx="50" cy="30" r="6" fill="#042f2e" stroke="url(#m_abu_gold)" strokeWidth="1.5" />
+      </g>
+    
 
-          {/* Панцирь-надкрылья */}
-          <ellipse cx="50" cy="55" rx="19.5" ry="25.5" fill="#0d9488" stroke="url(#m_abu_gold)" strokeWidth="2.2" />
-          <line x1="50" y1="29" x2="50" y2="81" stroke="url(#m_abu_gold)" strokeWidth="2" />
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 30)" filter="drop-shadow(0 0 8px #14b8a6)">
+        <polygon points="0,-7 1,-1.2 7,0 1,1.2 0,7 -1,1.2 -7,0 -1,-1.2" fill="#ffffff" opacity="0.95" />
+      </g>
+    
 
-          {/* Голова и усики */}
-          <ellipse cx="50" cy="27" rx="10.5" ry="8.5" fill="#134e4a" stroke="url(#m_abu_gold)" strokeWidth="1.8" />
-          <path d="M43 23 Q33 13 27 16" stroke="url(#m_abu_gold)" strokeWidth="2" fill="none" strokeLinecap="round" />
-          <path d="M57 23 Q67 13 73 16" stroke="url(#m_abu_gold)" strokeWidth="2" fill="none" strokeLinecap="round" />
-
-          {/* Чакровые люминесцентные точки */}
-          <circle cx="43" cy="49" r="2.2" fill="#5eead4" />
-          <circle cx="57" cy="49" r="2.2" fill="#5eead4" />
-          <circle cx="43" cy="62" r="2.2" fill="#5eead4" />
-          <circle cx="57" cy="62" r="2.2" fill="#5eead4" />
-        </g>
-
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_abu_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 12. ИНУЗУКА (Алые Клыки & Звериный След Нинкен)
-  // =========================================================================
   {
     id: 'emblem_inuzuka',
-    name: 'Герб Инузука (Алые Клыки & Нинкен)',
+    name: 'Герб Инузука (Алые Клыки & Оттиск Лапы)',
     kanji: '犬塚',
     element: 'BEAST',
-    elementBadge: '🐺 Тайдзюцу & Нинкен',
-    themeColor: '#ef4444',
-    bgGradient: 'from-red-950 via-zinc-950 to-amber-950',
-    borderColor: 'border-red-500/50',
-    glowColor: 'shadow-red-500/40',
-    defaultMotto: 'Верность стае и ярость зверя превыше всего!',
-    desc: 'Массивные ритуальные клыки клана Инузука в золотом обрамлении, следы звериных когтей и золотой оттиск лапы боевого нинкена Акамару.',
+    elementBadge: '🐾 Звериный Нинкен & Гацуга',
+    themeColor: '#ea580c',
+    bgGradient: 'from-amber-950 via-zinc-950 to-red-950',
+    borderColor: 'border-orange-600/50',
+    glowColor: 'shadow-orange-600/40',
+    defaultMotto: 'Два тела — одно сердце дикого зверя!',
+    desc: 'Священные алые клыки на щеках шиноби Инузука с золотым оттиском лапы нинкена и диким огнем чакры.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_inu_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fff1f2" />
-            <stop offset="25%" stopColor="#fecaca" />
-            <stop offset="55%" stopColor="#ef4444" />
-            <stop offset="85%" stopColor="#991b1b" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
             <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_inu_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#7f1d1d" />
-            <stop offset="45%" stopColor="#450a0a" />
-            <stop offset="80%" stopColor="#1a0202" />
-            <stop offset="100%" stopColor="#050000" />
-          </radialGradient>
-          <linearGradient id="m_inu_fang" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#ff4d4d" />
-            <stop offset="45%" stopColor="#dc2626" />
-            <stop offset="85%" stopColor="#991b1b" />
-            <stop offset="100%" stopColor="#450a0a" />
+
+          <linearGradient id="m_inu_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
           </linearGradient>
-          <filter id="m_inu_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_inu_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#fb923c" />
+      <stop offset="35%" stopColor="#ea580c" />
+      <stop offset="75%" stopColor="#9a3412" />
+      <stop offset="100%" stopColor="#431407" />
+    
+          </linearGradient>
+
+          <filter id="m_inu_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_inu_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#ef4444" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_inu_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_inu_gold)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #ea580c)">
+        <circle cx="50" cy="50" r="51" stroke="#ea580c" strokeWidth="1.4" strokeDasharray="6 3" fill="none" />
+      </g>
+    
 
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_inu_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_inu_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_inu_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_inu_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_inu_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_inu_lacquer)" />
 
-        {/* 4 следа когтей на фоне */}
-        <g stroke="#991b1b" strokeWidth="2.2" strokeLinecap="round" opacity="0.45">
-          <line x1="26" y1="19" x2="36" y2="34" />
-          <line x1="42" y1="15" x2="48" y2="29" />
-          <line x1="58" y1="15" x2="52" y2="29" />
-          <line x1="74" y1="19" x2="64" y2="34" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_inu_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_inu_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_inu_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Рельефные клыки Инузука */}
-        <g filter="url(#m_inu_shadow)">
-          <polygon points="29,21 44,21 37,77" fill="url(#m_inu_fang)" stroke="url(#m_inu_gold)" strokeWidth="2.2" strokeLinejoin="round" />
-          <polygon points="56,21 71,21 63,77" fill="url(#m_inu_fang)" stroke="url(#m_inu_gold)" strokeWidth="2.2" strokeLinejoin="round" />
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_inu_chisel)">
+        {/**/}
+        <path d="M 36 28 C 30 45 36 68 44 76 C 42 62 44 45 42 28 Z" fill="url(#m_inu_lacquer)" stroke="url(#m_inu_gold)" strokeWidth="1.8" />
+        <path d="M 64 28 C 70 45 64 68 56 76 C 58 62 56 45 58 28 Z" fill="url(#m_inu_lacquer)" stroke="url(#m_inu_gold)" strokeWidth="1.8" />
+      </g>
+    
 
-          {/* Золотой оттиск лапы нинкена */}
-          <circle cx="50" cy="46" r="4.2" fill="url(#m_inu_gold)" stroke="#7f1d1d" strokeWidth="0.8" />
-          <circle cx="43" cy="38" r="2.4" fill="url(#m_inu_gold)" />
-          <circle cx="48" cy="34" r="2.4" fill="url(#m_inu_gold)" />
-          <circle cx="54" cy="34" r="2.4" fill="url(#m_inu_gold)" />
-          <circle cx="59" cy="38" r="2.4" fill="url(#m_inu_gold)" />
-        </g>
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 48)" filter="drop-shadow(0 0 8px #ea580c)">
+        <polygon points="0,-8 1.2,-1.5 8,0 1.2,1.5 0,8 -1.2,1.5 -8,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+      </g>
+    
 
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_inu_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 13. САРУТОБИ (Факел 5 Стихий & Алмазный Посох Энмы)
-  // =========================================================================
   {
     id: 'emblem_sarutobi',
-    name: 'Герб Сарутоби (Факел 5 Стихий & Посох Энмы)',
+    name: 'Герб Сарутоби (Посох Энмы & 5 Стихий)',
     kanji: '猿飛',
-    element: 'FIRE',
-    elementBadge: '🔥 5 Стихий & Энма',
-    themeColor: '#f97316',
-    bgGradient: 'from-orange-950 via-zinc-950 to-amber-950',
-    borderColor: 'border-orange-500/50',
-    glowColor: 'shadow-orange-500/40',
-    defaultMotto: 'Листья кружатся там, где горит истинный Огонь!',
-    desc: 'Священный пятилепестковый факел природных стихий клана Сарутоби, алмазный медальон посоха Энмы и 5 цветных драгоценных камней стихий.',
+    element: 'ALL_FIVE',
+    elementBadge: '🔥 5 Стихий & Король Обезьян',
+    themeColor: '#f59e0b',
+    bgGradient: 'from-amber-950 via-zinc-950 to-orange-950',
+    borderColor: 'border-amber-500/50',
+    glowColor: 'shadow-amber-500/40',
+    defaultMotto: 'Листья Конохи взмывают в небо, огонь освещает деревню!',
+    desc: 'Алмазный несокрушимый шест царя обезьян Энмы с 5 стихийными цветными сферами чакры.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_saru_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fff7ed" />
-            <stop offset="30%" stopColor="#fb923c" />
-            <stop offset="65%" stopColor="#c2410c" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
             <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_saru_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#9a3412" />
-            <stop offset="45%" stopColor="#431407" />
-            <stop offset="80%" stopColor="#1c0602" />
-            <stop offset="100%" stopColor="#050100" />
-          </radialGradient>
-          <filter id="m_saru_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_saru_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_saru_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#fde047" />
+      <stop offset="35%" stopColor="#d97706" />
+      <stop offset="75%" stopColor="#92400e" />
+      <stop offset="100%" stopColor="#451a03" />
+    
+          </linearGradient>
+
+          <filter id="m_saru_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_saru_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#f97316" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_saru_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_saru_gold)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #f59e0b)">
+        <circle cx="50" cy="50" r="51" stroke="#f59e0b" strokeWidth="1.4" strokeDasharray="7 3" fill="none" />
+      </g>
+    
 
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_saru_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_saru_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_saru_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_saru_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_saru_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_saru_lacquer)" />
 
-        {/* 5 самоцветов стихий по ободу */}
-        <g stroke="#18181b" strokeWidth="1">
-          <circle cx="50" cy="14" r="3.2" fill="#ef4444" title="Огонь" />
-          <circle cx="79" cy="34" r="3.2" fill="#38bdf8" title="Молния" />
-          <circle cx="68" cy="74" r="3.2" fill="#10b981" title="Ветер" />
-          <circle cx="32" cy="74" r="3.2" fill="#ca8a04" title="Земля" />
-          <circle cx="21" cy="34" r="3.2" fill="#06b6d4" title="Вода" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_saru_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_saru_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_saru_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Рельефный Факел Сарутоби */}
-        <g filter="url(#m_saru_shadow)">
-          <path 
-            d="M50 15 Q65 35 59 48 Q71 44 67 60 Q61 77 50 83 Q39 77 33 60 Q29 44 41 48 Q35 35 50 15 Z" 
-            fill="url(#m_saru_gold)" 
-            stroke="#7c2d12" 
-            strokeWidth="2.2" 
-          />
-          {/* Алмазный медальон посоха Энмы */}
-          <polygon points="50,45 59,56 50,67 41,56" fill="#fef08a" stroke="#451a03" strokeWidth="1.4" />
-          <circle cx="50" cy="56" r="3.5" fill="#ea580c" />
-          <circle cx="49" cy="55" r="1.2" fill="#ffffff" />
-        </g>
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_saru_chisel)">
+        {/**/}
+        <rect x="46" y="16" width="8" height="68" rx="3" fill="#09090b" stroke="url(#m_saru_gold)" strokeWidth="2" />
+        <rect x="44" y="22" width="12" height="4" fill="url(#m_saru_gold)" />
+        <rect x="44" y="74" width="12" height="4" fill="url(#m_saru_gold)" />
+      </g>
+    
 
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 50)" filter="drop-shadow(0 0 8px #f59e0b)">
+        <polygon points="0,-8 1.2,-1.5 8,0 1.2,1.5 0,8 -1.2,1.5 -8,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+      </g>
+    
+
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_saru_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 14. ХАТАКЕ (Клинок Белого Клыка & Шепот Райкири)
-  // =========================================================================
   {
     id: 'emblem_hatake',
-    name: 'Герб Хатаке (Клинок Белого Клыка & Райкири)',
+    name: 'Герб Хатакэ (Белый Клык & Скрещенные Танто)',
     kanji: 'はたけ',
     element: 'LIGHTNING',
-    elementBadge: '⚡ Райкири & Белый Клык',
-    themeColor: '#94a3b8',
-    bgGradient: 'from-slate-950 via-zinc-950 to-zinc-900',
+    elementBadge: '⚔️ Белый Клык & Райкири',
+    themeColor: '#cbd5e1',
+    bgGradient: 'from-slate-900 via-zinc-950 to-blue-950',
     borderColor: 'border-slate-400/50',
     glowColor: 'shadow-slate-400/40',
-    defaultMotto: 'Те, кто нарушают правила — отбросы, но те, кто бросают друзей — хуже отбросов!',
-    desc: 'Граненый серебряный танто Сакумо и Какаши Хатаке из дамасской стали с зеркальной линией закалки хамон и ослепительными искрами Райкири.',
+    defaultMotto: 'Тот, кто предает друзей — хуже мусора!',
+    desc: 'Скрещенные фамильные клинки Белого Клыка Конохи (Хатакэ Сакумо) с искрящимся серебряным лезвием чакры Райтона.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
-          <linearGradient id="m_hatake_silver" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="m_hatake_gold" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="30%" stopColor="#cbd5e1" />
-            <stop offset="65%" stopColor="#64748b" />
-            <stop offset="100%" stopColor="#e2e8f0" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
+            <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_hatake_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#334155" />
-            <stop offset="45%" stopColor="#0f172a" />
-            <stop offset="80%" stopColor="#050811" />
-            <stop offset="100%" stopColor="#010204" />
-          </radialGradient>
-          <filter id="m_hatake_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_hatake_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_hatake_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#ffffff" />
+      <stop offset="35%" stopColor="#94a3b8" />
+      <stop offset="75%" stopColor="#475569" />
+      <stop offset="100%" stopColor="#0f172a" />
+    
+          </linearGradient>
+
+          <filter id="m_hatake_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_hatake_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#94a3b8" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_hatake_silver)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_hatake_silver)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #38bdf8)">
+        <circle cx="50" cy="50" r="51" stroke="#38bdf8" strokeWidth="1.4" strokeDasharray="5 5" fill="none" />
+      </g>
+    
 
-        <g fill="url(#m_hatake_silver)">
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_hatake_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_hatake_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
+        <g fill="url(#m_hatake_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_hatake_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_hatake_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_hatake_lacquer)" />
 
-        {/* Разряды молний Райкири */}
-        <g stroke="#38bdf8" strokeWidth="2.4" strokeLinecap="round" fill="none">
-          <path d="M26 38 L38 44 L31 52 L48 55" />
-          <path d="M74 38 L62 44 L69 52 L52 55" />
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_hatake_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_hatake_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_hatake_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
+
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_hatake_chisel)">
+        {/**/}
+        <g transform="translate(50,50) rotate(45)">
+          <line x1="-32" y1="0" x2="32" y2="0" stroke="url(#m_hatake_gold)" strokeWidth="3" strokeLinecap="round" />
+          <line x1="-32" y1="-0.8" x2="32" y2="-0.8" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" />
         </g>
-
-        {/* Рельефный танто Белого Клыка */}
-        <g filter="url(#m_hatake_shadow)">
-          <path d="M50 13 L57 24 L52 66 L48 66 L43 24 Z" fill="url(#m_hatake_silver)" stroke="#ffffff" strokeWidth="1.4" />
-          <line x1="50" y1="17" x2="50" y2="65" stroke="#ffffff" strokeWidth="1.2" opacity="0.9" />
-
-          {/* Гарда цуба */}
-          <rect x="40" y="66" width="20" height="5.5" rx="1.5" fill="#475569" stroke="url(#m_hatake_silver)" strokeWidth="1.2" />
-
-          {/* Рукоять цука с оплеткой */}
-          <rect x="44.5" y="71.5" width="11" height="17" rx="1.2" fill="#1e293b" stroke="url(#m_hatake_silver)" strokeWidth="1" />
-          <line x1="44.5" y1="76" x2="55.5" y2="76" stroke="#94a3b8" strokeWidth="1.4" />
-          <line x1="44.5" y1="82" x2="55.5" y2="82" stroke="#94a3b8" strokeWidth="1.4" />
+        <g transform="translate(50,50) rotate(-45)">
+          <line x1="-32" y1="0" x2="32" y2="0" stroke="url(#m_hatake_gold)" strokeWidth="3" strokeLinecap="round" />
+          <line x1="-32" y1="-0.8" x2="32" y2="-0.8" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" />
         </g>
+      </g>
+    
 
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 50)" filter="drop-shadow(0 0 8px #38bdf8)">
+        <polygon points="0,-8 1.2,-1.5 8,0 1.2,1.5 0,8 -1.2,1.5 -8,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+      </g>
+    
+
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_hatake_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 15. ХОКАГЕ (Имперский Лист Конохи & Золотой Кандзи 火)
-  // =========================================================================
   {
     id: 'emblem_hokage',
-    name: 'Герб Воли Огня (Хокаге Конохи & Кандзи 火)',
+    name: 'Императорский Герб Хокаге (Воля Огня)',
     kanji: '火影',
-    element: 'WILL_OF_FIRE',
-    elementBadge: '🔥 Воля Огня & Каге',
+    element: 'FIRE',
+    elementBadge: '🔥 Высшая Воля Огня Конохи',
     themeColor: '#ef4444',
-    bgGradient: 'from-rose-950 via-amber-950 to-zinc-950',
-    borderColor: 'border-amber-500/50',
-    glowColor: 'shadow-amber-500/40',
-    defaultMotto: 'Деревня — это моя семья, и я защищу ее ценой жизни!',
-    desc: 'Священный имперский герб Воли Огня: спираль Скрытого Листа Конохи и золотой каллиграфический иероглиф «火» (Огонь) на церемониальной шляпе Хокаге.',
+    bgGradient: 'from-red-950 via-zinc-950 to-amber-950',
+    borderColor: 'border-red-500/80',
+    glowColor: 'shadow-red-500/60',
+    defaultMotto: 'Пока горят листья дерева, пламя озаряет деревню!',
+    desc: 'Императорский герб лидеров Конохи: золотая шляпа Хокаге, священный кандзи 『火』 и ревущее вечное пламя Воли Огня.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_hoka_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fffbeb" />
-            <stop offset="25%" stopColor="#fde047" />
-            <stop offset="55%" stopColor="#f59e0b" />
-            <stop offset="85%" stopColor="#b45309" />
-            <stop offset="100%" stopColor="#fde047" />
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
+            <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_hoka_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#991b1b" />
-            <stop offset="45%" stopColor="#450a0a" />
-            <stop offset="80%" stopColor="#1a0202" />
-            <stop offset="100%" stopColor="#050000" />
-          </radialGradient>
-          <filter id="m_hoka_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_hoka_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_hoka_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#f87171" />
+      <stop offset="35%" stopColor="#dc2626" />
+      <stop offset="75%" stopColor="#991b1b" />
+      <stop offset="100%" stopColor="#450a0a" />
+    
+          </linearGradient>
+
+          <filter id="m_hoka_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_hoka_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#ef4444" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_hoka_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_hoka_gold)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.95" filter="drop-shadow(0 0 10px #ef4444)">
+        <circle cx="50" cy="50" r="51" stroke="#fde047" strokeWidth="1.8" strokeDasharray="8 4" fill="none" />
+      </g>
+    
 
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_hoka_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_hoka_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_hoka_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_hoka_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_hoka_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_hoka_lacquer)" />
 
-        {/* 8 Языков пламени основателей по ободу */}
-        <g fill="url(#m_hoka_gold)" opacity="0.45">
-          <polygon points="50,11 53,17 47,17" />
-          <polygon points="50,89 53,83 47,83" />
-          <polygon points="89,50 83,53 83,47" />
-          <polygon points="11,50 17,53 17,47" />
-          <polygon points="78,22 73,26 76,29" />
-          <polygon points="22,78 27,74 24,71" />
-          <polygon points="78,78 73,74 76,71" />
-          <polygon points="22,22 27,26 24,29" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_hoka_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_hoka_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_hoka_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Шляпа Хокаге и спираль Листа Конохи */}
-        <g filter="url(#m_hoka_shadow)">
-          <polygon points="50,17 79,42 21,42" fill="#ef4444" stroke="url(#m_hoka_gold)" strokeWidth="2.2" strokeLinejoin="round" />
-          <polygon points="50,21 75,42 25,42" fill="#f4f4f5" />
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_hoka_chisel)">
+        {/**/}
+        <path d="M 26 58 L 50 24 L 74 58 Z" fill="url(#m_hoka_lacquer)" stroke="url(#m_hoka_gold)" strokeWidth="2.4" />
+        <path d="M 20 60 Q 50 54 80 60" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" />
+        <text x="50" y="52" textAnchor="middle" fill="url(#m_hoka_gold)" fontSize="16" fontWeight="900" fontFamily="serif">火</text>
+      </g>
+    
 
-          {/* Золотой каллиграфический кандзи 火 */}
-          <text 
-            x="50" 
-            y="38" 
-            fontSize="19" 
-            fontWeight="900" 
-            fill="#dc2626" 
-            stroke="url(#m_hoka_gold)" 
-            strokeWidth="0.8" 
-            textAnchor="middle" 
-            fontFamily="'Hiragino Mincho Pro', 'Yu Mincho', serif"
-          >
-            火
-          </text>
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 24)" filter="drop-shadow(0 0 8px #fde047)">
+        <polygon points="0,-8 1.2,-1.5 8,0 1.2,1.5 0,8 -1.2,1.5 -8,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+      </g>
+    
 
-          {/* Спираль Листа Конохи */}
-          <path 
-            d="M34 64 C30 49 42 37 56 39 C64 40 70 47 66 55 C62 63 50 69 42 65 C38 63 35 67 30 75" 
-            stroke="url(#m_hoka_gold)" 
-            strokeWidth="4.2" 
-            fill="none" 
-            strokeLinecap="round" 
-          />
-          <circle cx="50" cy="52" r="3.4" fill="#fde047" stroke="#451a03" strokeWidth="1" />
-        </g>
-
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_hoka_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 16. АНБУ (Фарфоровая Маска Кицунэ & Скрещенные Ниндзято)
-  // =========================================================================
   {
     id: 'emblem_anbu',
-    name: 'Герб Спецназа АНБУ (Маска Кицунэ & Ниндзято)',
+    name: 'Герб Спецподразделения АНБУ',
     kanji: '暗部',
-    element: 'ANBU',
-    elementBadge: '🎭 Спецоперации & Тень',
-    themeColor: '#a855f7',
-    bgGradient: 'from-zinc-950 via-purple-950 to-slate-950',
-    borderColor: 'border-purple-500/50',
-    glowColor: 'shadow-purple-500/40',
-    defaultMotto: 'Мы действуем из тени, чтобы деревня жила на свету!',
-    desc: 'Фарфоровая маска лисицы отряда спецопераций АНБУ с алыми ритуальными метками и горящими глазами на фоне скрещенных клинков ниндзято.',
+    element: 'SHADOW',
+    elementBadge: '🎭 Тайные Операции Конохи',
+    themeColor: '#f43f5e',
+    bgGradient: 'from-zinc-950 via-rose-950 to-black',
+    borderColor: 'border-rose-500/60',
+    glowColor: 'shadow-rose-500/50',
+    defaultMotto: 'Безымянные тени, хранящие покой Конохи в ночи.',
+    desc: 'Фарфоровая маска Лиса Кицунэ специального подразделения тайных операций Конохи с алыми ритуальными знаками.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
-          <linearGradient id="m_anbu_plat" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="m_anbu_gold" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="30%" stopColor="#d8b4fe" />
-            <stop offset="65%" stopColor="#7e22ce" />
-            <stop offset="100%" stopColor="#c084fc" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
+            <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_anbu_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#3b0764" />
-            <stop offset="45%" stopColor="#18052e" />
-            <stop offset="80%" stopColor="#0a0114" />
-            <stop offset="100%" stopColor="#000000" />
-          </radialGradient>
-          <filter id="m_anbu_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_anbu_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_anbu_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#ffffff" />
+      <stop offset="35%" stopColor="#e2e8f0" />
+      <stop offset="75%" stopColor="#94a3b8" />
+      <stop offset="100%" stopColor="#0f172a" />
+    
+          </linearGradient>
+
+          <filter id="m_anbu_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_anbu_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#a855f7" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_anbu_plat)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_anbu_plat)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #f43f5e)">
+        <circle cx="50" cy="50" r="51" stroke="#f43f5e" strokeWidth="1.4" strokeDasharray="6 3" fill="none" />
+      </g>
+    
 
-        <g fill="url(#m_anbu_plat)">
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_anbu_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_anbu_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
+        <g fill="url(#m_anbu_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_anbu_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_anbu_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_anbu_lacquer)" />
 
-        {/* Скрещенные клинки ниндзято */}
-        <g stroke="#94a3b8" strokeWidth="2.6" strokeLinecap="round">
-          <line x1="21" y1="21" x2="79" y2="79" />
-          <line x1="79" y1="21" x2="21" y2="79" />
-          <line x1="26" y1="19" x2="19" y2="26" stroke="url(#m_anbu_plat)" strokeWidth="3.4" />
-          <line x1="74" y1="19" x2="81" y2="26" stroke="url(#m_anbu_plat)" strokeWidth="3.4" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_anbu_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_anbu_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_anbu_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Фарфоровая маска Кицунэ АНБУ */}
-        <g filter="url(#m_anbu_shadow)">
-          <path d="M50 19 C35 19 27 34 27 52 C27 71 37 83 50 83 C63 83 73 71 73 52 C73 34 65 19 50 19 Z" fill="#f4f4f5" stroke="url(#m_anbu_plat)" strokeWidth="2" />
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_anbu_chisel)">
+        {/**/}
+        <path d="M 30 30 L 36 44 C 36 62 44 72 50 76 C 56 72 64 62 64 44 L 70 30 C 62 34 56 36 50 36 C 44 36 38 34 30 30 Z" fill="#ffffff" stroke="url(#m_anbu_gold)" strokeWidth="2" />
+        <ellipse cx="42" cy="50" rx="3" ry="1.5" fill="#e11d48" transform="rotate(-15 42 50)" />
+        <ellipse cx="58" cy="50" rx="3" ry="1.5" fill="#e11d48" transform="rotate(15 58 50)" />
+      </g>
+    
 
-          {/* Лисьи ушки */}
-          <polygon points="34,21 27,11 38,17" fill="#e4e4e7" stroke="#71717a" strokeWidth="1" />
-          <polygon points="66,21 73,11 62,17" fill="#e4e4e7" stroke="#71717a" strokeWidth="1" />
-          <polygon points="33,19 29,14 36,17" fill="#dc2626" />
-          <polygon points="67,19 71,14 64,17" fill="#dc2626" />
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 42)" filter="drop-shadow(0 0 8px #f43f5e)">
+        <polygon points="0,-8 1.2,-1.5 8,0 1.2,1.5 0,8 -1.2,1.5 -8,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+      </g>
+    
 
-          {/* Раскосые прорези глаз с алым светом */}
-          <path d="M35 46 Q42 41 46 47" stroke="#18181b" strokeWidth="3.2" fill="none" strokeLinecap="round" />
-          <path d="M65 46 Q58 41 54 47" stroke="#18181b" strokeWidth="3.2" fill="none" strokeLinecap="round" />
-          <line x1="39" y1="46" x2="43" y2="46" stroke="#ef4444" strokeWidth="1.4" />
-          <line x1="61" y1="46" x2="57" y2="46" stroke="#ef4444" strokeWidth="1.4" />
-
-          {/* Алые ритуальные изогнутые метки на щеках */}
-          <path d="M31 56 Q36 63 44 60" stroke="#dc2626" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-          <path d="M69 56 Q64 63 56 60" stroke="#dc2626" strokeWidth="2.6" fill="none" strokeLinecap="round" />
-          <polygon points="50,65 48,69 52,69" fill="#18181b" />
-        </g>
-
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_anbu_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 17. ООЦУЦУКИ (Рога Прародителей & Золотой Риннеган)
-  // =========================================================================
   {
     id: 'emblem_otsutsuki',
-    name: 'Герб Ооцуцуки (Рога Богов & Золотой Риннеган)',
+    name: 'Герб Клана Ооцуцуки (Божественное Древо & Рога)',
     kanji: '大筒木',
-    element: 'RINNEGAN',
-    elementBadge: '👑 Риннеган & Прародители',
-    themeColor: '#e0e7ff',
-    bgGradient: 'from-indigo-950 via-zinc-950 to-slate-950',
-    borderColor: 'border-indigo-400/50',
-    glowColor: 'shadow-indigo-400/40',
-    defaultMotto: 'Вселенная подчиняется воле Божественного Древа!',
-    desc: 'Священный клан прародителей чакры: венчающие рога Кагуи и Хагоромо, кольца Риннегана и плод Божественного Древа.',
+    element: 'DIVINE',
+    elementBadge: '🌕 Божественная Чакра & Риннеган',
+    themeColor: '#e2e8f0',
+    bgGradient: 'from-purple-950 via-zinc-950 to-slate-900',
+    borderColor: 'border-purple-400/60',
+    glowColor: 'shadow-purple-400/50',
+    defaultMotto: 'Мы — боги, пожинающие плоды миров во вселенной.',
+    desc: 'Священные лунные рога прародителей чакры Ооцуцуки с золотым оком Риннегана и 9 томоэ.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_otsu_gold" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="35%" stopColor="#e0e7ff" />
-            <stop offset="70%" stopColor="#818cf8" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
             <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_otsu_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#3730a3" />
-            <stop offset="45%" stopColor="#1e1b4b" />
-            <stop offset="80%" stopColor="#0b0a21" />
-            <stop offset="100%" stopColor="#020008" />
-          </radialGradient>
-          <filter id="m_otsu_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_otsu_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_otsu_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#ffffff" />
+      <stop offset="35%" stopColor="#e9d5ff" />
+      <stop offset="75%" stopColor="#7e22ce" />
+      <stop offset="100%" stopColor="#1e0a38" />
+    
+          </linearGradient>
+
+          <filter id="m_otsu_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_otsu_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#818cf8" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_otsu_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_otsu_gold)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #c084fc)">
+        <circle cx="50" cy="50" r="51" stroke="#c084fc" strokeWidth="1.6" strokeDasharray="3 3" fill="none" />
+      </g>
+    
 
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_otsu_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_otsu_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_otsu_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_otsu_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_otsu_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_otsu_lacquer)" />
 
-        {/* Кольца Риннегана на фоне */}
-        <g stroke="url(#m_otsu_gold)" strokeWidth="0.9" opacity="0.4" fill="none">
-          <circle cx="50" cy="55" r="33" />
-          <circle cx="50" cy="55" r="25" />
-          <circle cx="50" cy="55" r="17" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_otsu_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_otsu_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_otsu_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Рельефные Рога Ооцуцуки и Золотой Риннеган */}
-        <g filter="url(#m_otsu_shadow)">
-          <path d="M42 50 C38 34 24 22 15 15 C22 28 28 42 36 56 Z" fill="#ffffff" stroke="url(#m_otsu_gold)" strokeWidth="1.8" />
-          <path d="M58 50 C62 34 76 22 85 15 C78 28 72 42 64 56 Z" fill="#ffffff" stroke="url(#m_otsu_gold)" strokeWidth="1.8" />
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_otsu_chisel)">
+        {/**/}
+        <path d="M 28 26 C 26 40 32 66 50 78 C 68 66 74 40 72 26 C 68 36 60 46 50 48 C 40 46 32 36 28 26 Z" fill="url(#m_otsu_lacquer)" stroke="url(#m_otsu_gold)" strokeWidth="2" />
+      </g>
+    
 
-          {/* Плод Божественного Древа (Золотой Риннеган) */}
-          <ellipse cx="50" cy="56" rx="14.5" ry="10.5" fill="#fef08a" stroke="url(#m_otsu_gold)" strokeWidth="2.2" />
-          <circle cx="50" cy="56" r="6.5" fill="#818cf8" stroke="#312e81" strokeWidth="1.2" />
-          <circle cx="50" cy="56" r="2.8" fill="#1e1b4b" />
-          <circle cx="48.5" cy="54.5" r="1.2" fill="#ffffff" />
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 48)" filter="drop-shadow(0 0 8px #fde047)">
+        <circle cx="0" cy="0" r="7" fill="#1e0a38" stroke="url(#m_otsu_gold)" strokeWidth="1.5" />
+        <circle cx="0" cy="0" r="4.5" fill="#fde047" />
+        <polygon points="0,-8 1.2,-1.5 8,0 1.2,1.5 0,8 -1.2,1.5 -8,0 -1.2,-1.5" fill="#ffffff" opacity="0.95" />
+      </g>
+    
 
-          {/* 3 Томоэ */}
-          <circle cx="43" cy="56" r="1.6" fill="#312e81" />
-          <circle cx="57" cy="56" r="1.6" fill="#312e81" />
-          <circle cx="50" cy="50" r="1.6" fill="#312e81" />
-        </g>
-
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_otsu_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 18. КАЗЕКАГЕ / СУНА (Золотая Тыква Гаары & Алый Кандзи 愛)
-  // =========================================================================
   {
     id: 'emblem_kazekage',
-    name: 'Герб Казекаге (Золотой Песок & Кандзи 愛)',
+    name: 'Герб Казекаге (Песчаная Тыква & Кандзи Ай)',
     kanji: '風影',
     element: 'SAND',
-    elementBadge: '🏜️ Песок & Казекаге',
-    themeColor: '#ca8a04',
-    bgGradient: 'from-amber-950 via-zinc-950 to-orange-950',
-    borderColor: 'border-yellow-600/50',
-    glowColor: 'shadow-yellow-600/40',
-    defaultMotto: 'Песчаная буря похоронит врагов, оставив лишь Любовь!',
-    desc: 'Великая песчаная тыква Гаары с золотыми печатями и священный светящийся алый кандзи «愛» (Любовь) на фоне дюн Сунагакуре.',
+    elementBadge: '⏳ Золотой Песок & Дзитон',
+    themeColor: '#d97706',
+    bgGradient: 'from-amber-950 via-zinc-950 to-stone-900',
+    borderColor: 'border-amber-600/60',
+    glowColor: 'shadow-amber-600/50',
+    defaultMotto: 'Песок защищает того, чье сердце познало любовь.',
+    desc: 'Песчаная тыква Гаары Хётан с выгравированным алым кандзи 『愛』 (Любовь) и бурей золотого песка.',
+    
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
-          <linearGradient id="m_suna_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fef9c3" />
-            <stop offset="30%" stopColor="#facc15" />
-            <stop offset="65%" stopColor="#a16207" />
-            <stop offset="100%" stopColor="#fde047" />
+          <linearGradient id="m_kaze_gold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ffffff" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
+            <stop offset="100%" stopColor="#fef08a" />
           </linearGradient>
-          <radialGradient id="m_suna_gem" cx="40%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#92400e" />
-            <stop offset="45%" stopColor="#451a03" />
-            <stop offset="80%" stopColor="#1c0b02" />
-            <stop offset="100%" stopColor="#080200" />
-          </radialGradient>
-          <filter id="m_suna_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.8" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.85" />
+
+          <linearGradient id="m_kaze_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_kaze_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#fde68a" />
+      <stop offset="35%" stopColor="#d97706" />
+      <stop offset="75%" stopColor="#92400e" />
+      <stop offset="100%" stopColor="#451a03" />
+    
+          </linearGradient>
+
+          <filter id="m_kaze_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
-          <radialGradient id="m_suna_glint" cx="35%" cy="30%" r="50%">
-            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.65" />
-            <stop offset="40%" stopColor="#ffffff" stopOpacity="0.15" />
+
+          <radialGradient id="m_kaze_glint" cx="35%" cy="30%" r="50%">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        <circle cx="50" cy="50" r="49" stroke="#ca8a04" strokeWidth="1" opacity="0.35" />
-        <circle cx="50" cy="50" r="48" stroke="url(#m_suna_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="45" stroke="#18181b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="43.5" stroke="url(#m_suna_gold)" strokeWidth="1" strokeDasharray="3 3" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.9" filter="drop-shadow(0 0 8px #d97706)">
+        <circle cx="50" cy="50" r="51" stroke="#d97706" strokeWidth="1.4" strokeDasharray="4 2" fill="none" />
+      </g>
+    
 
-        <g fill="url(#m_suna_gold)">
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_kaze_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_kaze_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
+        <g fill="url(#m_kaze_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        <circle cx="50" cy="50" r="42" fill="url(#m_suna_gem)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_kaze_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_kaze_lacquer)" />
 
-        {/* Песчаные дюны */}
-        <g stroke="url(#m_suna_gold)" strokeWidth="0.9" opacity="0.4" fill="none">
-          <path d="M17 71 Q35 63 50 71 T83 71" />
-          <path d="M21 79 Q38 71 50 79 T79 79" />
-        </g>
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_kaze_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_kaze_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_kaze_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-        {/* Рельефная тыква Гаары и кандзи 愛 */}
-        <g filter="url(#m_suna_shadow)">
-          <circle cx="50" cy="38" r="13.5" fill="#d97706" stroke="url(#m_suna_gold)" strokeWidth="2" />
-          <rect x="46" y="20" width="8" height="7.5" rx="1.5" fill="#92400e" stroke="url(#m_suna_gold)" strokeWidth="1.4" />
-          <circle cx="50" cy="62" r="18.5" fill="#b45309" stroke="url(#m_suna_gold)" strokeWidth="2.2" />
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_kaze_chisel)">
+        {/**/}
+        <circle cx="50" cy="42" r="14" fill="url(#m_kaze_lacquer)" stroke="url(#m_kaze_gold)" strokeWidth="2" />
+        <circle cx="50" cy="62" r="18" fill="url(#m_kaze_lacquer)" stroke="url(#m_kaze_gold)" strokeWidth="2" />
+        <text x="50" y="68" textAnchor="middle" fill="#dc2626" fontSize="18" fontWeight="900" fontFamily="serif">愛</text>
+      </g>
+    
 
-          {/* Поясная золотая обвязка */}
-          <path d="M37 48 Q50 54 63 48" stroke="url(#m_suna_gold)" strokeWidth="2.6" fill="none" />
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      <g transform="translate(50, 36)" filter="drop-shadow(0 0 8px #d97706)">
+        <polygon points="0,-7 1,-1.2 7,0 1,1.2 0,7 -1,1.2 -7,0 -1,-1.2" fill="#ffffff" opacity="0.95" />
+      </g>
+    
 
-          {/* Алый светящийся кандзи 愛 */}
-          <text 
-            x="50" 
-            y="43" 
-            fontSize="14.5" 
-            fontWeight="900" 
-            fill="#ef4444" 
-            stroke="#ffffff" 
-            strokeWidth="0.5" 
-            textAnchor="middle" 
-            fontFamily="'Hiragino Mincho Pro', 'Yu Mincho', serif"
-          >
-            愛
-          </text>
-        </g>
-
-        <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_suna_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
-        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.45" pointerEvents="none" />
-        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.3" pointerEvents="none" />
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
+        <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_kaze_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
+        <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
+        <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
   },
-
-  // =========================================================================
-  // 19. ЭКСКЛЮЗИВ СОЗДАТЕЛЯ: ОКО СОТВОРЕНИЯ И ЕДИНСТВА ВСЕХ КЛАНОВ (創世の神紋)
-  // ТОЛЬКО ДЛЯ КИРИЛЛА (askarovkiril5@gmail.com)
-  // =========================================================================
   {
     id: 'emblem_creator_genesis',
     name: '👑 Герб Создателя: Око Сотворения и Единства Всех Кланов',
@@ -1721,198 +2103,134 @@ export const CLAN_EMBLEMS = [
     themeColor: '#facc15',
     bgGradient: 'from-amber-950 via-zinc-950 to-purple-950',
     borderColor: 'border-yellow-400/90',
-    glowColor: 'shadow-yellow-400/60',
-    isCreatorExclusive: true,
-    developerEmail: 'askarovkiril5@gmail.com',
+    glowColor: 'shadow-yellow-400/70',
     defaultMotto: 'Тот, кто сотворил этот мир, объединил пламя, молнию и волю всех кланов воедино!',
     desc: 'Священный первородный герб Создателя и Архитектора мира шиноби (Кирилла). Синтезирует величайшие реликвии: рубиновый Гунбай Учиха, Спираль Удзумаки, Ветви Мокутона Сэндзю, 8 Триграмм Хьюга, барабаны Райдзина, 9 парящих сфер Гудодама и Око Ринне-Шарингана под золотой Короной Творца 『創世』.',
+    isCreatorExclusive: true,
+    developerEmail: 'askarovkiril5@gmail.com',
     renderSvg: (className = "w-12 h-12") => (
-      <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="-10 -10 120 120" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" overflow="visible">
         <defs>
           <linearGradient id="m_gen_gold" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#fffbeb" />
-            <stop offset="25%" stopColor="#fef08a" />
-            <stop offset="50%" stopColor="#eab308" />
-            <stop offset="75%" stopColor="#a16207" />
-            <stop offset="90%" stopColor="#713f12" />
-            <stop offset="100%" stopColor="#fde047" />
-          </linearGradient>
-          <radialGradient id="m_gen_cosmos" cx="45%" cy="40%" r="65%">
-            <stop offset="0%" stopColor="#3b0764" />
-            <stop offset="40%" stopColor="#1e0a38" />
-            <stop offset="75%" stopColor="#090412" />
-            <stop offset="100%" stopColor="#020105" />
-          </radialGradient>
-          <radialGradient id="m_gen_ruby" cx="45%" cy="40%" r="65%">
-            <stop offset="0%" stopColor="#ef4444" />
-            <stop offset="45%" stopColor="#b91c1c" />
-            <stop offset="80%" stopColor="#58050e" />
-            <stop offset="100%" stopColor="#250205" />
-          </radialGradient>
-          <radialGradient id="m_gen_gudodama" cx="35%" cy="30%" r="65%">
-            <stop offset="0%" stopColor="#64748b" />
-            <stop offset="30%" stopColor="#0f172a" />
-            <stop offset="85%" stopColor="#020617" />
-            <stop offset="100%" stopColor="#000000" />
-          </radialGradient>
-          <radialGradient id="m_gen_plasma" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="35%" stopColor="#ff4d4d" />
-            <stop offset="75%" stopColor="#990000" />
-            <stop offset="100%" stopColor="#2b0000" />
-          </radialGradient>
-          <filter id="m_gen_shadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="2.5" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.95" />
+            <stop offset="15%" stopColor="#fffbeb" />
+            <stop offset="35%" stopColor="#fde047" />
+            <stop offset="55%" stopColor="#ca8a04" />
+            <stop offset="75%" stopColor="#78350f" />
+            <stop offset="90%" stopColor="#a16207" />
+            <stop offset="100%" stopColor="#fef08a" />
+          </linearGradient>
+
+          <linearGradient id="m_gen_titanium" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="40%" stopColor="#1e293b" />
+            <stop offset="80%" stopColor="#0f172a" />
+            <stop offset="100%" stopColor="#020617" />
+          </linearGradient>
+
+          <linearGradient id="m_gen_lacquer" x1="0%" y1="0%" x2="100%" y2="100%">
+            
+      <stop offset="0%" stopColor="#fde047" />
+      <stop offset="35%" stopColor="#ec4899" />
+      <stop offset="75%" stopColor="#06b6d4" />
+      <stop offset="100%" stopColor="#3b0764" />
+    
+          </linearGradient>
+
+          <filter id="m_gen_chisel" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="3.2" stdDeviation="2.2" floodColor="#000000" floodOpacity="0.9" />
+            <feDropShadow dx="0" dy="-0.8" stdDeviation="0.6" floodColor="#ffffff" floodOpacity="0.35" />
           </filter>
+
           <radialGradient id="m_gen_glint" cx="35%" cy="30%" r="50%">
             <stop offset="0%" stopColor="#ffffff" stopOpacity="0.75" />
-            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.22" />
+            <stop offset="35%" stopColor="#ffffff" stopOpacity="0.2" />
             <stop offset="80%" stopColor="#ffffff" stopOpacity="0" />
           </radialGradient>
         </defs>
 
-        {/* 0. Божественный наружный ореол чакры творения */}
-        <circle cx="50" cy="50" r="49" stroke="#facc15" strokeWidth="1.2" opacity="0.6" strokeDasharray="3 2" />
-        <circle cx="50" cy="50" r="47.5" stroke="#38bdf8" strokeWidth="0.8" opacity="0.45" />
+        {/* LAYER 0: Стихийная корона чакры (Flames & Arcs) */}
+        
+      <g opacity="0.95" filter="drop-shadow(0 0 12px #facc15)">
+        <circle cx="50" cy="50" r="51" stroke="#facc15" strokeWidth="1.8" strokeDasharray="3 2" fill="none" />
+        <circle cx="50" cy="50" r="53.5" stroke="#38bdf8" strokeWidth="1" opacity="0.6" fill="none" />
+        <polyline points="50,-4 54,6 48,12 55,20" stroke="#fde047" strokeWidth="1.6" fill="none" />
+        <polyline points="104,50 94,54 88,48 80,55" stroke="#38bdf8" strokeWidth="1.6" fill="none" />
+        <polyline points="50,104 46,94 52,88 45,80" stroke="#ec4899" strokeWidth="1.6" fill="none" />
+        <polyline points="-4,50 6,46 12,52 20,45" stroke="#fde047" strokeWidth="1.6" fill="none" />
+      </g>
+    
 
-        {/* 1. Чеканный золотой обод с 12 заклепками */}
-        <circle cx="50" cy="50" r="46.5" stroke="url(#m_gen_gold)" strokeWidth="2.8" />
-        <circle cx="50" cy="50" r="43.5" stroke="#09090b" strokeWidth="1.2" />
-        <circle cx="50" cy="50" r="42" stroke="url(#m_gen_gold)" strokeWidth="0.8" strokeDasharray="2 1.5" />
-
-        {/* 12 заклепок по ободу */}
+        {/* LAYER 1: Чеканный трехмерный золотой обод с 12 заклепками */}
+        <circle cx="50" cy="50" r="48" stroke="url(#m_gen_gold)" strokeWidth="3" />
+        <circle cx="50" cy="50" r="45" stroke="#09090b" strokeWidth="1.2" />
+        <circle cx="50" cy="50" r="43.5" stroke="url(#m_gen_gold)" strokeWidth="0.8" strokeDasharray="3 2" />
         <g fill="url(#m_gen_gold)">
           {Array.from({ length: 12 }).map((_, i) => {
             const rad = (i * 30 * Math.PI) / 180;
-            return <circle key={i} cx={50 + 45 * Math.cos(rad)} cy={50 + 45 * Math.sin(rad)} r="1.3" />;
+            return <circle key={i} cx={50 + 46.5 * Math.cos(rad)} cy={50 + 46.5 * Math.sin(rad)} r="1.4" />;
           })}
         </g>
 
-        {/* 2. Космическое эмалевое дно (Клуазоне) */}
-        <circle cx="50" cy="50" r="41" fill="url(#m_gen_cosmos)" />
+        {/* LAYER 3: Двухкомпонентный вихревой диск Инь-Ян (как в icon.png) */}
+        <circle cx="50" cy="50" r="42" fill="url(#m_gen_titanium)" />
+        <path d="M 50 8 A 42 42 0 0 1 92 50 A 42 42 0 0 1 50 92 A 21 21 0 0 1 50 50 A 21 21 0 0 0 50 8 Z" fill="url(#m_gen_lacquer)" />
 
-        {/* 3. Щит Гунбай Учиха (Рельефная база в форме веера) */}
-        <g filter="url(#m_gen_shadow)">
-          {/* Рукоять веера с золотой намоткой */}
-          <path d="M48 68 L48 88 C48 90 49 91 50 91 C51 91 52 90 52 88 L52 68 Z" fill="#18181b" stroke="url(#m_gen_gold)" strokeWidth="0.8" />
-          <circle cx="50" cy="89" r="1.6" fill="url(#m_gen_gold)" />
-          {/* Алая шелковая кисть */}
-          <path d="M49 90 L47 95 M51 90 L53 95 M50 90 L50 96" stroke="#ef4444" strokeWidth="1" strokeLinecap="round" />
+        {/* LAYER 2: Верхняя накладная пластина протектора из титана со следами сражений */}
+        <path d="M 28 20 C 40 16 60 16 72 20 C 74 28 71 36 67 38 C 57 40 43 40 33 38 C 29 36 26 28 28 20 Z" fill="#1e293b" stroke="url(#m_gen_gold)" strokeWidth="1" />
+        <circle cx="33" cy="28" r="1.2" fill="url(#m_gen_gold)" />
+        <circle cx="67" cy="28" r="1.2" fill="url(#m_gen_gold)" />
+        <line x1="38" y1="23" x2="48" y2="30" stroke="#000000" strokeWidth="1.2" strokeLinecap="round" />
+        <line x1="38.4" y1="23.4" x2="48.4" y2="30.4" stroke="#94a3b8" strokeWidth="0.5" strokeLinecap="round" />
+        <line x1="56" y1="24" x2="62" y2="32" stroke="#000000" strokeWidth="0.9" strokeLinecap="round" />
+        <line x1="56.4" y1="24.4" x2="62.4" y2="32.4" stroke="#cbd5e1" strokeWidth="0.4" strokeLinecap="round" />
 
-          {/* Корпус Гунбая (двойной лепесток веера) */}
-          <path
-            d="M 50 16 C 70 16 78 35 68 48 C 76 60 70 74 50 74 C 30 74 24 60 32 48 C 22 35 30 16 50 16 Z"
-            fill="url(#m_gen_ruby)"
-            stroke="url(#m_gen_gold)"
-            strokeWidth="2.2"
-          />
-        </g>
-
-        {/* 4. Спираль Удзумаки & волны Сейгайха */}
-        <g stroke="#fca5a5" fill="none" strokeWidth="0.9" opacity="0.4">
-          <circle cx="50" cy="46" r="19" stroke="#fbbf24" strokeWidth="0.6" strokeDasharray="2 2" />
-          <path d="M 50 46 A 4 4 0 0 1 50 54 A 8 8 0 0 0 50 38 A 12 12 0 0 1 50 62 A 16 16 0 0 0 50 30" />
-        </g>
-
-        {/* 5. Золотые ветви Мокутона Сэндзю */}
-        <g stroke="url(#m_gen_gold)" fill="none" strokeWidth="1.2" strokeLinecap="round">
-          <path d="M 32 64 C 28 52 24 40 32 30 C 35 24 30 18 38 12" />
-          <path d="M 68 64 C 72 52 76 40 68 30 C 65 24 70 18 62 12" />
-          {/* Листья Мокутона */}
-          <path d="M 28 46 Q 23 44 26 40 Q 30 42 28 46 Z" fill="url(#m_gen_gold)" />
-          <path d="M 72 46 Q 77 44 74 40 Q 70 42 72 46 Z" fill="url(#m_gen_gold)" />
-          <path d="M 34 26 Q 29 23 32 19 Q 36 22 34 26 Z" fill="url(#m_gen_gold)" />
-          <path d="M 66 26 Q 71 23 68 19 Q 64 22 66 26 Z" fill="url(#m_gen_gold)" />
-        </g>
-
-        {/* 6. Ореол 8 Триграмм Хьюга & вены Бьякугана */}
-        <g stroke="#38bdf8" opacity="0.8" strokeWidth="0.8">
-          <circle cx="50" cy="46" r="16" fill="none" strokeDasharray="3 1.5" />
-          <path d="M 33 46 C 29 42 26 46 22 44" fill="none" opacity="0.6" strokeWidth="0.7" />
-          <path d="M 67 46 C 71 42 74 46 78 44" fill="none" opacity="0.6" strokeWidth="0.7" />
-        </g>
-
-        {/* 7. Барабаны Томоэ Райдзина (4 по диагоналям) */}
-        {[-45, 45, 135, -135].map((deg) => (
-          <g key={deg} transform={`translate(50, 46) rotate(${deg}) translate(0, -25)`}>
-            <circle cx="0" cy="0" r="3.2" fill="#09090b" stroke="url(#m_gen_gold)" strokeWidth="0.8" />
-            <path d="M -0.8 -1.2 C 1.2 -1.8 1.8 0.6 0.6 1.8 C -0.6 1.8 -1.2 0 -0.8 -1.2 Z" fill="#fbbf24" />
-          </g>
-        ))}
-
-        {/* 8. Священное Око Ринне-Шарингана (9 томоэ) в ядре */}
-        <g transform="translate(50, 46)" filter="url(#m_gen_shadow)">
-          <circle cx="0" cy="0" r="12" fill="url(#m_gen_ruby)" stroke="url(#m_gen_gold)" strokeWidth="1.2" />
-          <circle cx="0" cy="0" r="9" fill="none" stroke="#18181b" strokeWidth="0.7" />
-          <circle cx="0" cy="0" r="6" fill="none" stroke="#18181b" strokeWidth="0.7" />
-          <circle cx="0" cy="0" r="3" fill="none" stroke="#18181b" strokeWidth="0.7" />
-          
-          {/* Сверхновая сингулярность */}
-          <circle cx="0" cy="0" r="1.8" fill="url(#m_gen_plasma)" />
-          <circle cx="0" cy="0" r="0.7" fill="#ffffff" />
-
-          {/* 9 Томоэ на 3-х орбитах */}
-          {[0, 120, 240].map((deg) => (
-            <circle key={`t1-${deg}`} cx={Math.cos(deg * Math.PI / 180) * 3} cy={Math.sin(deg * Math.PI / 180) * 3} r="0.7" fill="#000000" />
-          ))}
-          {[60, 180, 300].map((deg) => (
-            <circle key={`t2-${deg}`} cx={Math.cos(deg * Math.PI / 180) * 6} cy={Math.sin(deg * Math.PI / 180) * 6} r="0.8" fill="#000000" />
-          ))}
-          {[0, 120, 240].map((deg) => (
-            <circle key={`t3-${deg}`} cx={Math.cos(deg * Math.PI / 180) * 9} cy={Math.sin(deg * Math.PI / 180) * 9} r="0.9" fill="#000000" />
-          ))}
-        </g>
-
-        {/* 9. Корона Творца 👑 с кандзи 『創世』 */}
-        <g transform="translate(50, 13)" filter="url(#m_gen_shadow)">
-          <path
-            d="M -12 4 L -15 -7 L -7 -2 L 0 -11 L 7 -2 L 15 -7 L 12 4 Z"
-            fill="url(#m_gen_gold)"
-            stroke="#78350f"
-            strokeWidth="0.9"
-          />
-          {/* 3 рубина на зубцах короны */}
+        {/* LAYER 5: Скульптурный 3D-символ клана */}
+        
+      <g filter="url(#m_gen_chisel)">
+        {/**/}
+        <path d="M 50 16 C 70 16 78 35 68 48 C 76 60 70 74 50 74 C 30 74 24 60 32 48 C 22 35 30 16 50 16 Z" fill="url(#m_gen_lacquer)" stroke="url(#m_gen_gold)" strokeWidth="2.2" />
+        {/**/}
+        <path d="M 32 64 C 28 52 24 40 32 30 C 35 24 30 18 38 12" stroke="url(#m_gen_gold)" strokeWidth="1.4" fill="none" />
+        <path d="M 68 64 C 72 52 76 40 68 30 C 65 24 70 18 62 12" stroke="url(#m_gen_gold)" strokeWidth="1.4" fill="none" />
+        {/**/}
+        <g transform="translate(50, 14)">
+          <path d="M -12 4 L -15 -7 L -7 -2 L 0 -11 L 7 -2 L 15 -7 L 12 4 Z" fill="url(#m_gen_gold)" stroke="#78350f" strokeWidth="0.9" />
           <circle cx="-15" cy="-7" r="1.3" fill="#ef4444" stroke="#ffffff" strokeWidth="0.4" />
           <circle cx="0" cy="-11" r="1.7" fill="#ef4444" stroke="#ffffff" strokeWidth="0.5" />
           <circle cx="15" cy="-7" r="1.3" fill="#ef4444" stroke="#ffffff" strokeWidth="0.4" />
-          
-          {/* Золотой кандзи 『創世』 */}
-          <text
-            x="0"
-            y="2.8"
-            textAnchor="middle"
-            fill="#ffffff"
-            fontSize="4.2"
-            fontWeight="900"
-            fontFamily="'Hiragino Mincho Pro', 'Yu Mincho', serif"
-            style={{ textShadow: '0 0 2px #000000' }}
-          >
-            創世
-          </text>
+          <text x="0" y="2.8" textAnchor="middle" fill="#000000" fontSize="4.2" fontWeight="900" fontFamily="serif">創世</text>
         </g>
+        {/**/}
+        {Array.from({ length: 6 }).map((_, i) => {
+          const rad = (i * 60 * Math.PI) / 180;
+          return (
+            <circle key={i} cx={50 + 36 * Math.cos(rad)} cy={48 + 36 * Math.sin(rad)} r="3" fill="#020617" stroke="#38bdf8" strokeWidth="0.6" />
+          );
+        })}
+      </g>
+    
 
-        {/* 10. 9 Сфер Гудодама по внешнему кругу */}
-        <g>
-          {Array.from({ length: 9 }).map((_, i) => {
-            const rad = (i * 40 * Math.PI) / 180;
-            const cx = 50 + 36 * Math.cos(rad);
-            const cy = 48 + 36 * Math.sin(rad);
-            return (
-              <g key={i}>
-                <circle cx={cx} cy={cy} r="3.2" fill="url(#m_gen_gudodama)" stroke="#38bdf8" strokeWidth="0.5" opacity="0.95" />
-                <circle cx={cx - 0.9} cy={cy - 0.9} r="0.9" fill="#ffffff" opacity="0.65" />
-              </g>
-            );
-          })}
-        </g>
+        {/* LAYER 6: Центральное фотонное око со звездой-бликом (как в icon.png) */}
+        
+      {/**/}
+      <g transform="translate(50, 48)" filter="drop-shadow(0 0 10px #facc15)">
+        <circle cx="0" cy="0" r="10" fill="#180104" stroke="url(#m_gen_gold)" strokeWidth="1.6" />
+        <circle cx="0" cy="0" r="7.5" fill="#ef4444" />
+        <circle cx="0" cy="0" r="5" fill="none" stroke="#18181b" strokeWidth="0.7" />
+        <circle cx="0" cy="0" r="2.5" fill="none" stroke="#18181b" strokeWidth="0.7" />
+        <polygon points="0,-12 1.5,-2 12,0 1.5,2 0,12 -1.5,2 -12,0 -1.5,-2" fill="#ffffff" opacity="0.95" />
+        <polygon points="0,-7 1,-1.5 7,0 1,1.5 0,7 -1,1.5 -7,0 -1,-1.5" fill="#fde047" opacity="0.8" transform="rotate(45)" />
+      </g>
+    
 
-        {/* 11. Двойной купольный софтбокс-блик линзы */}
+        {/* LAYER 7: Двойной купольный софтбокс-блик стекла и контурный рефлекс */}
         <ellipse cx="38" cy="34" rx="22" ry="12" fill="url(#m_gen_glint)" transform="rotate(-30 38 34)" pointerEvents="none" />
         <circle cx="30" cy="25" r="3" fill="#ffffff" opacity="0.5" pointerEvents="none" />
         <path d="M 68 76 C 76 68, 80 58, 80 48" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" pointerEvents="none" />
       </svg>
     )
-  }
+  },
 ];
 
 export const DEVELOPER_EMAIL = 'askarovkiril5@gmail.com';
@@ -1922,9 +2240,6 @@ export function isDeveloperAccount(email) {
   return String(email).trim().toLowerCase() === DEVELOPER_EMAIL;
 }
 
-/**
- * Быстрый и безопасный поиск герба клана по его уникальному ID
- */
 export function getClanEmblemById(id) {
   if (!id) return CLAN_EMBLEMS[0];
   const found = CLAN_EMBLEMS.find(e => e.id === id);

@@ -3,7 +3,7 @@ import {
   X, Award, Trophy, Swords, Bot, Shield, Sparkles, 
   Check, Lock, ChevronRight, User, Mail, Flame, ExternalLink, Zap,
   RefreshCw, LogIn, LogOut, CheckCircle2, AlertCircle, Cloud, Save,
-  Key, Eye, EyeOff, UserPlus, Crown, Megaphone, Palette
+  Key, Eye, EyeOff, UserPlus, Crown, Megaphone, Palette, Edit3
 } from 'lucide-react';
 import { TITLES_DATA } from '../data/titlesData';
 import { getPlayerFrameById, isDeveloperAccount } from '../data/playerFramesData';
@@ -25,6 +25,7 @@ export default function ShinobiProfileModal({
   onSyncAccount,
   onRegisterAccount,
   onLoginAccount,
+  onChangePlayerName,
   onOpenCustomization,
   onOpenDeveloperBroadcast,
   selectedJutsuCount = 0,
@@ -38,6 +39,8 @@ export default function ShinobiProfileModal({
   const [showPassword, setShowPassword] = useState(false);
   const [syncStatus, setSyncStatus] = useState(null); // 'loading' | 'success' | 'error' | null
   const [statusMessage, setStatusMessage] = useState('');
+  const [isEditingNick, setIsEditingNick] = useState(false);
+  const [nickInputValue, setNickInputValue] = useState(playerName || '');
 
   if (!isOpen) return null;
 
@@ -81,6 +84,48 @@ export default function ShinobiProfileModal({
     } catch (e) {
       setSyncStatus('error');
       setStatusMessage('Не удалось синхронизировать данные с сервером.');
+      setTimeout(() => setSyncStatus(null), 4000);
+    }
+  };
+
+  const handleSaveNick = async () => {
+    const trimmed = nickInputValue.trim();
+    if (!trimmed || trimmed.length < 2) {
+      setSyncStatus('error');
+      setStatusMessage('Никнейм должен содержать минимум 2 символа!');
+      setTimeout(() => setSyncStatus(null), 3000);
+      return;
+    }
+    if (trimmed.length > 24) {
+      setSyncStatus('error');
+      setStatusMessage('Никнейм не может превышать 24 символа!');
+      setTimeout(() => setSyncStatus(null), 3000);
+      return;
+    }
+    if (trimmed === playerName) {
+      setIsEditingNick(false);
+      return;
+    }
+
+    setSyncStatus('loading');
+    setStatusMessage('Проверка уникальности и закрепление никнейма...');
+    try {
+      if (onChangePlayerName) {
+        const res = await onChangePlayerName(trimmed);
+        if (res && res.error) {
+          setSyncStatus('error');
+          setStatusMessage(res.error);
+          setTimeout(() => setSyncStatus(null), 4000);
+          return;
+        }
+      }
+      setIsEditingNick(false);
+      setSyncStatus('success');
+      setStatusMessage(`✅ Никнейм «${trimmed}» успешно закреплён за вашим аккаунтом!`);
+      setTimeout(() => setSyncStatus(null), 4000);
+    } catch (e) {
+      setSyncStatus('error');
+      setStatusMessage(e.message || 'Ошибка смены никнейма');
       setTimeout(() => setSyncStatus(null), 4000);
     }
   };
@@ -197,9 +242,51 @@ export default function ShinobiProfileModal({
 
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-base sm:text-lg font-black tracking-wide text-zinc-100 uppercase">
-                  {playerName || 'Шиноби Листа'}
-                </h2>
+                {isEditingNick ? (
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <input
+                      type="text"
+                      value={nickInputValue}
+                      onChange={(e) => setNickInputValue(e.target.value)}
+                      maxLength={24}
+                      placeholder="Новый никнейм..."
+                      autoFocus
+                      className="bg-black/90 border border-amber-500/80 rounded-xl px-2.5 py-1 text-sm font-bold text-amber-200 outline-none focus:ring-2 focus:ring-amber-500 shadow-inner w-36 sm:w-48"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleSaveNick();
+                        if (e.key === 'Escape') setIsEditingNick(false);
+                      }}
+                    />
+                    <button
+                      onClick={handleSaveNick}
+                      className="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-yellow-600 text-black font-black text-xs rounded-xl shadow hover:brightness-110 active:scale-95 transition"
+                    >
+                      ✓ Сохранить
+                    </button>
+                    <button
+                      onClick={() => setIsEditingNick(false)}
+                      className="px-2 py-1 bg-zinc-800 text-zinc-400 hover:text-zinc-200 text-xs rounded-xl transition"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5">
+                    <h2 className="text-base sm:text-lg font-black tracking-wide text-zinc-100 uppercase">
+                      {playerName || 'Шиноби Листа'}
+                    </h2>
+                    <button
+                      onClick={() => {
+                        setNickInputValue(playerName || '');
+                        setIsEditingNick(true);
+                      }}
+                      className="p-1 rounded-lg bg-zinc-800/80 hover:bg-amber-500/20 text-zinc-400 hover:text-amber-300 border border-white/10 hover:border-amber-500/40 transition text-xs flex items-center gap-1"
+                      title="Сменить никнейм и закрепить за собой"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
                 {isDev && (
                   <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-full bg-yellow-500 text-black shadow-md flex items-center gap-1">
                     <Crown className="w-3 h-3" /> СОЗДАТЕЛЬ
@@ -528,24 +615,6 @@ export default function ShinobiProfileModal({
           {activeTab === 'ACCOUNT' && (
             /* ВКЛАДКА ОБЛАЧНОГО АККАУНТА И ПОЧТЫ */
             <div className="space-y-4">
-              {/* Статус-баннер уведомлений */}
-              {syncStatus && (
-                <div
-                  className={`p-3.5 rounded-2xl flex items-center gap-3 text-xs font-bold transition animate-fadeIn ${
-                    syncStatus === 'loading'
-                      ? 'bg-cyan-950/70 border border-cyan-500/40 text-cyan-300'
-                      : syncStatus === 'success'
-                      ? 'bg-emerald-950/70 border border-emerald-500/40 text-emerald-300'
-                      : 'bg-rose-950/70 border border-rose-500/40 text-rose-300'
-                  }`}
-                >
-                  {syncStatus === 'loading' && <RefreshCw className="w-4 h-4 animate-spin text-cyan-400 shrink-0" />}
-                  {syncStatus === 'success' && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
-                  {syncStatus === 'error' && <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />}
-                  <span className="flex-1">{statusMessage}</span>
-                </div>
-              )}
-
               {linkedEmail ? (
                 /* 1. ПОЧТА УЖЕ ПРИВЯЗАНА */
                 <div className="space-y-4">

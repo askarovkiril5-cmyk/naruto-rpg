@@ -169,6 +169,15 @@ app.post('/api/user/login', (req, res) => {
   res.json(result);
 });
 
+// Смена и персональное закрепление никнейма за шиноби
+app.post('/api/user/change-name', (req, res) => {
+  const result = storageManager.changePlayerName(req.body || {});
+  if (result.error) {
+    return res.status(400).json(result);
+  }
+  res.json(result);
+});
+
 // Системные оповещения Создателя игры (Кирилла)
 app.get('/api/system/announcements', (req, res) => {
   res.json(storageManager.getSystemAnnouncements());
@@ -502,6 +511,31 @@ io.on('connection', (socket) => {
       text: `⚡ ИИ-Ведущий переключен на модель: ${room.activeModel}`
     });
     console.log(`[Room ${roomId}] Модель ИИ переключена на: ${room.activeModel}`);
+  });
+
+  // Обновление имени игрока в комнате / лобби
+  socket.on('update_player_name', ({ roomId, playerId, newName }) => {
+    if (!roomId || !newName) return;
+    const room = rooms.get(roomId);
+    if (!room) return;
+    const effectivePlayerId = playerId || socket.id;
+    let player = room.players.get(effectivePlayerId);
+    if (!player) {
+      for (const p of room.players.values()) {
+        if (p.socketId === socket.id) {
+          player = p;
+          break;
+        }
+      }
+    }
+    if (player) {
+      const oldName = player.name;
+      player.name = newName;
+      io.to(roomId).emit('room_state_update', buildRoomState(room));
+      io.to(roomId).emit('system_message', {
+        text: `📜 Шиноби ${oldName} теперь известен как ${newName}!`
+      });
+    }
   });
 
   // Подключение к комнате

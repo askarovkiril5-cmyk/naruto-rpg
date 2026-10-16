@@ -378,18 +378,64 @@ function saveUser(userData) {
 
   users[key] = updated;
 
-  // Если сохранен по почте, но у него есть имя, связываем также имя для быстрого поиска
-  if (emailKey && nameKey && nameKey !== emailKey) {
-    users[nameKey] = {
-      ...updated,
-      identifier: nameKey,
-      linkedToEmail: emailKey
-    };
-  }
-
   writeJsonFile(USERS_FILE, users);
 
   return getUserProfile(key);
+}
+
+/**
+ * Проверка занятости никнейма (регистронезависимо) среди всех других пользователей
+ */
+function isNicknameTaken(nickname, excludeEmail = null) {
+  if (!nickname) return false;
+  const cleanName = String(nickname).trim().toLowerCase();
+  const cleanExcludeEmail = excludeEmail ? String(excludeEmail).trim().toLowerCase() : null;
+  const users = readJsonFile(USERS_FILE, {});
+  return Object.values(users).some(u => {
+    if (!u || !u.name) return false;
+    const uEmail = u.email ? String(u.email).trim().toLowerCase() : null;
+    if (cleanExcludeEmail && uEmail && uEmail === cleanExcludeEmail) {
+      return false; // Тот же самый аккаунт
+    }
+    return String(u.name).trim().toLowerCase() === cleanName;
+  });
+}
+
+/**
+ * Смена и персональное закрепление никнейма за аккаунтом шиноби
+ */
+function changePlayerName({ email, newName }) {
+  if (!email || !String(email).includes('@')) {
+    return { error: 'Пожалуйста, войдите в аккаунт, чтобы изменить никнейм!' };
+  }
+  const cleanEmail = String(email).trim().toLowerCase();
+  const cleanName = String(newName || '').trim();
+
+  if (!cleanName || cleanName.length < 2) {
+    return { error: 'Никнейм должен содержать не менее 2 символов!' };
+  }
+  if (cleanName.length > 24) {
+    return { error: 'Никнейм не может быть длиннее 24 символов!' };
+  }
+
+  // Проверка уникальности
+  if (isNicknameTaken(cleanName, cleanEmail)) {
+    return { error: `Никнейм «${cleanName}» уже занят другим шиноби! Выберите другое имя.` };
+  }
+
+  const users = readJsonFile(USERS_FILE, {});
+  let user = users[cleanEmail];
+  if (!user) {
+    return { error: 'Аккаунт не найден на сервере.' };
+  }
+
+  user.name = cleanName;
+  user.updatedAt = new Date().toISOString();
+  users[cleanEmail] = user;
+  writeJsonFile(USERS_FILE, users);
+
+  const profile = getUserProfile(cleanEmail);
+  return { success: true, name: cleanName, profile: sanitizeUser(profile) };
 }
 
 /**
@@ -408,6 +454,11 @@ function registerUser({ email, password, confirmPassword, name, avatar, frameId 
     return { error: 'Введённый пароль и подтверждение пароля не совпадают!' };
   }
 
+  const cleanName = name ? String(name).trim() : cleanEmail.split('@')[0];
+  if (cleanName && isNicknameTaken(cleanName, cleanEmail)) {
+    return { error: `Никнейм «${cleanName}» уже закреплён за другим игроком! Пожалуйста, укажите другой никнейм.` };
+  }
+
   const users = readJsonFile(USERS_FILE, {});
   const existing = users[cleanEmail];
 
@@ -421,7 +472,7 @@ function registerUser({ email, password, confirmPassword, name, avatar, frameId 
 
   const baseData = existing || {
     identifier: cleanEmail,
-    name: name || cleanEmail.split('@')[0],
+    name: cleanName || 'Шиноби',
     email: cleanEmail,
     googleConnected: true,
     totalXp: 0,
@@ -1256,6 +1307,8 @@ module.exports = {
   // Авторизация, Пароли и Оповещения Создателя
   registerUser,
   loginUser,
+  changePlayerName,
+  isNicknameTaken,
   isDeveloper,
   saveSystemAnnouncement,
   getSystemAnnouncements,

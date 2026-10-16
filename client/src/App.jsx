@@ -1608,6 +1608,54 @@ export default function App() {
     }
   };
 
+  // Смена и уникальное закрепление никнейма за игроком
+  const handleChangePlayerName = async (newName) => {
+    try {
+      const email = currentAccount?.email || userProfile?.email;
+      const res = await fetch(`${BACKEND_URL}/api/user/change-name`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, newName })
+      });
+      const data = await res.json();
+      if (data.error) {
+        return { success: false, error: data.error };
+      }
+      if (data.success) {
+        setPlayerName(data.name);
+        try { localStorage.setItem('naruto_player_name', data.name); } catch {}
+        if (data.profile) {
+          setUserProfile(data.profile);
+          try { localStorage.setItem('naruto_user_profile', JSON.stringify(data.profile)); } catch {}
+        }
+        if (currentAccount) {
+          const updatedAcc = { ...currentAccount, name: data.name };
+          setCurrentAccount(updatedAcc);
+          try { localStorage.setItem('naruto_google_accounts', JSON.stringify([updatedAcc])); } catch {}
+        }
+        if (socket && isConnected) {
+          socket.emit('update_player_name', {
+            roomId,
+            playerId,
+            newName: data.name
+          });
+        }
+        audioManager.playSfx('seal');
+        notificationManager.addNotification({
+          category: 'village',
+          title: 'Никнейм закреплён',
+          sender: 'Канцелярия Конохи',
+          content: `Ваш никнейм успешно изменён на «${data.name}» и персонально закреплён за вами в Зале Славы Конохи!`
+        });
+        return { success: true, name: data.name };
+      }
+      return { success: false, error: 'Неизвестная ошибка смены никнейма' };
+    } catch (err) {
+      console.error('Change player name error:', err);
+      return { success: false, error: err.message };
+    }
+  };
+
   const handleSelectAccount = (account) => {
     setCurrentAccount(account);
     if (account?.name) {
@@ -2885,6 +2933,7 @@ export default function App() {
         onSyncAccount={handleSyncAccount}
         onRegisterAccount={handleRegisterAccount}
         onLoginAccount={handleLoginAccount}
+        onChangePlayerName={handleChangePlayerName}
         onOpenCustomization={() => setIsCustomizationOpen(true)}
         onOpenDeveloperBroadcast={() => setIsDevBroadcastOpen(true)}
         selectedJutsuCount={selectedJutsuIds.length}

@@ -13,13 +13,16 @@ import { audioManager } from '../utils/audioManager';
 export default function AvatarFrameSelectorModal({
   isOpen,
   onClose,
-  currentAvatar = '🍥',
-  currentFrameId = 'frame_academy',
+  currentAvatar,
+  currentFrameId,
   userProfile,
-  onSaveCustomization
+  onSaveCustomization,
+  onSaveProfile
 }) {
-  const [selectedAvatar, setSelectedAvatar] = useState(currentAvatar);
-  const [selectedFrameId, setSelectedFrameId] = useState(currentFrameId);
+  const initialAvatar = currentAvatar || userProfile?.avatar || '🍥';
+  const initialFrameId = currentFrameId || userProfile?.frameId || 'frame_academy';
+  const [selectedAvatar, setSelectedAvatar] = useState(initialAvatar);
+  const [selectedFrameId, setSelectedFrameId] = useState(initialFrameId);
   const [customImageError, setCustomImageError] = useState('');
   const fileInputRef = useRef(null);
 
@@ -73,8 +76,9 @@ export default function AvatarFrameSelectorModal({
 
   const handleSave = () => {
     audioManager.playSfx('lock');
-    if (onSaveCustomization) {
-      onSaveCustomization({
+    const saveFn = onSaveCustomization || onSaveProfile;
+    if (saveFn) {
+      saveFn({
         avatar: selectedAvatar,
         frameId: selectedFrameId
       });

@@ -10,6 +10,8 @@ export default function DeveloperAnnouncementModal({
   backendUrl,
   socket,
   userProfile,
+  developerEmail,
+  developerName,
   onAnnouncementSent
 }) {
   const [title, setTitle] = useState('');
@@ -21,7 +23,7 @@ export default function DeveloperAnnouncementModal({
 
   if (!isOpen) return null;
 
-  const userEmail = String(userProfile?.email || '').trim().toLowerCase();
+  const userEmail = String(developerEmail || userProfile?.email || '').trim().toLowerCase();
   const isDev = userEmail === 'askarovkiril5@gmail.com';
 
   const handleBroadcast = async (e) => {

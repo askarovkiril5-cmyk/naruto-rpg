@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { 
   BookOpen, Scroll, UserCheck, Settings, Swords, ShieldAlert, Shield,
   Maximize2, Minimize2, UserPlus, FileText, Bot, Award, Mail, Users, Trophy, Crown,

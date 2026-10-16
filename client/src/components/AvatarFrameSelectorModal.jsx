@@ -141,16 +141,18 @@ export default function AvatarFrameSelectorModal({
           
           {/* БЛОК ЖИВОГО ПРЕДПРОСМОТРА */}
           <div className="p-4 rounded-3xl bg-gradient-to-r from-zinc-900 via-zinc-950 to-zinc-900 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
-            <div className="flex items-center gap-4">
-              {/* Живой 3D-рендер рамки с аватаром */}
-              <Frame3D
-                frame={activeFrame}
-                avatarContent={renderAvatarContent(selectedAvatar)}
-                sizeClass="w-24 h-24 sm:w-28 sm:h-28"
-                interactive={true}
-                idleFloat={true}
-                maxTilt={18}
-              />
+            <div className="flex items-center gap-6 sm:gap-8 min-w-0">
+              {/* Живой 3D-рендер рамки с аватаром на подиуме */}
+              <div className="mx-6 sm:mx-8 my-3 shrink-0 flex items-center justify-center relative">
+                <Frame3D
+                  frame={activeFrame}
+                  avatarContent={renderAvatarContent(selectedAvatar)}
+                  sizeClass="w-22 h-22 sm:w-24 sm:h-24"
+                  interactive={true}
+                  idleFloat={true}
+                  maxTilt={18}
+                />
+              </div>
 
               <div>
                 <span className="text-[10px] font-mono text-zinc-400 block uppercase">

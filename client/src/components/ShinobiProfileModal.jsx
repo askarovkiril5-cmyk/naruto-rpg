@@ -212,12 +212,12 @@ export default function ShinobiProfileModal({
       <div className="w-full max-w-3xl rounded-3xl border border-white/10 bg-zinc-950/98 p-4 sm:p-6 shadow-2xl text-zinc-100 flex flex-col max-h-[92vh] overflow-hidden">
         
         {/* ШАПКА МОДАЛЬНОГО ОКНА */}
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 shrink-0">
-          <div className="flex items-center gap-3">
-            {/* Аватарка в боевой рамке */}
+        <div className="flex items-center justify-between border-b border-white/10 pb-4 shrink-0 overflow-visible">
+          <div className="flex items-center gap-6 sm:gap-8 min-w-0">
+            {/* Аватарка в боевой рамке с безопасными отступами под крылья */}
             <div 
               onClick={onOpenCustomization} 
-              className="cursor-pointer group relative"
+              className="cursor-pointer group relative mx-4 sm:mx-6 my-2 shrink-0"
               title="Нажмите, чтобы настроить аватарку и наградную рамку"
             >
               {(() => {

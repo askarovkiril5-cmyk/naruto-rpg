@@ -1853,29 +1853,45 @@ export default function App() {
           /* КРАСИВОЕ ОТДЕЛЬНОЕ ГЛАВНОЕ МЕНЮ (ПОЛНОЦЕННЫЙ ЭКРАН ВЫБОРА) */
           /* ========================================================= */
           <div className="glass-panel border-x border-b border-white/10 flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 rounded-b-2xl">
-            {/* 1. HERO БАННЕР С ПРИВЕТСТВИЕМ И ИМЕНЕМ БОЙЦА */}
-            <div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 bg-gradient-to-r from-amber-950/40 via-zinc-900/80 to-cyan-950/40 border border-amber-500/30 shadow-2xl">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">⛩️</span>
-                    <h2 className="text-base sm:text-xl font-black uppercase tracking-wider text-zinc-100 flex items-center gap-2">
+            {/* 1. HERO БАННЕР С ПРИВЕТСТВИЕМ И ИМЕНЕМ БОЙЦА (MLBB PRESTIGE SHOWCASE) */}
+            <div className="relative rounded-3xl p-4 sm:p-6 bg-gradient-to-br from-amber-950/40 via-zinc-950/90 to-zinc-900 border border-amber-500/30 shadow-2xl overflow-visible">
+              
+              {/* Верхняя строка: Заголовок арены и статус */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <span className="text-2xl drop-shadow-md">⛩️</span>
+                  <div>
+                    <h2 className="text-sm sm:text-base font-black uppercase tracking-wider text-amber-300 flex items-center gap-2">
                       Боевая Арена Конохи
                     </h2>
+                    <p className="text-[11px] text-zinc-400">
+                      Тактическая ролевая арена шиноби. Подготовьте боевой арсенал и начните дуэль!
+                    </p>
                   </div>
-                  <p className="text-xs text-zinc-400 max-w-xl">
-                    Тактическая ролевая арена шиноби. Выберите режим битвы, подготовьте свой боевой арсенал из 30 дзюцу и нажмите «Начать дуэль»!
-                  </p>
                 </div>
 
-                {/* Быстрая плашка вашего бойца с аватаркой в наградной рамке */}
-                <div className="bg-black/60 border border-white/10 rounded-2xl p-3 flex items-center gap-3 shrink-0 shadow-lg">
-                  {/* Аватарка в наградной боевой рамке */}
+                <div className="flex items-center gap-2 self-start sm:self-auto">
+                  <span className="text-[11px] font-mono font-bold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 flex items-center gap-1.5 shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Арена активна</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Основной блок: Престижная карточка бойца (MLBB Hero Podium) */}
+              <div className="mt-4 flex flex-col xl:flex-row xl:items-center justify-between gap-5 p-4 sm:p-5 rounded-2xl bg-black/60 border border-white/10 shadow-inner overflow-visible">
+                
+                {/* Левая часть: 3D Аватар в рамке с безопасным подиумом + Информация об игроке */}
+                <div className="flex items-center gap-4 sm:gap-6 min-w-0">
+                  {/* Подиум 3D-рамки с просторными безопасными отступами под размах крыльев (MLBB Frame Stage) */}
                   <div 
                     onClick={() => setIsCustomizationOpen(true)}
-                    className="relative cursor-pointer group shrink-0"
+                    className="relative cursor-pointer group shrink-0 mx-5 sm:mx-7 my-3 flex items-center justify-center"
                     title="Нажмите, чтобы настроить аватарку (загрузить фото с ПК) и наградную рамку"
                   >
+                    {/* Мягкий рассеянный фоновый свет под подиумом */}
+                    <div className="absolute -inset-5 rounded-full bg-amber-500/20 blur-xl pointer-events-none group-hover:bg-amber-500/35 transition duration-500" />
+                    
                     {(() => {
                       const userFrame = getPlayerFrameById(userProfile?.frameId, userProfile);
                       const av = userProfile?.avatar || '🍥';
@@ -1890,16 +1906,16 @@ export default function App() {
                           <Frame3D
                             frame={userFrame}
                             avatarContent={avContent}
-                            sizeClass="w-14 h-14 sm:w-16 sm:h-16"
+                            sizeClass="w-16 h-16 sm:w-18 sm:h-18"
                             interactive={true}
                             idleFloat={true}
-                            maxTilt={15}
+                            maxTilt={16}
                           />
                         );
                       }
                       return (
                         <div 
-                          className={`w-12 h-12 rounded-2xl flex items-center justify-center relative overflow-hidden transition-all duration-300 group-hover:scale-105 border ${userFrame.borderClass} ${userFrame.glowClass}`}
+                          className={`w-14 h-14 rounded-2xl flex items-center justify-center relative overflow-hidden transition-all duration-300 group-hover:scale-105 border ${userFrame.borderClass} ${userFrame.glowClass}`}
                           style={userFrame.style || {}}
                         >
                           {avContent}
@@ -1911,63 +1927,86 @@ export default function App() {
                         </div>
                       );
                     })()}
-                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-500 text-black text-[9px] font-black flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition">
-                      ✏️
+
+                    {/* Подсказка редактирования */}
+                    <span className="absolute -bottom-2.5 px-2 py-0.5 rounded-full bg-black/90 border border-amber-500/50 text-amber-300 text-[9px] font-mono font-bold shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-30">
+                      🎨 Изменить облик
                     </span>
                   </div>
 
-                  <div>
-                    <div className="text-xs font-bold text-zinc-100 flex items-center gap-1.5 flex-wrap">
-                      <span>{playerName || 'Шиноби'}</span>
+                  {/* Текстовая информация о бойце */}
+                  <div className="min-w-0 space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="text-base sm:text-lg font-black text-white tracking-wide truncate">
+                        {playerName || 'Шиноби'}
+                      </h3>
                       {isDeveloperAccount(currentAccount?.email || userProfile?.email) && (
-                        <span className="text-[10px] font-black bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white px-2 py-0.2 rounded-full border border-amber-300 shadow-sm flex items-center gap-0.5">
+                        <span className="text-[11px] font-black bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white px-2.5 py-0.5 rounded-full border border-amber-300 shadow-md flex items-center gap-1">
                           👑 Создатель
                         </span>
                       )}
                       {customNinja?.clan && (
-                        <span className="text-[10px] font-mono text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-700/40 font-bold">
+                        <span className="text-[11px] font-mono text-cyan-300 bg-cyan-950/80 px-2.5 py-0.5 rounded-lg border border-cyan-700/40 font-bold">
                           {customNinja.clan}
                         </span>
                       )}
                     </div>
-                    <div className="text-[10px] text-amber-400 font-mono mt-0.5 flex items-center gap-1.5">
-                      <span>{getPlayerFrameById(userProfile?.frameId, userProfile).name}</span>
+
+                    <div className="flex items-center gap-2 flex-wrap text-xs font-mono">
+                      <span 
+                        className="px-2 py-0.5 rounded-md font-bold border"
+                        style={{
+                          color: getPlayerFrameById(userProfile?.frameId, userProfile).rarityColor,
+                          borderColor: `${getPlayerFrameById(userProfile?.frameId, userProfile).rarityColor}60`,
+                          backgroundColor: `${getPlayerFrameById(userProfile?.frameId, userProfile).rarityColor}15`
+                        }}
+                      >
+                        Рамка: {getPlayerFrameById(userProfile?.frameId, userProfile).name}
+                      </span>
                       <span className="text-zinc-500">•</span>
-                      <span>
+                      <span className="text-zinc-300">
                         {customNinja 
-                          ? `${customNinja.elements?.join('+')} • ${customNinja.archetype || 'Универсал'}`
+                          ? `${customNinja.elements?.join(' + ')} • ${customNinja.archetype || 'Универсал'}`
                           : (profile ? `${profile.clan} • ${profile.speed || 28} м/с` : 'Досье можно настроить 🥷')}
                       </span>
                     </div>
+
+                    <div className="text-[11px] text-zinc-400 font-mono flex items-center gap-2.5">
+                      <span>Ранг: <strong className="text-amber-400">{userProfile?.rank?.title || 'Генин'}</strong> (Ур. {userProfile?.level || 1})</span>
+                      <span>•</span>
+                      <span>Побед: <strong className="text-emerald-400">{userProfile?.battlesWon || 0}</strong></span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1.5 ml-2">
-                    <button
-                      type="button"
-                      onClick={() => setIsPersonalProfileOpen(true)}
-                      className="px-2.5 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/50 text-emerald-300 text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-sm"
-                      title="Личные победы, винрейт, ранг и боевые титулы"
-                    >
-                      <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                      <span>🏆 Мой Профиль</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsCreatorOpen(true)}
-                      className="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-sm"
-                      title="Настроить клан, стихии и додзюцу"
-                    >
-                      <span>✏️ Досье</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsArsenalOpen(true)}
-                      className="px-2.5 py-1.5 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-300 text-xs font-bold transition cursor-pointer flex items-center gap-1 shadow-sm"
-                      title="Выбрать до 30 техник в боевой арсенал"
-                    >
-                      <Swords className="w-3.5 h-3.5" />
-                      <span>Арсенал ({selectedJutsuIds.length}/30)</span>
-                    </button>
-                  </div>
+                </div>
+
+                {/* Правая часть: Кнопки действий (MLBB Action Pills) */}
+                <div className="flex items-center gap-2 flex-wrap shrink-0 pt-2 xl:pt-0 border-t xl:border-t-0 border-white/5">
+                  <button
+                    type="button"
+                    onClick={() => setIsPersonalProfileOpen(true)}
+                    className="px-3.5 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/50 text-emerald-300 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95"
+                    title="Личные победы, винрейт, ранг и боевые титулы"
+                  >
+                    <Trophy className="w-4 h-4 text-amber-400" />
+                    <span>🏆 Профиль</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsCreatorOpen(true)}
+                    className="px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95"
+                    title="Настроить клан, стихии и додзюцу"
+                  >
+                    <span>✏️ Досье</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsArsenalOpen(true)}
+                    className="px-3.5 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/50 text-cyan-300 text-xs font-bold transition cursor-pointer flex items-center gap-1.5 shadow-sm hover:scale-105 active:scale-95"
+                    title="Выбрать до 30 техник в боевой арсенал"
+                  >
+                    <Swords className="w-4 h-4" />
+                    <span>Арсенал ({selectedJutsuIds.length}/30)</span>
+                  </button>
                 </div>
               </div>
 

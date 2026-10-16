@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { TITLES_DATA } from '../data/titlesData';
 import { getPlayerFrameById, isDeveloperAccount } from '../data/playerFramesData';
+import { Frame3D } from './common/Artifact3D';
 import { audioManager } from '../utils/audioManager';
 
 export default function ShinobiProfileModal({
@@ -227,12 +228,20 @@ export default function ShinobiProfileModal({
                 ) : (
                   <span className="text-xl sm:text-2xl">{av}</span>
                 );
-                return userFrame.renderFrame(
-                  avContent,
-                  "w-12 h-12 sm:w-14 sm:h-14",
-                  <span className="absolute -bottom-1 -right-1 text-[10px] font-mono font-black px-1.5 py-0.2 rounded-full bg-amber-500 text-zinc-950 border border-zinc-950 z-20">
-                    {level}
-                  </span>
+                return (
+                  <Frame3D
+                    frame={userFrame}
+                    avatarContent={avContent}
+                    sizeClass="w-12 h-12 sm:w-14 sm:h-14"
+                    interactive={true}
+                    idleFloat={true}
+                    maxTilt={16}
+                    extraBadge={
+                      <span className="absolute -bottom-1 -right-1 text-[10px] font-mono font-black px-1.5 py-0.2 rounded-full bg-amber-500 text-zinc-950 border border-zinc-950 z-20" style={{ transform: 'translateZ(35px)' }}>
+                        {level}
+                      </span>
+                    }
+                  />
                 );
               })()}
               <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-black/80 border border-white/20 text-[9px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-md z-30">

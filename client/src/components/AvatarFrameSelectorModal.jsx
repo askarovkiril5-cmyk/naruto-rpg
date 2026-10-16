@@ -1,13 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { 
-  X, Check, Lock, Upload, Image, Sparkles, Award, Shield, User, RefreshCw
+  X, Check, Lock, Upload, Image, Sparkles, Award, Shield, RefreshCw
 } from 'lucide-react';
 import { 
   PLAYER_FRAMES, 
-  PRESET_AVATARS, 
   getPlayerFrameById, 
   isDeveloperAccount 
 } from '../data/playerFramesData';
+import { Frame3D } from './common/Artifact3D';
 import { audioManager } from '../utils/audioManager';
 
 export default function AvatarFrameSelectorModal({
@@ -142,11 +142,15 @@ export default function AvatarFrameSelectorModal({
           {/* БЛОК ЖИВОГО ПРЕДПРОСМОТРА */}
           <div className="p-4 rounded-3xl bg-gradient-to-r from-zinc-900 via-zinc-950 to-zinc-900 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
             <div className="flex items-center gap-4">
-              {/* Живой рендер рамки с аватаром */}
-              {activeFrame.renderFrame(
-                renderAvatarContent(selectedAvatar),
-                "w-20 h-20 sm:w-22 sm:h-22"
-              )}
+              {/* Живой 3D-рендер рамки с аватаром */}
+              <Frame3D
+                frame={activeFrame}
+                avatarContent={renderAvatarContent(selectedAvatar)}
+                sizeClass="w-20 h-20 sm:w-22 sm:h-22"
+                interactive={true}
+                idleFloat={true}
+                maxTilt={18}
+              />
 
               <div>
                 <span className="text-[10px] font-mono text-zinc-400 block uppercase">
@@ -187,6 +191,21 @@ export default function AvatarFrameSelectorModal({
                 <Upload className="w-4 h-4" />
                 <span>Загрузить свою картинку (ПК)</span>
               </button>
+
+              {selectedAvatar?.startsWith('data:') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    audioManager.playSfx('click');
+                    setSelectedAvatar('🍥');
+                  }}
+                  className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-xs font-bold transition flex items-center justify-center gap-1.5 border border-white/10 cursor-pointer"
+                  title="Сбросить загруженную картинку"
+                >
+                  <RefreshCw className="w-3.5 h-3.5 text-zinc-400" />
+                  <span>Сбросить</span>
+                </button>
+              )}
             </div>
           </div>
 
@@ -195,57 +214,6 @@ export default function AvatarFrameSelectorModal({
               {customImageError}
             </div>
           )}
-
-          {/* 1. ВЫБОР АВАТАРА (ПРЕСЕТЫ) */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between px-1">
-              <span className="text-xs font-bold text-zinc-300 uppercase font-mono flex items-center gap-1.5">
-                <User className="w-4 h-4 text-amber-400" />
-                <span>Коллекция аватарок шиноби:</span>
-              </span>
-              <span className="text-[10px] text-zinc-500">
-                Кликните для выбора
-              </span>
-            </div>
-
-            <div className="grid grid-cols-4 sm:grid-cols-8 gap-2.5">
-              {PRESET_AVATARS.map((av) => {
-                const isSelected = selectedAvatar === av.icon;
-                const isCreatorIcon = av.id === 'av_creator';
-                const isLocked = isCreatorIcon && !isDev;
-
-                return (
-                  <button
-                    key={av.id}
-                    type="button"
-                    disabled={isLocked}
-                    onClick={() => {
-                      if (!isLocked) {
-                        audioManager.playSfx('click');
-                        setSelectedAvatar(av.icon);
-                      }
-                    }}
-                    title={`${av.name} — ${av.desc}${isLocked ? ' (Эксклюзив Создателя)' : ''}`}
-                    className={`p-2.5 rounded-2xl border text-center transition flex flex-col items-center justify-center gap-1 relative ${
-                      isSelected
-                        ? 'bg-amber-500/20 border-amber-400 shadow-md shadow-amber-500/20 ring-2 ring-amber-400/50 scale-105'
-                        : isLocked
-                        ? 'bg-zinc-950/80 border-white/5 opacity-40 cursor-not-allowed'
-                        : 'bg-zinc-900/60 border-white/5 hover:border-white/20 hover:bg-zinc-900 cursor-pointer hover:scale-105'
-                    }`}
-                  >
-                    <span className="text-2xl">{av.icon}</span>
-                    <span className="text-[9px] font-bold text-zinc-300 truncate w-full block">
-                      {av.name.split(' ')[0]}
-                    </span>
-                    {isLocked && (
-                      <span className="absolute top-1 right-1 text-[8px]">🔒</span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
 
           {/* 2. ВЫБОР РАМОК ЗА ДОСТИЖЕНИЯ (11 РАМОК) */}
           <div className="space-y-3">
@@ -276,12 +244,16 @@ export default function AvatarFrameSelectorModal({
                         : 'bg-zinc-950/80 border-white/5 opacity-60'
                     }`}
                   >
-                    {/* Превью рамки с текущим выбранным аватаром */}
+                    {/* Превью 3D-рамки с текущим выбранным аватаром */}
                     <div className="shrink-0">
-                      {frame.renderFrame(
-                        renderAvatarContent(selectedAvatar),
-                        "w-12 h-12"
-                      )}
+                      <Frame3D
+                        frame={frame}
+                        avatarContent={renderAvatarContent(selectedAvatar)}
+                        sizeClass="w-12 h-12"
+                        interactive={true}
+                        idleFloat={isEquipped}
+                        maxTilt={14}
+                      />
                     </div>
 
                     {/* Описание рамки и кнопка */}

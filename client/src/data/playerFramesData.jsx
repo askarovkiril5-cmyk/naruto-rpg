@@ -54,9 +54,9 @@ export const PLAYER_FRAMES = [
     borderClass: 'border-emerald-600/70',
     glowClass: 'shadow-md shadow-emerald-900/30',
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`}>
+      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
         {/* Изумрудно-древесный ореол чакры */}
-        <div className="absolute -inset-1.5 rounded-2xl bg-gradient-to-br from-emerald-600/25 via-amber-800/20 to-transparent blur-sm opacity-80 pointer-events-none" />
+        <div style={{ transform: "translateZ(-15px)" }} className="absolute -inset-1.5 rounded-2xl bg-gradient-to-br from-emerald-600/25 via-amber-800/20 to-transparent blur-sm opacity-80 pointer-events-none" />
 
         {/* Боковые деревянные пилоны с бронзовыми накладками */}
         <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-2 h-7 bg-gradient-to-b from-amber-700 via-amber-900 to-amber-950 rounded-l border-l border-y border-amber-500/60 shadow pointer-events-none flex flex-col justify-between py-1 items-center">
@@ -69,7 +69,7 @@ export const PLAYER_FRAMES = [
         </div>
 
         {/* Основной корпус рамки из резного дерева Хиноки */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-amber-950 via-zinc-950 to-emerald-950 border-2 border-emerald-600/80 shadow-xl shadow-black/80 overflow-hidden">
+        <div style={{ transform: "translateZ(16px)" }} className="absolute inset-0 rounded-2xl bg-gradient-to-b from-amber-950 via-zinc-950 to-emerald-950 border-2 border-emerald-600/80 shadow-xl shadow-black/80 overflow-hidden">
           <div className="absolute inset-0.5 border border-amber-600/40 rounded-xl" />
           {/* Бронзовые угловые скобы */}
           <span className="absolute top-0.5 left-0.5 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-400 rounded-tl-md" />
@@ -93,7 +93,7 @@ export const PLAYER_FRAMES = [
           </div>
         </div>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
           {avatarContent}
         </div>
         {extraBadge}
@@ -118,7 +118,7 @@ export const PLAYER_FRAMES = [
     borderClass: 'border-sky-400',
     glowClass: 'shadow-lg shadow-sky-500/35',
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`}>
+      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
         {/* Неоновый лазурный ореол чакры */}
         <div className="absolute -inset-2 rounded-2xl bg-gradient-to-r from-sky-500/35 via-cyan-400/25 to-blue-600/35 blur-md opacity-90 animate-pulse pointer-events-none" />
 
@@ -158,7 +158,7 @@ export const PLAYER_FRAMES = [
           </div>
         </div>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
           {avatarContent}
         </div>
         {extraBadge}
@@ -183,7 +183,7 @@ export const PLAYER_FRAMES = [
     borderClass: 'border-amber-500',
     glowClass: 'shadow-lg shadow-amber-500/40',
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`}>
+      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
         {/* Янтарно-бронзовый ореол */}
         <div className="absolute -inset-2 rounded-2xl bg-gradient-to-r from-amber-600/35 via-orange-500/25 to-yellow-600/35 blur-md opacity-90 pointer-events-none" />
 
@@ -221,7 +221,7 @@ export const PLAYER_FRAMES = [
           <span className="w-3 h-3 rounded-full bg-gradient-to-br from-yellow-300 via-amber-500 to-amber-900 border border-white shadow" />
         </div>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
           {avatarContent}
         </div>
         {extraBadge}
@@ -246,7 +246,7 @@ export const PLAYER_FRAMES = [
     borderClass: 'border-indigo-400',
     glowClass: 'shadow-xl shadow-indigo-500/50',
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`}>
+      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
         {/* Сапфирово-платиновый сияющий контур */}
         <div className="absolute -inset-2.5 rounded-2xl bg-gradient-to-tr from-indigo-500/45 via-sky-400/35 to-purple-500/45 blur-lg opacity-90 animate-pulse pointer-events-none" />
 
@@ -275,7 +275,7 @@ export const PLAYER_FRAMES = [
           </div>
         </div>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
           {avatarContent}
         </div>
         {extraBadge}
@@ -300,7 +300,7 @@ export const PLAYER_FRAMES = [
     borderClass: 'border-rose-500',
     glowClass: 'shadow-xl shadow-rose-600/60',
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`}>
+      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
         {/* Кроваво-алый теневой дым */}
         <div className="absolute -inset-2.5 rounded-2xl bg-gradient-to-r from-rose-600/45 via-red-500/35 to-rose-700/45 blur-lg opacity-90 animate-pulse pointer-events-none" />
 
@@ -335,7 +335,7 @@ export const PLAYER_FRAMES = [
           <span className="text-xs">🗡️</span>
         </div>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
           {avatarContent}
         </div>
         {extraBadge}
@@ -360,7 +360,7 @@ export const PLAYER_FRAMES = [
     borderClass: 'border-amber-400',
     glowClass: 'shadow-2xl shadow-amber-500/70',
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`}>
+      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
         {/* Бушующее пламя Мёбоку */}
         <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-600 to-red-600 blur-xl opacity-90 animate-pulse pointer-events-none" />
 
@@ -395,7 +395,7 @@ export const PLAYER_FRAMES = [
           </div>
         </div>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
           {avatarContent}
         </div>
         {extraBadge}
@@ -420,7 +420,7 @@ export const PLAYER_FRAMES = [
     borderClass: 'border-purple-400',
     glowClass: 'shadow-2xl shadow-purple-600/70',
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`}>
+      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
         {/* Астральный фиолетовый ореол Сусаноо */}
         <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-purple-600 via-fuchsia-500 to-indigo-600 blur-xl opacity-90 animate-pulse pointer-events-none" />
 
@@ -448,7 +448,7 @@ export const PLAYER_FRAMES = [
           </div>
         </div>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
           {avatarContent}
         </div>
         {extraBadge}
@@ -473,7 +473,7 @@ export const PLAYER_FRAMES = [
     borderClass: 'border-emerald-400',
     glowClass: 'shadow-2xl shadow-emerald-500/60',
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`}>
+      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
         {/* Изумрудно-нефритовый природный бриз */}
         <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-400 to-green-600 blur-xl opacity-90 animate-pulse pointer-events-none" />
 
@@ -504,7 +504,7 @@ export const PLAYER_FRAMES = [
           </div>
         </div>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
           {avatarContent}
         </div>
         {extraBadge}
@@ -529,7 +529,7 @@ export const PLAYER_FRAMES = [
     borderClass: 'border-purple-400',
     glowClass: 'shadow-2xl shadow-indigo-500/70',
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`}>
+      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
         {/* Гравитационная волна Синра Тэнсэй */}
         <div className="absolute -inset-3 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-violet-500 blur-xl opacity-90 animate-pulse pointer-events-none" />
 
@@ -560,7 +560,7 @@ export const PLAYER_FRAMES = [
           </div>
         </div>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
           {avatarContent}
         </div>
         {extraBadge}
@@ -585,7 +585,7 @@ export const PLAYER_FRAMES = [
     borderClass: 'border-red-500',
     glowClass: 'shadow-2xl shadow-red-500/80',
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`}>
+      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
         {/* Алое пламя Воли Огня */}
         <div className="absolute -inset-3.5 rounded-2xl bg-gradient-to-r from-red-600 via-amber-500 to-rose-600 blur-xl opacity-90 animate-pulse pointer-events-none" />
 
@@ -617,7 +617,7 @@ export const PLAYER_FRAMES = [
           </div>
         </div>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
           {avatarContent}
         </div>
         {extraBadge}
@@ -644,9 +644,9 @@ export const PLAYER_FRAMES = [
     borderClass: 'border-yellow-400',
     glowClass: 'shadow-[0_0_40px_rgba(250,204,21,0.9)]',
     renderFrame: (avatarContent, sizeClass = "w-14 h-14", extraBadge = null) => (
-      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`}>
+      <div className={`relative ${sizeClass} shrink-0 select-none flex items-center justify-center group overflow-visible`} style={{ transformStyle: "preserve-3d" }}>
         {/* Радужно-призматический космический ореол Творца */}
-        <div className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-amber-400 via-fuchsia-500 to-cyan-400 blur-2xl opacity-90 animate-pulse pointer-events-none" />
+        <div style={{ transform: "translateZ(-22px)" }} className="absolute -inset-4 rounded-3xl bg-gradient-to-r from-amber-400 via-fuchsia-500 to-cyan-400 blur-2xl opacity-90 animate-pulse pointer-events-none" />
 
         {/* Императорские Божественные Золотые Крылья (MLBB Supreme Celestial Dragon Wings, вынос 30px) */}
         <div className="absolute -left-6 top-1/2 -translate-y-1/2 flex flex-col items-end pointer-events-none filter drop-shadow-[0_0_14px_#fde047]">
@@ -665,7 +665,7 @@ export const PLAYER_FRAMES = [
         </div>
 
         {/* Парящая императорская золотая корона над рамкой с рубинами */}
-        <div className="absolute -top-6 z-30 flex items-center justify-center filter drop-shadow-[0_0_16px_#fde047] pointer-events-none">
+        <div className="absolute -top-6 z-30 flex items-center justify-center filter drop-shadow-[0_0_16px_#fde047] pointer-events-none" style={{ transform: "translateZ(52px)" }}>
           <span className="text-2xl sm:text-3xl transform hover:scale-125 transition-transform animate-bounce">👑</span>
         </div>
 
@@ -678,19 +678,19 @@ export const PLAYER_FRAMES = [
         <span className="absolute -bottom-2 -right-2 w-3.5 h-3.5 rounded-full bg-black border border-amber-300 shadow-[0_0_14px_#fde047] z-20 animate-pulse pointer-events-none" />
 
         {/* Золотая ограненная рамка с сакральной гравировкой */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-950 via-zinc-950 to-purple-950 border-2 border-yellow-400 shadow-[0_0_40px_rgba(250,204,21,0.9)] overflow-hidden">
+        <div style={{ transform: "translateZ(18px)" }} className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-950 via-zinc-950 to-purple-950 border-2 border-yellow-400 shadow-[0_0_40px_rgba(250,204,21,0.9)] overflow-hidden">
           <div className="absolute inset-1 rounded-xl border border-cyan-400/80" />
           <div className="absolute inset-1.5 rounded-lg border border-fuchsia-400/70" />
         </div>
 
         {/* Золотой императорский постамент с кандзи 『創世』 */}
-        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center filter drop-shadow-[0_0_14px_#facc15] pointer-events-none">
+        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center justify-center filter drop-shadow-[0_0_14px_#facc15] pointer-events-none" style={{ transform: "translateZ(40px)" }}>
           <div className="px-3.5 py-0.5 rounded-lg bg-gradient-to-b from-yellow-300 via-amber-600 to-zinc-950 border-2 border-yellow-200 text-[10px] font-black tracking-widest text-black font-serif shadow-2xl">
             創世
           </div>
         </div>
 
-        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl">
+        <div className="relative z-10 w-full h-full p-1.5 flex items-center justify-center overflow-hidden rounded-xl" style={{ transform: "translateZ(2px)" }}>
           {avatarContent}
         </div>
         {extraBadge}

@@ -25,6 +25,7 @@ import EyeActivationOverlay from './components/EyeActivationOverlay';
 import AvatarFrameSelectorModal from './components/AvatarFrameSelectorModal';
 import DeveloperAnnouncementModal from './components/DeveloperAnnouncementModal';
 import { getPlayerFrameById, isDeveloperAccount } from './data/playerFramesData';
+import { Frame3D } from './components/common/Artifact3D';
 import { TITLES_DATA } from './data/titlesData';
 import NarrativeRenderer from './components/NarrativeRenderer';
 import defaultJutsuData from './data/jutsuData.json';
@@ -1885,7 +1886,16 @@ export default function App() {
                         <span className="text-2xl drop-shadow-md">{av}</span>
                       );
                       if (userFrame && typeof userFrame.renderFrame === 'function') {
-                        return userFrame.renderFrame(avContent, "w-12 h-12 sm:w-14 sm:h-14");
+                        return (
+                          <Frame3D
+                            frame={userFrame}
+                            avatarContent={avContent}
+                            sizeClass="w-12 h-12 sm:w-14 sm:h-14"
+                            interactive={true}
+                            idleFloat={true}
+                            maxTilt={15}
+                          />
+                        );
                       }
                       return (
                         <div 

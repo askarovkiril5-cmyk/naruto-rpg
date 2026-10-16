@@ -5,6 +5,7 @@ import {
   Award, ChevronRight, AlertCircle, Edit3
 } from 'lucide-react';
 import { CLAN_EMBLEMS, getClanEmblemById, isDeveloperAccount } from '../data/clanEmblemsData';
+import { ClanEmblem3D } from './common/Artifact3D';
 import { audioManager } from '../utils/audioManager';
 import { notificationManager } from '../utils/notificationManager';
 
@@ -417,30 +418,12 @@ export default function ClanModal({
                   boxShadow: `0 0 35px ${currentEmblem.themeColor}20, inset 0 0 20px ${currentEmblem.themeColor}15`
                 }}
               >
-                <div className="relative shrink-0 flex items-center justify-center">
-                  <div 
-                    className="absolute -inset-3 rounded-full blur-xl opacity-60 animate-pulse pointer-events-none"
-                    style={{ backgroundColor: currentEmblem.themeColor }}
-                  />
-                  <div 
-                    className="p-3 rounded-3xl bg-black/85 border shadow-2xl relative transition-transform duration-300 transform hover:scale-105"
-                    style={{
-                      borderColor: `${currentEmblem.themeColor}90`,
-                      boxShadow: `0 0 30px ${currentEmblem.themeColor}50, inset 0 0 15px ${currentEmblem.themeColor}30`
-                    }}
-                  >
-                    {currentEmblem.renderSvg("w-20 h-20 sm:w-24 sm:h-24")}
-                  </div>
-                  <span 
-                    className="absolute -bottom-2 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black tracking-widest uppercase bg-black/90 border shadow-lg"
-                    style={{
-                      borderColor: currentEmblem.themeColor,
-                      color: currentEmblem.themeColor
-                    }}
-                  >
-                    {currentEmblem.kanji}
-                  </span>
-                </div>
+                <ClanEmblem3D 
+                  emblem={currentEmblem} 
+                  sizeClass="w-20 h-20 sm:w-24 sm:h-24" 
+                  interactive={true} 
+                  idleFloat={true} 
+                />
 
                 <div className="flex-1 text-center sm:text-left space-y-1.5 min-w-0">
                   <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
@@ -874,30 +857,12 @@ export default function ClanModal({
                     boxShadow: `0 0 35px ${currentEmblem.themeColor}20, inset 0 0 20px ${currentEmblem.themeColor}15`
                   }}
                 >
-                  <div className="relative shrink-0 flex items-center justify-center">
-                    <div 
-                      className="absolute -inset-3 rounded-full blur-xl opacity-60 animate-pulse pointer-events-none"
-                      style={{ backgroundColor: currentEmblem.themeColor }}
-                    />
-                    <div 
-                      className="p-2.5 sm:p-3 rounded-3xl bg-black/85 border shadow-2xl relative transition-transform duration-300 transform hover:scale-105"
-                      style={{
-                        borderColor: `${currentEmblem.themeColor}90`,
-                        boxShadow: `0 0 30px ${currentEmblem.themeColor}50, inset 0 0 15px ${currentEmblem.themeColor}30`
-                      }}
-                    >
-                      {currentEmblem.renderSvg("w-18 h-18 sm:w-22 sm:h-22")}
-                    </div>
-                    <span 
-                      className="absolute -bottom-2 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black tracking-widest uppercase bg-black/90 border shadow-lg"
-                      style={{
-                        borderColor: currentEmblem.themeColor,
-                        color: currentEmblem.themeColor
-                      }}
-                    >
-                      {currentEmblem.kanji}
-                    </span>
-                  </div>
+                  <ClanEmblem3D 
+                    emblem={currentEmblem} 
+                    sizeClass="w-18 h-18 sm:w-22 sm:h-22" 
+                    interactive={true} 
+                    idleFloat={true} 
+                  />
 
                   <div className="flex-1 text-center sm:text-left space-y-1 min-w-0">
                     <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
@@ -966,13 +931,17 @@ export default function ClanModal({
                           boxShadow: `0 0 25px ${emblem.themeColor}35, inset 0 0 10px ${emblem.themeColor}20`
                         } : undefined}
                       >
-                        <div 
-                          className="p-1.5 rounded-2xl bg-black/70 border transition-transform duration-300 group-hover:scale-110 shadow-inner relative"
-                          style={{ borderColor: `${emblem.themeColor}40` }}
-                        >
-                          {emblem.renderSvg("w-12 h-12")}
+                        <div className="relative">
+                          <ClanEmblem3D 
+                            emblem={emblem} 
+                            sizeClass="w-12 h-12" 
+                            interactive={true} 
+                            idleFloat={isSelected} 
+                            showKanjiBadge={false} 
+                            maxTilt={14} 
+                          />
                           {isCreatorOnly && (
-                            <span className="absolute -top-1.5 -right-1.5 text-xs filter drop-shadow-[0_0_6px_#fde047]">
+                            <span className="absolute -top-1.5 -right-1.5 text-xs filter drop-shadow-[0_0_6px_#fde047] z-30 pointer-events-none">
                               {isDev ? '👑' : '🔒'}
                             </span>
                           )}

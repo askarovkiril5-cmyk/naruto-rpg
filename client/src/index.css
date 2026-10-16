@@ -46,3 +46,21 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(245, 158, 11, 0.5);
 }
+
+/* 3D Masterpiece Utilities & Glare Sweep */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+@keyframes metallicGlareSweep {
+  0% { transform: translateX(-160%) rotate(30deg); opacity: 0; }
+  15% { opacity: 0.85; }
+  50% { opacity: 0.85; }
+  75% { transform: translateX(160%) rotate(30deg); opacity: 0; }
+  100% { transform: translateX(160%) rotate(30deg); opacity: 0; }
+}
+
+.glare-sweep {
+  animation: metallicGlareSweep 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+

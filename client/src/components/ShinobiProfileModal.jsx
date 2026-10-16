@@ -232,7 +232,7 @@ export default function ShinobiProfileModal({
                   <Frame3D
                     frame={userFrame}
                     avatarContent={avContent}
-                    sizeClass="w-12 h-12 sm:w-14 sm:h-14"
+                    sizeClass="w-16 h-16 sm:w-20 sm:h-20"
                     interactive={true}
                     idleFloat={true}
                     maxTilt={16}

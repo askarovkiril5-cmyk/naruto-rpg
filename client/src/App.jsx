@@ -1890,7 +1890,7 @@ export default function App() {
                           <Frame3D
                             frame={userFrame}
                             avatarContent={avContent}
-                            sizeClass="w-12 h-12 sm:w-14 sm:h-14"
+                            sizeClass="w-14 h-14 sm:w-16 sm:h-16"
                             interactive={true}
                             idleFloat={true}
                             maxTilt={15}

@@ -146,7 +146,7 @@ export default function AvatarFrameSelectorModal({
               <Frame3D
                 frame={activeFrame}
                 avatarContent={renderAvatarContent(selectedAvatar)}
-                sizeClass="w-20 h-20 sm:w-22 sm:h-22"
+                sizeClass="w-24 h-24 sm:w-28 sm:h-28"
                 interactive={true}
                 idleFloat={true}
                 maxTilt={18}
@@ -245,11 +245,11 @@ export default function AvatarFrameSelectorModal({
                     }`}
                   >
                     {/* Превью 3D-рамки с текущим выбранным аватаром */}
-                    <div className="shrink-0">
+                    <div className="shrink-0 p-1.5 flex items-center justify-center">
                       <Frame3D
                         frame={frame}
                         avatarContent={renderAvatarContent(selectedAvatar)}
-                        sizeClass="w-12 h-12"
+                        sizeClass="w-14 h-14 sm:w-16 sm:h-16"
                         interactive={true}
                         idleFloat={isEquipped}
                         maxTilt={14}
